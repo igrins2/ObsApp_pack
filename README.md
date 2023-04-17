@@ -15,17 +15,17 @@ After setup finished, exit the current terminal, open new terminal
 dcs: server / ics, TelOps: client
 (S-192.168.1.100)
 
-IGRINS setting directory - $HOME/IGRINS
+ObsApp setting directory - $HOME/ObsApp
 
 # dnf install nfs-utils nfs4-acl-tools
 
 # showmount -e 192.168.1.100  //for dcss
 
-# mount -t nfs 192.168.1.100:/home/dcss/DCS/Data $HOME/IGRINS/dcss
+# mount -t nfs 192.168.1.100:/home/dcss/DCS/Data $HOME/ObsApp/dcss
 
 # mount | grep nfs
 
-# echo "192.168.1.100:/home/dcss/DCS/Data     $HOME/IGRINS/dcss  nfs     defaults 0 0">>/etc/fstab
+# echo "192.168.1.100:/home/dcss/DCS/Data     $HOME/ObsApp/dcss  nfs     defaults 0 0">>/etc/fstab
 # cat /etc/fstab
 
 
