@@ -248,7 +248,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.show_dcs_timer.timeout.connect(self.dcs_data_processing)     
         self.show_dcs_timer.start()        
         
-        self.send_to_SVC(CMD_INIT2_DONE)
+        self.publish_to_queue(CMD_INIT2_DONE)
                            
         self.auto_save_image()         
         self.set_off_slit()
@@ -334,7 +334,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     def callback_InstSeq(self, ch, method, properties, body):
         cmd = body.decode()
-        msg = "<- [INSTSEQ] %s" % cmd
+        msg = "<- [InstSeq] %s" % cmd
         self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
         self.param_InstSeq = cmd
         
@@ -462,11 +462,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     #--------------------------------------------------------
     # dcss command
-    def send_to_SVC(self, cmd, param=""):
+    def publish_to_queue(self, cmd, param=""):
         msg = "%s %s %d" % (cmd, "DCSS", self.simulation)
         if param != "":
             msg += " " + param
-        self.producer.send_message(self.ObsApp_q, msg) 
+        self.producer.send_message(self.ObsApp_q, msg)
+        
+        msg = "%s -> [DCSS]" % msg
+        self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg)) 
         
     
     def set_fs_param(self, first=False):     
@@ -498,14 +501,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         else:
             cmd = CMD_ACQUIRERAMP_ICS
             msg = ""
-        self.send_to_SVC(cmd, msg)
+        self.publish_to_queue(cmd, msg)
 
         
     def abort_acquisition(self):
         if self.cur_prog_step[SVC] > 0:
             self.prog_timer[SVC].stop()
               
-        self.send_to_SVC(CMD_STOPACQUISITION)  
+        self.publish_to_queue(CMD_STOPACQUISITION)  
     
     
     def load_data(self, folder_name):
@@ -1194,7 +1197,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.bt_single.setEnabled(True)
 
             elif param[0] == CMD_SETFSPARAM_ICS:
-                self.send_to_SVC(CMD_ACQUIRERAMP_ICS, "")
+                self.publish_to_queue(CMD_ACQUIRERAMP_ICS, "")
             
             elif param[0] == CMD_ACQUIRERAMP_ICS:        
                 self.NFS_load_time = ti.time()
