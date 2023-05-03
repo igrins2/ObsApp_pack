@@ -463,6 +463,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
     #--------------------------------------------------------
     # dcss command
     def publish_to_queue(self, cmd, param=""):
+        if self.producer == None:
+            return
+        
         msg = "%s %s %d" % (cmd, "DCSS", self.simulation)
         if param != "":
             msg += " " + param
