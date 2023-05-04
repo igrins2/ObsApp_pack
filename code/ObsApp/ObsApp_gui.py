@@ -1237,7 +1237,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                         self.stop_clicked = False
                         
                         self.cur_cnt = 0
-                        self.QWidgetBtnColor(self.bt_single, "black", "white")
+                        self.QWidgetBtnColor(self.bt_single, "black")
                         self.bt_single.setText("Exposure")
                         self.enable_dcss(True)
                         
@@ -1247,12 +1247,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     self.set_fs_param()
                     
                 else:
-                    self.QWidgetBtnColor(self.bt_single, "black", "white")
+                    self.QWidgetBtnColor(self.bt_single, "black")
                     self.bt_single.setText("Exposure")
                     self.enable_dcss(True)
                     
             elif param[0] == CMD_STOPACQUISITION:   # for single mode
-                self.QWidgetBtnColor(self.bt_single, "black", "white")
+                self.QWidgetBtnColor(self.bt_single, "black")
                 self.bt_single.setText("Exposure")
                 self.enable_dcss(True)
                 
