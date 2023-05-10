@@ -58,7 +58,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.log = LOG(WORKING_DIR+self.iam)  
         self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, "start"))
         
-        self.setWindowTitle("ObsApp 1.0")     
+        self.setWindowTitle("ObsApp 2.0")     
         
         # canvas        
         self.image_ax = [None for _ in range(4)]
