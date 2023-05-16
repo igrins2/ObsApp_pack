@@ -268,12 +268,18 @@ class MainWindow(Ui_Dialog, QMainWindow):
         for th in threading.enumerate():
             self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, th.name + " exit."))
         
-        self.producer.channel.close()
+        #self.publish_to_queue(EXIT)
         
+        if self.producer != None:
+            self.producer.__del__()
+        
+        '''    
+        self.producer.channel.close()
         self.consumer_InstSeq.channel.close()
         for i in range(DC_CNT):
             self.consumer_dcs[i].channel.close()
             self.consumer_sub[i].channel.close()
+        '''
                             
         self.editlist_loglist.appendPlainText(self.log.send(self.iam, DEBUG, "Closed!"))
         
