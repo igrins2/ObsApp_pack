@@ -87,7 +87,9 @@ BOX_CLR = "green"
 
 HK_REQ_GETVALUE = "GetValue"  #temp_ctrl, tm, vm
 
-SHOW_TCS_INFO = "ShowTCSInfo"
+INSTSEQ_SHOW_TCS_INFO = "ShowTCSInfo"
+OBSAPP_CAL_OFFSET = "CalOffset"
+OBSAPP_BUSY = "ObsAppBusy"
 
 CMD_INIT2_DONE = "Initialize2_Done" # to DCS
 CMD_INITIALIZE2_ICS = "Initialize2_ics"
@@ -96,4 +98,4 @@ CMD_ACQUIRERAMP_ICS = "ACQUIRERAMP_ics"
 CMD_STOPACQUISITION = "STOPACQUISITION"
 
 #CMD_COMPLETED = "Completed"
-#EXIT = "Exit"
+EXIT = "Exit"
