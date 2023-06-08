@@ -3,12 +3,12 @@
 """
 Created on Oct 21, 2022
 
-Modified on May 22, 2023
+Modified on May 2, 2023
 
+refered from SCP of original IGRINS
 @author: hilee
 """
 
-import subprocess
 import sys, os
 from ui_ObsApp import *
 from ObsApp_def import *
@@ -27,16 +27,18 @@ import Libs.SetConfig as sc
 
 import time as ti
 
+import subprocess
 import numpy as np
 from scipy.ndimage.interpolation import rotate
+from scipy.optimize import curve_fit
 import astropy.io.fits as fits 
-import Libs.zscale as zs
 
-#import glob
+import Libs.zscale as zs
+import TMCF_Functions_jj as tmcfmask
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Rectangle, Circle
 
 from shutil import copyfile
 
@@ -46,9 +48,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     def __init__(self, simul):  #simulation mode: True
         super().__init__()
-                
-        #self.setGeometry(QRect(0, 0, 1253, 598))
-        
+                        
         self.init_widget_rect = []
         self.prev_widget_rect = []      
         
@@ -63,28 +63,37 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.setWindowTitle("ObsApp 2.0")     
         
         # canvas        
-        self.image_ax = [None for _ in range(4)]
-        self.image_canvas = [None for _ in range(4)]
-        for i in range(4):
+        self.image_ax = [None for _ in range(3)]
+        self.image_canvas = [None for _ in range(3)]
+        for i in range(3):
             _image_fig = Figure(figsize=(4, 4), dpi=100)
-            self.image_ax[i] = _image_fig.add_subplot(111)
-            _image_fig.subplots_adjust(left=0.01,right=0.99,bottom=0.01,top=0.99) 
+            self.image_ax[i] = _image_fig.add_subplot(111)            
+            if i == 1:
+                _image_fig.subplots_adjust(left=0.02,right=1.03,bottom=0.02,top=1.03) 
+            elif i == 2:
+                _image_fig.subplots_adjust(left=0.035,right=0.96,bottom=0.043,top=0.96) 
+            else:
+                _image_fig.subplots_adjust(left=0.01,right=0.99,bottom=0.01, top=0.99) 
             self.image_canvas[i] = FigureCanvas(_image_fig)
-                       
-        vbox_svc = QVBoxLayout(self.frame_svc)
-        vbox_svc.addWidget(self.image_canvas[IMG_SVC])
-        vbox_svc = QVBoxLayout(self.frame_expand)
-        vbox_svc.addWidget(self.image_canvas[IMG_EXPAND])
-        vbox_svc = QVBoxLayout(self.frame_fitting)
-        vbox_svc.addWidget(self.image_canvas[IMG_FITTING])
-        vbox_svc = QVBoxLayout(self.frame_profile)
-        vbox_svc.addWidget(self.image_canvas[IMG_PROFILE])
+        
+        vbox_svc = [None for _ in range(4)]               
+        vbox_svc[0] = QVBoxLayout(self.frame_svc)
+        vbox_svc[0].addWidget(self.image_canvas[IMG_SVC])
+        vbox_svc[1] = QVBoxLayout(self.frame_expand)
+        vbox_svc[1].addWidget(self.image_canvas[IMG_EXPAND])
+        vbox_svc[2] = QVBoxLayout(self.frame_fitting)
+        vbox_svc[2].addWidget(self.image_canvas[IMG_FITTING])
+        #vbox_svc[3] = QVBoxLayout(self.frame_profile)
+        #vbox_svc[3].addWidget(self.image_canvas[IMG_PROFILE])
         
         self.clean_ax(self.image_ax[IMG_SVC])
         self.clean_ax(self.image_ax[IMG_EXPAND])
-        #self.clean_ax(self.image_ax[IMG_FITTING])
+        self.clean_ax(self.image_ax[IMG_FITTING], False)
         #self.clean_ax(self.image_ax[IMG_PROFILE])
         
+        self.image_ax[IMG_FITTING].tick_params(axis='x', labelsize=6, pad=-12)
+        self.image_ax[IMG_FITTING].tick_params(axis='y', labelsize=6, pad=-14)
+                
         #---------------------------------------------------------
         # load ini file
         cfg = sc.LoadConfig(WORKING_DIR + "ObsApp/ObsApp.ini")
@@ -102,9 +111,41 @@ class MainWindow(Ui_Dialog, QMainWindow):
         #self.temp_limit = float(cfg.get(HK, 'temp-limit'))    #for abs(normal) range
         self.Period = int(cfg.get(HK,'hk-monitor-intv'))
         
-        self.slit_cen = cfg.get(SC, 'slit-cen').split(",")
+        slit_img_flip = bool(int(cfg.get(SC, 'slit-image-flip')))
+        if slit_img_flip:
+            self.slit_image_flip_func = lambda im: np.fliplr(np.rot90(im))
+            self.slit_coord_abs_flip_func = lambda x,y: (2048-y, 2048-x)
+        else:
+            self.slit_image_flip_func = lambda im: im
+            self.slit_coord_abs_flip_func = lambda x,y: (x, y)
+                    
+        global SLIT_CEN, SLIT_WID, SLIT_LEN, SLIT_ANG, ZOOMW, CONTOURW, PIXELSCALE
+        try:
+            tmp = cfg.get(SC, 'slit-cen').split(",")
+            SLIT_CEN = self.slit_coord_abs_flip_func(float(tmp[0]), float(tmp[1]))
+        except:
+            SLIT_CEN = (0,0)
+            msg = 'Slit Center Parameter Error: %s' % (self.cfg.get(SC, 'slit-cen'),)
+            self.editlist_loglist.appendPlainText(self.log.send(self.iam, ERROR, msg))
+                    
+        SLIT_WID = float(cfg.get(SC,'slit-wid'))
+        SLIT_LEN = float(cfg.get(SC,'slit-len'))
+        SLIT_ANG = float(cfg.get(SC,'slit-ang'))
+        
+        A_pos = cfg.get(SC, 'A_pos').split(",")
+        B_pos = cfg.get(SC, 'B_pos').split(",")
+        self.A_x, self.A_y = float(A_pos[0]), float(A_pos[1])
+        self.B_x, self.B_y = float(B_pos[0]), float(B_pos[1])
+        
+        ZOOMW = int(cfg.get(SC, 'zoomw'))
+        CONTOURW = int(cfg.get(SC, 'contourw'))
+        PIXELSCALE = float(cfg.get(SC, 'pixelscale'))
+        self.fwhm_mode = int(cfg.get(SC, 'fwhm-mode'))
+        self.fwhm_mode_value = float(cfg.get(SC, 'fwhm-mode-value'))
         
         self.svc_path = cfg.get(DCS,'data-location')
+        
+        self.setup_sw_offset_window(self.frame_profile)
         
         self.key_to_label = dict()
         self.dtvalue, self.heatlabel = dict(), dict()
@@ -137,13 +178,18 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.param_InstSeq = ""
         self.param_dcs = ["" for _ in range(DC_CNT)]
         
-        self.svc_x, self.svc_y = float(self.slit_cen[0]), float(self.slit_cen[1])
-        self.guide_x, self.guide_y = self.svc_x, self.svc_y
-        self.A_x, self.A_y = self.svc_x-45, self.svc_y
-        self.B_x, self.B_y = self.svc_x+45, self.svc_y
+        _svc_x, _svc_y = float(SLIT_CEN[0]), float(SLIT_CEN[1])
+        self.guide_x, self.guide_y = _svc_x, _svc_y
+        self.svc_cut_x, self.svc_cut_y = 400, 400
+        self.click_x, self.click_y = _svc_x, _svc_y
         
-        #self.setMouseTracking(True)
-        #self.setCursor(QCursor(Qt.CrossCursor))
+        self.height, self.sigma, self.background = 0.0, 0.0, 0.0
+        self.cen_x_in, self.cen_y_in = 0, 0   # center in box
+        self.cen_x, self.cen_y = 0, 0   # center in full coordination
+                
+        self.fitting_clicked = False  #False: fitting, True: contour
+        
+        self.cur_frame = "A" #A, B or nothing
                 
         #--------------------------------
         # 0 - SVC, 1 - H_K
@@ -151,8 +197,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.dcss_ready = False
         self.acquiring = [False for _ in range(DC_CNT)]
         
-        self.cur_save_cnt = 5
-        self.cur_cal_cnt = 5
+        self.cur_save_cnt = 0
+        self.cur_guide_cnt = 0
         self.center_ra, self.center_dec = [], []
         
         self.NFS_load_time = 0
@@ -163,7 +209,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.svc_header = None
         self.svc_img = None
+        self.svc_img_cut = None
         self.fitsfullpath = ""
+        
+        mask = fits.open(WORKING_DIR + "ObsApp/slitmaskv4.fits")[0].data
+        self.mask = self.slit_image_flip_func(mask)
         
         self.resize_enable = True
                 
@@ -216,11 +266,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # temp
         fname = ti.strftime("SDCS_%02Y%02m%02d_", ti.localtime())
         self.e_repeat_file_name.setText(fname)
-        self.e_saving_number.setText(str(self.cur_save_cnt))
+        self.e_saving_number.setText("5")
         
         self.e_offset.setText("1")
         
-        self.e_averaging_number.setText(str(self.cur_cal_cnt))
+        self.e_averaging_number.setText("5")
         
         self.radio_raw.setChecked(True)
         self.radio_zscale.setChecked(True)
@@ -261,6 +311,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.select_log_none()
         
+        self.sw_slit_star_init()
+        
         
     def closeEvent(self, event: QCloseEvent) -> None:        
         
@@ -295,11 +347,13 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def init_events(self):
         
         self.editlist_loglist.setMaximumBlockCount(100)
-        self.init_widget_rect = [None for _ in range(13)]
+        self.init_widget_rect = [None for _ in range(20)]
                 
         self.image_canvas[IMG_SVC].mpl_connect('button_press_event', self.image_leftclick)
+        self.image_canvas[IMG_FITTING].mpl_connect('button_press_event', self.fitting_leftclick)
+        #self.image_canvas[IMG_PROFILE].mpl_connect('button_press_event', self.profile_leftclick)
         
-        self.self.chk_continue.clicked.connect(self.set_continue_mode)
+        self.chk_continue.clicked.connect(self.set_continue_mode)
         self.bt_single.clicked.connect(self.single)
         
         self.chk_auto_save.clicked.connect(self.auto_save_image)
@@ -321,6 +375,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.radio_show_loglist.clicked.connect(self.select_log_list)
         
         self.bt_single.setEnabled(False)
+        self.bt_slow_guide.setEnabled(False)
         self.bt_set_guide_star.setEnabled(False)
         
         
@@ -551,15 +606,20 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.svc_header = frm[0].header
             _img = np.array(data, dtype = "f")
             
-            #_img = np.flipud(np.array(data, dtype = "f"))
-            self.svc_img = rotate(_img, -45, axes=(1,0), reshape=None)
+            #_img = np.rot90(_img, 1)
+            self.svc_img = self.slit_image_flip_func(_img)
+            #self.svc_img = rotate(_svc_img, -45, axes=(1,0), reshape=None)      
+                        
+            ny, nx = self.svc_img.shape
             
-            self.zmin, self.zmax = zs.zscale(self.svc_img)
+            self.svc_img_cut = self.svc_img[self.svc_cut_y:ny-self.svc_cut_y, self.svc_cut_x:nx-self.svc_cut_x]    
+            
+            self.zmin, self.zmax = zs.zscale(self.svc_img_cut)
             range = "%d ~ %d" % (self.zmin, self.zmax)
             
             self.label_zscale.setText(range)
         
-            self.mmin, self.mmax = np.min(self.svc_img[SVC]), np.max(self.svc_img[SVC])
+            self.mmin, self.mmax = np.min(self.svc_img_cut), np.max(self.svc_img_cut)
             self.e_mscale_min.setText("%.1f" % self.mmin)
             self.e_mscale_max.setText("%.1f" % self.mmax)
                 
@@ -567,13 +627,17 @@ class MainWindow(Ui_Dialog, QMainWindow):
             #    self.save_fits(dc_idx)
             
             self.reload_img()
+            
+            self.update_sw_offset(self.svc_img, self.mask)
         
         except:
             self.svc_img = None
-            self.editlist_loglist.appendPlainText(self.log.send(self.iam, WARNING, "No image"))    
-            
+            self.editlist_loglist.appendPlainText(self.log.send(self.iam, WARNING, "No image"))            
+        
             
     def reload_img(self):
+        
+        self.clean_ax(self.image_ax[IMG_SVC])
         
         try:
             # main draw                            
@@ -582,8 +646,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 _min, _max = self.zmin, self.zmax
             elif self.radio_mscale.isChecked():
                 _min, _max = self.mmin, self.mmax
-            
-            self.display_coordinate(self.image_ax[IMG_SVC],self.svc_img, _min, _max, self.PA)
+                            
+            self.display_coordinate(self.image_ax[IMG_SVC], self.svc_img_cut, _min, _max, self.PA)
             if self.chk_off_slit.isChecked():
                 self.display_box(self.image_ax[IMG_SVC], self.guide_x, self.guide_y, G_BOX_CLR)
             
@@ -595,13 +659,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
             
             self.image_canvas[IMG_SVC].draw()
             
-            self.load_img_zoom()
-            
+            self.display_click(int(self.click_x), int(self.click_y))
+                        
             self.label_svc_state.setText("Idle")
                 
         except:
-            self.svc_img = None
-            self.editlist_loglist.appendPlainText(self.log.send(self.iam, WARNING, "No image"))
+            pass
         
         
     def display_coordinate(self, imageax, imgdata, vmin, vmax, pa_tel):
@@ -610,31 +673,32 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             
         imageax.axis('off')
         
-        imageax.set_xlim(0, SVC_FRAME_X)
-        imageax.set_xlim(0, SVC_FRAME_Y)
+        imageax.set_xlim(0, SVC_FRAME_X-self.svc_cut_x*2)
+        imageax.set_xlim(0, SVC_FRAME_Y-self.svc_cut_y*2)
         
-        cx, cy = 300, SVC_FRAME_Y-300
+        cx, cy = 300, SVC_FRAME_Y-self.svc_cut_y*2-300
         arrow_size = 100
         text_ratio = 2
         
         PA = pa_tel
+        s_color = "limegreen"
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
-        imageax.arrow(cx, cy, u, v, color="white", width=2, head_width=20)
-        imageax.text(cx+u*text_ratio-40, cy+v*text_ratio*0.8, "N", color="white", size=10)
+        imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
+        imageax.text(cx+u*text_ratio-40, cy+v*text_ratio*0.8, "N", color=s_color, size=10)
         PA = PA - 90
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
-        imageax.arrow(cx, cy, u, v, color="white", width=2, head_width=20)
-        imageax.text(cx+u*text_ratio-10, cy+v*text_ratio-30, "E", color="white", size=10)
+        imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
+        imageax.text(cx+u*text_ratio-10, cy+v*text_ratio-30, "E", color=s_color, size=10)
         
-        cx = SVC_FRAME_X-150
+        cx = SVC_FRAME_X-self.svc_cut_x*2-100
         PA = 0
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
-        imageax.arrow(cx, cy, u, v, color="white", width=2, head_width=20)
-        imageax.text(cx+u*text_ratio-60, cy+v*text_ratio*0.8, "+p", color="white", size=10)
+        imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
+        imageax.text(cx+u*text_ratio-60, cy+v*text_ratio*0.8, "+p", color=s_color, size=10)
         PA = PA - 90
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
-        imageax.arrow(cx, cy, u, v, color="white", width=2, head_width=20)
-        imageax.text(cx+u*text_ratio*1.5, cy+v*text_ratio-30, "+q", color="white", size=10)
+        imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
+        imageax.text(cx+u*text_ratio*1.2, cy+v*text_ratio-30, "+q", color=s_color, size=10)
 
         '''
         PA = 0
@@ -657,13 +721,13 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if (int(x) == 0 and int(y) == 0):
             return
 
-        x_pos, y_pos = (int(x), int(y))
+        x_pos, y_pos = (int(x)-self.svc_cut_x, int(y)-self.svc_cut_x)
 
-        zbox = Rectangle( (x_pos-ZOOMW, y_pos-ZOOMW), 2*ZOOMW+1, 2*ZOOMW+1, facecolor='none', edgecolor=boxcolor)
+        zbox = Rectangle( (x_pos-ZOOMW, y_pos-ZOOMW), 2*ZOOMW, 2*ZOOMW, facecolor='none', edgecolor=boxcolor)
         ax.add_patch(zbox)
 
-        ax.plot([x_pos-ZOOMW,x_pos+ZOOMW], [y_pos, y_pos], color=boxcolor)
-        ax.plot([x_pos, x_pos], [y_pos-ZOOMW,y_pos+ZOOMW], color=boxcolor)
+        ax.plot([x_pos-ZOOMW+5,x_pos+ZOOMW], [y_pos, y_pos], color=boxcolor)
+        ax.plot([x_pos, x_pos], [y_pos-ZOOMW,y_pos+ZOOMW-5], color=boxcolor)
         
         
     def display_click(self, x_pos, y_pos):
@@ -675,92 +739,99 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # make croped data
         ny, nx = self.svc_img.shape
 
-        x_pos, y_pos = int(x_pos), int(y_pos)
-
-        y1 = np.max([0, y_pos - ZOOMW])
-        y2 = np.min([ny, y_pos + ZOOMW])
-        x1 = np.max([0, x_pos - ZOOMW])
-        x2 = np.min([nx, x_pos + ZOOMW])
+        y1 = np.max([0, y_pos - ZOOMW]) 
+        y2 = np.min([ny, y_pos + ZOOMW]) 
+        x1 = np.max([0, x_pos - ZOOMW]) 
+        x2 = np.min([nx, x_pos + ZOOMW]) 
         
         self.cropdata = self.svc_img[y1:y2, x1:x2]
 
-        #add for test
-        #self.cropdata = ndimage.rotate(self.cropdata, 45)
         self.cropmask = self.mask[y1:y2, x1:x2]
 
-        '''
         # display pixel value and define click point in the crop image coordinate
         try:
-            self.height, self.sx, self.sy, self.sigma, self.background = self.FindingCentroid(self.cropdata, self.cropmask, FITTING_2D_MASK)
-            self.height_iMM = self.height
+            self.height, self.cen_x_in, self.cen_y_in, self.sigma, self.background = self.FindingCentroid(self.cropdata, self.cropmask)
+            #self.height_iMM = self.height
+            
+            msg = "Gaussian param P:%.0f B:%.0f X:%.1f Y:%.1f \nFWHM:%.2f" % (self.height, self.background, self.cen_x_in, self.cen_y_in, self.sigma*2.35482)
+            self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
 
-            msg = "Gaussian param"
-            self.logger.debug(msg, extra=dict(height= self.height,
-                                              sx=self.sx,
-                                              sy=self.sy,
-                                              sigma=self.sigma,
-                                              bg=self.background))
-
-            self.scframe.StatusInsert("P:%.0f B:%.0f X:%.1f Y:%.1f \nFWHM:%.2f" % (self.height, self.background, self.sx, self.sy, self.sigma*2.35482) )
-
-            if not (np.isfinite(self.sx) and np.isfinite(self.sy)):
-                self.sx, self.sy = x_pos - x1, y_pos - y1
+            if not (np.isfinite(self.cen_x_in) and np.isfinite(self.cen_y_in)):
+                self.cen_x_in, self.cen_y_in = x_pos - x1, y_pos - y1
 
         except Exception as e:
-            #x_source_crop, y_source_crop = (0,0)
             import traceback, sys
             traceback.print_exc(file=sys.stdout)
 
-            self.sx, self.sy = x_pos - x1, y_pos - y1
-
-        #x_source_crop, y_source_crop = (self.sx, self.sy)
+            self.cen_x_in, self.cen_y_in = x_pos - x1, y_pos - y1
 
         # change coordinate for the full image
-        source_x = self.sx + x1 # self.click_x - ZOOMW
-        source_y = self.sy + y1 # self.click_y - ZOOMW
+        self.cen_x = self.cen_x_in + x1
+        self.cen_y = self.cen_y_in + y1
 
-        self.draw_zoomin(self.cropdata, self.cropmask, source_x, source_y, self.sx, self.sy)
-
-        # save the source position
-        self.source_x, self.source_y = (source_x, source_y)
+        self.draw_zoomin(self.cropdata, self.cen_x, self.cen_y, self.cen_x_in, self.cen_y_in)
 
         self.show_GaussianFitting()
 
         return True
-        '''
+    
+    # FITTING_2D_MASK from original IGRINS
+    def FindingCentroid(self, data, mask): 
+
+        height, sx, sy, sigma , background= (0, 0, 0, 0, 0)
+
+        if self.fwhm_mode == FWHM_FIX:
+            fit_gaussian_func = tmcfmask.fitgaussian2d_mask_with_saturation_fixed_width
+            fwhm_width = self.fwhm_mode_value / PIXELSCALE / 2.35
+            params = fit_gaussian_func(data, mask > 0, width=fwhm_width)
+        else:
+            if self.fwhm_mode == FWHM_GUESS:
+                params = tmcfmask.fitgaussian2d_mask_with_saturation(data, mask>0, fit_width=False)
+            else:
+                params = tmcfmask.fitgaussian2d_mask_with_saturation(data, mask>0, fit_width=True)
+        # fit_gaussian_func = tmcfmask.fitgaussian2d_mask_with_saturation_fixed_width
+        # params = fit_gaussian_func(data, mask>0, width=4.)
+        height, sx, sy, sigma, background = params[0], params[1], params[2], params[3], params[4]
+
+        return height, sx, sy, sigma, background
         
-    def load_img_zoom(self):
+        
+    def draw_zoomin(self, cropdata, x_pos, y_pos, x_source_crop, y_source_crop):
         
         self.clean_ax(self.image_ax[IMG_EXPAND])
+        self.clean_ax(self.image_ax[IMG_FITTING], False)
         
         try:                                
-            # zoomin draw
-            _x = self.svc_x
-            _y = self.svc_y
-            zoom_w = 100
-            
-            y1 = int(np.max([0, _y - zoom_w]))
-            y2 = int(np.min([SVC_FRAME_Y, _y + zoom_w]))
-            x1 = int(np.max([0, _x - zoom_w]))
-            x2 = int(np.min([SVC_FRAME_X, _x + zoom_w]))
-            
-            _img_zoomin = self.svc_img[y1:y2, x1:x2]
-            
+            # zoomin draw    
+            _min, _max = 0, 0        
             if self.radio_zscale.isChecked():
                 _min, _max = self.zmin, self.zmax
             elif self.radio_mscale.isChecked():
                 _min, _max = self.mmin, self.mmax
                 
             self.image_ax[IMG_EXPAND].axis('off')
-            self.image_ax[IMG_EXPAND].imshow(_img_zoomin, vmin=_min, vmax=_max, cmap='gray', origin='lower')
-            self.image_canvas[IMG_EXPAND].draw()
+            self.image_ax[IMG_EXPAND].imshow(cropdata, vmin=_min, vmax=_max, cmap='gray', origin='lower')
             
-            self.label_svc_state.setText("Idle")
-                
+            strtmp = 'X:%6.1f  Y:%6.1f \nH:%.0f S:%.2f B:%.0f' % (x_pos, y_pos, self.height, self.sigma, self.background)
+            self.image_ax[IMG_EXPAND].text(0.5, +0.3, strtmp, \
+                            color='red', ha='center', va='top', \
+                            transform=self.image_ax[IMG_EXPAND].transAxes, fontsize=8)
+            ny, nx = cropdata.shape
+            self.image_ax[IMG_EXPAND].plot([(nx-1)/2,(nx-1)/2], [0, ny], '-', color='yellow')
+            self.image_ax[IMG_EXPAND].plot([0, nx], [(ny-1)/2,(ny-1)/2], '-', color='yellow')
+            
+            # draw a mark in zoom-in
+            _circle = Circle( (x_source_crop, y_source_crop), \
+                            facecolor='none', edgecolor='blue',
+                            radius=self.sigma * 2.35 / 2.)
+            self.image_ax[IMG_EXPAND].add_patch(_circle)
+            
+            self.image_canvas[IMG_EXPAND].draw()
+                            
         except:
-            self.svc_img = None
-            self.editlist_loglist.appendPlainText(self.log.send(self.iam, WARNING, "No image"))
-    
+            pass
+
+            
     
     def clean_ax(self, ax, ticks_off = True):
         ax.cla()
@@ -772,6 +843,166 @@ class MainWindow(Ui_Dialog, QMainWindow):
             ax.set_xticks([])
             ax.set_yticks([])
             
+            
+    def show_GaussianFitting(self):
+        if self.fitting_clicked:
+            self.clean_ax(self.image_ax[IMG_FITTING], ticks_off = False)
+            self.contour_plot()
+
+        else:
+            self.clean_ax(self.image_ax[IMG_FITTING], ticks_off = False)
+            self.radial_fits()
+            
+    
+    def radial_fits(self):
+        if (np.isnan(self.cen_x) or np.isnan(self.cen_y)):
+            DOFIT = False
+            return 0
+
+        DOFIT = True
+
+        (ny, nx) = self.svc_img.shape
+        y1 = np.max([0, self.cen_y - CONTOURW])
+        y2 = np.min([ny, self.cen_y + CONTOURW])
+        x1 = np.max([0, self.cen_x - CONTOURW])
+        x2 = np.min([nx, self.cen_x + CONTOURW])
+        # make data array
+
+        data = self.svc_img[int(y1):int(y2), int(x1):int(x2)]
+        cen_x_in, cen_y_in = (self.cen_x - x1, self.cen_y - y1)
+
+       # matplotlib part
+        if cen_x_in == 0 and cen_y_in == 0:
+            cen_x_in = self.guide_x
+            cen_y_in = self.guide_y
+            DOFIT = False
+
+       # Plot the sampled data from the selected source
+        radialprofile = self.radial_profile(data, cen_x_in, cen_y_in)
+        self.image_ax[IMG_FITTING].plot(radialprofile, "r.", markersize=7)
+
+        if DOFIT == True :
+       # Now, prepare for fitting process
+            arrsize = radialprofile.size
+            xarr = np.arange(-arrsize + 1, arrsize)
+            doubleprofile = np.concatenate((radialprofile[:0:-1], radialprofile))
+
+       # Do the 1-d gaussian fitting
+       # Initial guess value(optional)
+       #  params = [background, Amplitude, Xcenter, width]
+       #  params = [5000, 3000, 0, 3] would be good initial guess
+            #gfit = gf.onedgaussfit(xarr, doubleprofile)
+            gfit = self.onedgaussfit(xarr, doubleprofile)
+            print(gfit)
+
+       # Put the fitted values to each separate variables
+            amplitude = gfit[0]
+            bkground = gfit[1]
+            xcenter = gfit[2]
+            sigma = abs(gfit[3])
+            self.fwhm = 2.3548*sigma  # FWHM is width measured at 1/2 peak.
+
+       # Generate gaussian profile with fitted parameters for plotting
+            xfit = np.arange(-arrsize + 1, arrsize, 0.1)
+            yfit = self.gaussian(xfit, amplitude, bkground, xcenter, sigma)
+            self.image_ax[IMG_FITTING].plot(xfit, yfit, "b-")
+
+        else:
+            bkground = 0.0
+            amplitude = 0.0
+            xcenter = 0.0
+            sigma = 0.0
+            self.fwhm = sigma
+
+        self.image_ax[IMG_FITTING].set_xlim(-0.5, 15)
+        self.image_ax[IMG_FITTING].set_frame_on(True)
+        self.image_ax[IMG_FITTING].tick_params(direction='in')
+        self.image_ax[IMG_FITTING].ticklabel_format(axis='y',style='sci')
+        self.image_ax[IMG_FITTING].set_aspect('auto','datalim')
+
+        xcen_info = "Xc: %5.1f" % (self.cen_x)
+        ycen_info = "Yc: %5.1f" % (self.cen_y)
+        fwhm_info = "FWHM: %4.2fpix(%5.2f\")"\
+                   % (self.fwhm, self.fwhm*PIXELSCALE)
+        peak_info = "Peak: %6.1fADU" % (amplitude)
+        self.image_ax[IMG_FITTING].text(0.6,+0.5,('%s,%s\n%s\n%s') % (xcen_info, ycen_info, fwhm_info, peak_info), color='black', ha='center',va='bottom',\
+                            transform=self.image_ax[IMG_FITTING].transAxes, fontsize=7)
+
+        self.image_canvas[IMG_FITTING].draw()
+        
+    
+    def radial_profile(self, image, xcen, ycen):
+        y, x = np.indices(image.shape)
+        r = np.sqrt( (x - xcen)**2 + (y - ycen)**2 )
+        ind = np.argsort(r.flat)
+
+        sr = r.flat[ind]
+        sim = image.flat[ind]
+        ri = sr.astype(int)
+
+        deltar = ri[1:] - ri[:-1]
+        rind = np.where(deltar)[0]
+        nr = rind[1:] - rind[:-1]
+        csim = np.cumsum(sim, dtype = np.float64)
+        tbin = csim[rind[1:]] - csim[rind[:-1]]
+        profile = tbin/nr
+
+       # Add 0-th value to the array
+        radialprofile = np.concatenate((np.array([image[int(ycen), int(xcen)]]),
+                                        profile))
+
+        return radialprofile
+        
+        
+    def onedgaussfit(self, xcoord, intensity):
+        coeff, pcov = curve_fit(self.gaussian, xcoord, intensity)
+        return coeff
+    
+    
+    # gaussian function for gaussian plot
+    def gaussian(self, x, amplitude, background, xcenter, width):
+        coeff = amplitude
+        idx = (x - xcenter)**2 / (2.*width**2)
+        body = np.exp(-idx)
+        
+        return (coeff*body) + background
+    
+    
+    def contour_plot(self, x_cen=0, y_cen=0):
+        if (np.isnan(self.cen_x) or np.isnan(self.cen_y)):
+            DOFIT = False
+            return 0
+
+        (ny, nx) = self.svc_img.shape
+        y1 = int(np.max([0, self.cen_y - CONTOURW]))
+        y2 = int(np.min([ny, self.cen_y + CONTOURW]))
+        x1 = int(np.max([0, self.cen_x - CONTOURW]))
+        x2 = int(np.min([nx, self.cen_x + CONTOURW]))
+
+        contourdata = self.svc_img[y1:y2, x1:x2]
+        # crop the image nearby source
+
+        # contour level correction
+        cmin, cmax = zs.zscale(contourdata)
+        #cmin = self.zmin
+        #cmax = np.max(contourdata)
+        # clevel = np.arange(cmin,cmax*1.2,int((cmax-cmin)/15))[2:]
+        clevel = np.linspace(cmin,cmax*1.2, 15)[2:]
+
+        scontour = self.image_ax[IMG_FITTING].contour(contourdata, levels=clevel)
+
+        scontour.set_clim(self.zmin, self.zmax)
+        self.image_ax[IMG_FITTING].set_aspect('equal','datalim')
+
+        self.image_ax[IMG_FITTING].set_frame_on(True)
+        strtmp = "X=%6.1f Y=%6.1f" % (self.cen_x, self.cen_y)
+        self.image_ax[IMG_FITTING].text(0.5, +0.95, strtmp, \
+           color='black', ha='center', va='top', \
+           transform=self.image_ax[IMG_FITTING].transAxes, fontsize=8)
+        
+        self.image_canvas[IMG_FITTING].draw()
+    
+    
     #--------------------------------------------------------
     # gui set
     def QShowValue(self, widget, label):
@@ -872,8 +1103,16 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.widget_resize(cur_width, cur_height, self.frame_expand, FRM_EXPAND)
         self.widget_resize(cur_width, cur_height, self.frame_fitting, FRM_FITTING)
-        self.widget_resize(cur_width, cur_height, self.frame_profile, FRM_PROFILE)
         self.widget_resize(cur_width, cur_height, self.frame_svc, FRM_SVC)
+        
+        self.widget_resize(cur_width, cur_height, self.groupBox_profile, GROUPBOX_PROFILE)
+        self.widget_resize(cur_width, cur_height, self.frame_profile, FRM_PROFILE)
+        self.widget_resize(cur_width, cur_height, self.label_slit, LABEL_SLIT)
+        self.widget_resize(cur_width, cur_height, self.label_star, LABEL_STAR)
+        self.widget_resize(cur_width, cur_height, self.label_star_slit, LABEL_SLITSTAR)
+        self.widget_resize(cur_width, cur_height, self.label_sw_slit, SW_LABEL_SLIT)
+        self.widget_resize(cur_width, cur_height, self.label_sw_star, SW_LABEL_STAR)
+        self.widget_resize(cur_width, cur_height, self.label_sw_star_slit, SW_LABEL_SLITSTAR)
         
         self.widget_resize(cur_width, cur_height, self.groupBox_SlitViewCamera, GROUPBOX_SVC)
         self.widget_resize(cur_width, cur_height, self.groupBox_zscale, GROUPBOX_SCALE)
@@ -898,23 +1137,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         return super().mouseMoveEvent(event)
         
-    '''
-    def mousePressEvent(self, event: QMouseEvent) -> None:
-        if event.button() == Qt.LeftButton:
-            print("Mouse (frame):", self.mouse_x, self.mouse_y)
-            print("Press (frame):", event.x(), event.y())
-            print("self.prev_widget_rect[FRM_SVC]: ", self.prev_widget_rect[FRM_SVC])
-            pixel_x = self.prev_widget_rect[FRM_SVC].width() / SVC_FRAME_X
-            pixel_y = self.prev_widget_rect[FRM_SVC].height() / SVC_FRAME_Y
-            self.svc_x = abs(self.mouse_x - self.prev_widget_rect[FRM_SVC].left()) / pixel_x
-            self.svc_y = abs(self.mouse_y - self.prev_widget_rect[FRM_SVC].bottom()) / pixel_y
-            print("pixel scale:", pixel_x, pixel_y)
-            print("Press (svc):", self.svc_x, self.svc_y)
-            
-            self.load_img_zoom()
-        return super().mousePressEvent(event)
-    '''
-    
     
     def image_leftclick(self, event):
         if event.xdata == None or event.ydata == None:
@@ -922,13 +1144,24 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         print("Press (frame):", event.xdata, event.ydata)
         #print("self.prev_widget_rect[FRM_SVC]: ", self.prev_widget_rect[FRM_SVC])
-        self.svc_x = event.xdata
-        self.svc_y = event.ydata
-        print("Press (svc):", self.svc_x, self.svc_y)
+        self.click_x = event.xdata + self.svc_cut_x
+        self.click_y = event.ydata + self.svc_cut_y
+        print("Press (svc):", self.click_x, self.click_y)
         
-        #self.display_click(self.svc_x, self.svc_y)
+        self.display_click(int(self.click_x), int(self.click_y))
+                
+                
+    def fitting_leftclick(self, event):
+        if self.fitting_clicked:
+            self.fitting_clicked = False
+        else:
+            self.fitting_clicked = True
+            
+        self.show_GaussianFitting()
         
-        self.load_img_zoom()
+        
+    def profile_leftclick(self, event):
+        pass
         
     
     def set_continue_mode(self):
@@ -955,6 +1188,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.QWidgetBtnColor(self.bt_single, "yellow", "blue")
             self.set_fs_param(True)
             
+            self.bt_slow_guide.setEnabled(False)
+            
         else:       
             if self.svc_mode == CONT_MODE:     
                 self.stop_clicked = True   
@@ -962,6 +1197,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.abort_acquisition()       
             
             self.bt_single.setText("Exposure")  
+            
+            self.bt_slow_guide.setEnabled(True)
     
     
     def auto_save_image(self):
@@ -978,9 +1215,13 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def manual_filesave(self):        
         if self.fitsfullpath == "":
             return
+       
+        foldername = ti.strftime("%02Y%02m%02d/", ti.localtime()) 
+        self.createFolder(self.svc_path + foldername)
         
-        self.createFolder(self.svc_path)
-        newfile = self.svc_path + self.e_repeat_file_name.text()
+        newfile = self.svc_path + foldername + self.e_repeat_file_name.text()
+        if not ".fits" in newfile:
+            newfile += ".fits"
         copyfile(self.fitsfullpath, newfile)
         
         self.fitsfullpath = ""
@@ -1020,9 +1261,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
             
             self.QWidgetBtnColor(self.bt_slow_guide, "yellow", "blue")
             self.set_fs_param(True)
+            
+            self.bt_single.setEnabled(False)
+            
         else:
             self.bt_slow_guide.setText("Slow Guide") 
             self.stop_clicked = True
+            
+            self.bt_single.setEnabled(True)
     
     
     def select_log_none(self):
@@ -1032,7 +1278,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.radio_show_logfile.setChecked(False)
         self.radio_show_loglist.setChecked(False)
         
-        self.setGeometry(QRect(0, 0, 900, 598))
+        self.setGeometry(QRect(0, 0, 870, 662))
         self.reset_resize()
             
     
@@ -1043,7 +1289,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.radio_show_logfile.setChecked(True)
         self.radio_show_loglist.setChecked(False)
         
-        self.setGeometry(QRect(0, 0, 900, 598))
+        self.setGeometry(QRect(0, 0, 870, 662))
         self.reset_resize()
     
         # show log file
@@ -1059,7 +1305,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.radio_show_loglist.setChecked(True)
         
         # show listview
-        self.setGeometry(QRect(0, 0, 1253, 598))     
+        self.setGeometry(QRect(0, 0, 1211, 662))     
         self.reset_resize()
         
         
@@ -1070,10 +1316,20 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.init_widget_rect[GROUPBOX_IS] = self.groupBox_InstrumentStatus.geometry()      # GROUPBOX_IS       
         self.init_widget_rect[GROUPBOX_SO] = self.groupBox_ScienceObservation.geometry()    # GROUPBOX_SO
+        
+        self.init_widget_rect[GROUPBOX_PROFILE] = self.groupBox_profile.geometry()          # GROUPBOX_PROFILE
+        self.init_widget_rect[FRM_PROFILE] = self.frame_profile.geometry()                  # FRM_PROFILE
+        
+        self.init_widget_rect[LABEL_SLIT] = self.label_slit.geometry()                   # LABEL_SLIT
+        self.init_widget_rect[LABEL_STAR] = self.label_star.geometry()                   # LABEL_STAR
+        self.init_widget_rect[LABEL_SLITSTAR] = self.label_star_slit.geometry()               # LABEL_SLITSTAR
+        self.init_widget_rect[SW_LABEL_SLIT] = self.label_sw_slit.geometry()                # SW_LABEL_SLIT
+        self.init_widget_rect[SW_LABEL_STAR] = self.label_sw_star.geometry()                # SW_LABEL_STAR
+        self.init_widget_rect[SW_LABEL_SLITSTAR] = self.label_sw_star_slit.geometry()            # SW_LABEL_SLITSTAR
+        
             
         self.init_widget_rect[FRM_EXPAND] = self.frame_expand.geometry()                    # FRM_EXPAND
         self.init_widget_rect[FRM_FITTING] = self.frame_fitting.geometry()                  # FRM_FITTING
-        self.init_widget_rect[FRM_PROFILE] = self.frame_profile.geometry()                  # FRM_PROFILE
         self.init_widget_rect[FRM_SVC] = self.frame_svc.geometry()                          # FRM_SVC
             
         self.init_widget_rect[GROUPBOX_SVC] = self.groupBox_SlitViewCamera.geometry()       # GROUPBOX_SVC
@@ -1117,7 +1373,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def enable_dcss(self, enable):
         self.e_svc_fowler_number.setEnabled(enable)
         self.e_svc_exp_time.setEnabled(enable)
-        #self.bt_single.setEnabled(enable)
         
         self.chk_auto_save.setEnabled(enable)
         if enable:
@@ -1146,7 +1401,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.bt_minus_q.setEnabled(enable)
         self.e_offset.setEnabled(enable)
         
-        self.bt_slow_guide.setEnabled(enable)
         self.e_averaging_number.setEnabled(enable)
         
 
@@ -1264,6 +1518,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             if param[0] == CMD_INIT2_DONE or param[0] == CMD_INITIALIZE2_ICS:
                 self.dcss_ready = True
                 self.bt_single.setEnabled(True)
+                self.bt_slow_guide.setEnabled(True)
 
             elif param[0] == CMD_SETFSPARAM_ICS:                
                 msg = "%s DCSS %d" % (CMD_ACQUIRERAMP_ICS, self.simulation)
@@ -1283,56 +1538,78 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
                 self.load_data(param[2])
                 
-                #calculate center
-                center = [0, 0]
-                self.center_ra.append(center[0])
-                self.center_dec.append(center[1])
-                self.cur_cal_cnt += 1
-            
-                cen_ra_mean, cen_dec_mean = 0, 0
-                if self.cur_cal_cnt >= int(self.e_averaging_number.text()):
-                    cen_ra_mean = np.mean(self.center_ra)
-                    cen_dec_mean = np.mean(self.center_dec)
-                    #tmp, no show in plot!!!               
+                if self.svc_mode == SINGLE_MODE:
+                    self.QWidgetBtnColor(self.bt_single, "black")
+                    self.bt_single.setText("Exposure")
+                    self.enable_dcss(True)
+                                            
+                    self.bt_slow_guide.setEnabled(True)
+                
+                else:
+                    #calculate center
+                    center = [0, 0]
+                    self.center_ra.append(center[0])
+                    self.center_dec.append(center[1])
                     
-                    self.cur_cal_cnt = 0         
+                    if self.svc_mode == GUIDE_MODE:
+                        self.cur_guide_cnt += 1
+                        cen_ra_mean, cen_dec_mean = 0, 0
+                        if self.cur_guide_cnt >= int(self.e_averaging_number.text()):
+                            cen_ra_mean = np.mean(self.center_ra)
+                            cen_dec_mean = np.mean(self.center_dec)
+                            #tmp, no show in plot!!!               
                             
-                if self.svc_mode == CONT_MODE or self.svc_mode == GUIDE_MODE:
+                            # send to TCS (offset)
+                            msg = "%s %.3f %.3f" % (OBSAPP_CAL_OFFSET, cen_ra_mean, cen_dec_mean)
+                            self.publish_to_queue(msg) 
+                            
+                            self.cur_guide_cnt = 0         
+                            
                     self.cur_save_cnt += 1
                     if self.chk_auto_save.isChecked() and self.cur_save_cnt >= int(self.e_saving_number.text()):
                         ori_file = param[2].split('/')
-                        fullpath = self.svc_path + ori_file[0] + '/'
-                        self.createFolder(fullpath)
+                        foldername = ti.strftime("%02Y%02m%02d/", ti.localtime())
+                        self.createFolder(self.svc_path + foldername)
                         # if someone want to rename the svc file name, it can be changed...
                         # save fname
-                        newfile = fullpath + ori_file[1]
+                        
+                        path = self.svc_path + foldername
+                        dir_names = []
+                        for names in os.listdir(path):
+                            if names.find(".fits") >= 0:
+                                dir_names.append(names)
+                        if len(dir_names) > 0:
+                            next_idx = len(dir_names) + 1
+                        else:
+                            next_idx = 1
+        
+                        tmp = ori_file[0].split('_')
+                        newfile = "%s%sO_%s_%s_%d.fits" % (self.svc_path, foldername, tmp[0], tmp[1], next_idx)
                         copyfile(self.fitsfullpath, newfile)
                                         
-                        self.cur_save_cnt = 0 ?????
-                        
-                    if self.svc_mode == GUIDE_MODE and self.cur_cal_cnt == 0:
-                        # send to TCS (offset)
-                        msg = "%s %.3f %.3f" % (OBSAPP_CAL_OFFSET, cen_ra_mean, cen_dec_mean)
-                        self.publish_to_queue(msg)   
+                        self.cur_save_cnt = 0                          
                         
                     if self.stop_clicked:
                         self.stop_clicked = False
                         
                         self.cur_save_cnt = 0
                         
-                        self.QWidgetBtnColor(self.bt_single, "black")
-                        self.bt_single.setText("Exposure")
+                        if self.svc_mode == CONT_MODE:
+                            self.QWidgetBtnColor(self.bt_single, "black")
+                        elif self.svc_mode == GUIDE_MODE:
+                            self.QWidgetBtnColor(self.bt_slow_guide, "black")
+                        
+                        #self.svc_mode = SINGLE_MODE
                         self.enable_dcss(True)
+                        
+                        self.bt_single.setEnabled(True)
+                        self.bt_slow_guide.setEnabled(True)
                         
                         self.param_dcs[SVC] = ""
                         return      
                                      
                     self.set_fs_param()                
-                        
-                else:
-                    self.QWidgetBtnColor(self.bt_single, "black")
-                    self.bt_single.setText("Exposure")
-                    self.enable_dcss(True)
+                                    
                     
             elif param[0] == CMD_STOPACQUISITION:   # for single mode                
                 self.label_svc_state.setText("Idle")
@@ -1388,6 +1665,81 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     
             self.param_dcs[K] = ""
             
+
+    #-----------------------------------------------------------------------------------
+    # for SW offset frame
+    def setup_sw_offset_window(self, frame):
+        from slit_centroid import MplFrame
+        pixel_scale = PIXELSCALE
+        self._sw_offset_finder = MplFrame(frame, 1.5, 1.,
+                                          pixel_scale=pixel_scale)
+        #self._sw_offset_finder.pack(side="top")
+        
+        
+    def update_sw_offset(self, imgdata, maskdata):
+
+        #cur_pos = self.cur_frame
+        #nodding_mode = self._nodding_mode
+
+        #if cur_pos not in "AB" or (cur_pos == "B" and nodding_mode != 0):
+        if self.cur_frame == "" or self.svc_mode != GUIDE_MODE:
+            self._sw_offset_finder.reset_image()
+            return
+
+        target = self.cur_frame
+
+        try:
+            if target == "A":
+                gx, gy = (float(self.A_x), float(self.A_y))
+            elif target == "B":
+                gx, gy = (float(self.B_x), float(self.B_y))
+        except:
+            import traceback
+            traceback.print_exc()
+            return
+
+        # 1004.5, 1047.6
+        # PA = float(self.rotator.get()) + ROT_OFFSET
+        PA = SLIT_ANG
+
+        sw_slit_star_stack = self.sw_slit_star_get_stack()
+
+        to_keep = self.sw_slit_star_get_height()
+        sw_slit, sw_star = self._sw_offset_finder.update_image(
+            imgdata, maskdata>0, gx, gy, PA,
+            sw_slit_star_stack=(sw_slit_star_stack, to_keep))
+
+        self.sw_slit_star_push_offset(sw_slit, sw_star)
+        
+    
+    def sw_slit_star_init(self):
+        self._sw_slit_star_stack = []
+        
+        
+    def sw_slit_star_get_height(self):
+        to_keep = int(min(max(5,
+                              int(self.e_averaging_number.text())),
+        10))
+        return to_keep
+    
+    
+    def sw_slit_star_gc(self):
+        to_keep = self.sw_slit_star_get_height()
+
+        self._sw_slit_star_stack = self._sw_slit_star_stack[:to_keep*2]
+    
+        
+    def sw_slit_star_get_stack(self):
+        return self._sw_slit_star_stack
+    
+    
+    def sw_slit_star_push_offset(self, sw_slit, sw_star):
+        # i = len(self._sw_slit_star_stack)
+        self._sw_slit_star_stack.insert(0, ("offset",
+                                            # i,
+                                            sw_slit,
+                                            sw_star))
+        self.sw_slit_star_gc()
 
 
 if __name__ == "__main__":

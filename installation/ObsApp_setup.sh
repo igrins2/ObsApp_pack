@@ -9,7 +9,7 @@ fi
 
 
 # configuration file
-cp $HOME/ObsApp_pack/installation/ObsApp.ini $HOME/ObsApp
+cp $HOME/ObsApp_pack/installation/ObsApp $HOME
 
 
 # install python library
