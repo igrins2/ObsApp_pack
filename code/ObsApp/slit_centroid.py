@@ -94,10 +94,6 @@ class MplFrame(QFrame):
         ax2.set_ylim(0, nn)
         self.canvas.draw()
 
-        cid = self.canvas.mpl_connect('button_press_event',
-                                      self.leftclick)
-
-        self.update_sw_slit_star_labels(sw_slit0, sw_star0)
         return sw_slit0, sw_star0
 
 

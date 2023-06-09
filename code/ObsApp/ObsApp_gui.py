@@ -29,7 +29,7 @@ import time as ti
 
 import subprocess
 import numpy as np
-from scipy.ndimage.interpolation import rotate
+#from scipy.ndimage.interpolation import rotate
 from scipy.optimize import curve_fit
 import astropy.io.fits as fits 
 
@@ -182,14 +182,16 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.guide_x, self.guide_y = _svc_x, _svc_y
         self.svc_cut_x, self.svc_cut_y = 400, 400
         self.click_x, self.click_y = _svc_x, _svc_y
+        self.off_x, self.off_y = self.click_x, self.click_y
         
         self.height, self.sigma, self.background = 0.0, 0.0, 0.0
-        self.cen_x_in, self.cen_y_in = 0, 0   # center in box
-        self.cen_x, self.cen_y = 0, 0   # center in full coordination
+        self.cen_x, self.cen_y = 0, 0   # center in full coordination after fitting
                 
         self.fitting_clicked = False  #False: fitting, True: contour
         
-        self.cur_frame = "A" #A, B or nothing
+        self.cur_frame = "" #A, B or nothing
+        
+        self.find_center = False
                 
         #--------------------------------
         # 0 - SVC, 1 - H_K
@@ -351,7 +353,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
         self.image_canvas[IMG_SVC].mpl_connect('button_press_event', self.image_leftclick)
         self.image_canvas[IMG_FITTING].mpl_connect('button_press_event', self.fitting_leftclick)
-        #self.image_canvas[IMG_PROFILE].mpl_connect('button_press_event', self.profile_leftclick)
         
         self.chk_continue.clicked.connect(self.set_continue_mode)
         self.bt_single.clicked.connect(self.single)
@@ -369,6 +370,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.bt_minus_q.clicked.connect(lambda: self.move_p(False))
         
         self.bt_slow_guide.clicked.connect(self.slow_guide)
+        
+        self.radio_raw.clicked.connect(self.select_raw)
+        self.radio_sub.clicked.connect(self.select_sub)
+        self.bt_mark_sky.clicked.connect(self.mark_sky)
         
         self.radio_none.clicked.connect(self.select_log_none)
         self.radio_show_logfile.clicked.connect(self.select_log_file)
@@ -588,6 +593,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.publish_to_queue(msg)  
     
     
+    #for observation
     def load_data(self, folder_name):
         
         self.label_svc_state.setText("Transfer")
@@ -626,16 +632,87 @@ class MainWindow(Ui_Dialog, QMainWindow):
             #if self.chk_autosave.isChecked():
             #    self.save_fits(dc_idx)
             
-            self.reload_img()
-            
+            if self.svc_mode == GUIDE_MODE:    
+                if self.cur_frame == A_BOX:
+                    self.guide_x, self.guide_y = self.A_x, self.A_y
+                elif self.cur_frame == B_BOX:
+                    self.guide_x, self.guide_y = self.B_x, self.B_y   
+                elif self.cur_frame == OFF_BOX:
+                    self.guide_x, self.guide_y = self.off_x, self.off_y
+            else:
+                self.guide_x, self.guide_y= self.A_x, self.A_y
+                    
+            if self.display_click(self.guide_x, self.guide_y):
+                self.find_center = True
+            else:
+                self.find_center = False
+            self.reload_img()   
+        
             self.update_sw_offset(self.svc_img, self.mask)
         
         except:
             self.svc_img = None
             self.editlist_loglist.appendPlainText(self.log.send(self.iam, WARNING, "No image"))            
         
+        
+    def display_click(self, x_pos, y_pos):
+        
+        cen_x_in, cen_y_in, ret = self.calc_offset(int(x_pos), int(y_pos))
+        
+        if ret:
+            self.draw_zoomin(self.cropdata, x_pos, y_pos, cen_x_in, cen_y_in)
+            self.show_GaussianFitting()
             
-    def reload_img(self):
+        return ret
+    
+    
+    def calc_offset(self, x_pos, y_pos):
+        ret = False
+        
+        if (x_pos < 0) | (y_pos < 0): 
+            return 0, 0, ret
+        if self.svc_img is None: 
+            return 0, 0, ret
+        # make croped data
+        ny, nx = self.svc_img.shape
+
+        y1 = np.max([0, y_pos - ZOOMW]) 
+        y2 = np.min([ny, y_pos + ZOOMW]) 
+        x1 = np.max([0, x_pos - ZOOMW]) 
+        x2 = np.min([nx, x_pos + ZOOMW]) 
+        
+        self.cropdata = self.svc_img[y1:y2, x1:x2]
+
+        self.cropmask = self.mask[y1:y2, x1:x2]
+
+        # display pixel value and define click point in the crop image coordinate
+        try:
+            self.height, cen_x_in, cen_y_in, self.sigma, self.background = self.FindingCentroid(self.cropdata, self.cropmask)
+            #self.height_iMM = self.height
+            
+            msg = "Gaussian param P:%.0f B:%.0f X:%.1f Y:%.1f \nFWHM:%.2f" % (self.height, self.background, cen_x_in, cen_y_in, self.sigma*2.35482)
+            self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
+            
+            ret = True
+
+            if not (np.isfinite(cen_x_in) and np.isfinite(cen_y_in)):
+                cen_x_in, cen_y_in = x_pos - x1, y_pos - y1
+
+        except Exception as e:
+            import traceback, sys
+            traceback.print_exc(file=sys.stdout)
+
+            cen_x_in, cen_y_in = x_pos - x1, y_pos - y1
+
+        # change coordinate for the full image
+        self.cen_x = cen_x_in + x1
+        self.cen_y = cen_y_in + y1
+        
+        return cen_x_in, cen_y_in, ret
+    
+    
+    #sky, mask        
+    def reload_img(self, left_click=False):
         
         self.clean_ax(self.image_ax[IMG_SVC])
         
@@ -649,17 +726,15 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             
             self.display_coordinate(self.image_ax[IMG_SVC], self.svc_img_cut, _min, _max, self.PA)
             if self.chk_off_slit.isChecked():
-                self.display_box(self.image_ax[IMG_SVC], self.guide_x, self.guide_y, G_BOX_CLR)
+                self.display_box(self.image_ax[IMG_SVC], self.off_x, self.off_y, OFF_BOX_CLR)
             
             self.display_box(self.image_ax[IMG_SVC], self.A_x, self.A_y, A_BOX_CLR)
             self.display_box(self.image_ax[IMG_SVC], self.B_x, self.B_y, B_BOX_CLR)
             
-            #self.display_box(self.image_ax[IMG_EXPAND], self.A_x, self.A_y, A_BOX_CLR)
-            #self.display_box(self.image_ax[IMG_EXPAND], self.B_x, self.B_y, A_BOX_CLR)
-            
+            if left_click:
+                self.display_box(self.image_ax[IMG_SVC], self.click_x, self.click_y, BOX_CLR) 
+                
             self.image_canvas[IMG_SVC].draw()
-            
-            self.display_click(int(self.click_x), int(self.click_y))
                         
             self.label_svc_state.setText("Idle")
                 
@@ -728,52 +803,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
         ax.plot([x_pos-ZOOMW+5,x_pos+ZOOMW], [y_pos, y_pos], color=boxcolor)
         ax.plot([x_pos, x_pos], [y_pos-ZOOMW,y_pos+ZOOMW-5], color=boxcolor)
-        
-        
-    def display_click(self, x_pos, y_pos):
-        
-        if (x_pos < 0) | (y_pos < 0): 
-            return False
-        if self.svc_img is None: 
-            return False
-        # make croped data
-        ny, nx = self.svc_img.shape
-
-        y1 = np.max([0, y_pos - ZOOMW]) 
-        y2 = np.min([ny, y_pos + ZOOMW]) 
-        x1 = np.max([0, x_pos - ZOOMW]) 
-        x2 = np.min([nx, x_pos + ZOOMW]) 
-        
-        self.cropdata = self.svc_img[y1:y2, x1:x2]
-
-        self.cropmask = self.mask[y1:y2, x1:x2]
-
-        # display pixel value and define click point in the crop image coordinate
-        try:
-            self.height, self.cen_x_in, self.cen_y_in, self.sigma, self.background = self.FindingCentroid(self.cropdata, self.cropmask)
-            #self.height_iMM = self.height
-            
-            msg = "Gaussian param P:%.0f B:%.0f X:%.1f Y:%.1f \nFWHM:%.2f" % (self.height, self.background, self.cen_x_in, self.cen_y_in, self.sigma*2.35482)
-            self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
-
-            if not (np.isfinite(self.cen_x_in) and np.isfinite(self.cen_y_in)):
-                self.cen_x_in, self.cen_y_in = x_pos - x1, y_pos - y1
-
-        except Exception as e:
-            import traceback, sys
-            traceback.print_exc(file=sys.stdout)
-
-            self.cen_x_in, self.cen_y_in = x_pos - x1, y_pos - y1
-
-        # change coordinate for the full image
-        self.cen_x = self.cen_x_in + x1
-        self.cen_y = self.cen_y_in + y1
-
-        self.draw_zoomin(self.cropdata, self.cen_x, self.cen_y, self.cen_x_in, self.cen_y_in)
-
-        self.show_GaussianFitting()
-
-        return True
+    
+    
     
     # FITTING_2D_MASK from original IGRINS
     def FindingCentroid(self, data, mask): 
@@ -821,10 +852,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.image_ax[IMG_EXPAND].plot([0, nx], [(ny-1)/2,(ny-1)/2], '-', color='yellow')
             
             # draw a mark in zoom-in
-            _circle = Circle( (x_source_crop, y_source_crop), \
-                            facecolor='none', edgecolor='blue',
-                            radius=self.sigma * 2.35 / 2.)
-            self.image_ax[IMG_EXPAND].add_patch(_circle)
+            if 0 <= x_source_crop <= ZOOMW*2 and 0 <= y_source_crop <= ZOOMW*2:
+                _circle = Circle( (x_source_crop, y_source_crop), \
+                                facecolor='none', edgecolor='blue',
+                                radius=self.sigma * 2.35 / 2.)
+                self.image_ax[IMG_EXPAND].add_patch(_circle)
             
             self.image_canvas[IMG_EXPAND].draw()
                             
@@ -873,8 +905,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
        # matplotlib part
         if cen_x_in == 0 and cen_y_in == 0:
-            cen_x_in = self.guide_x
-            cen_y_in = self.guide_y
+            cen_x_in = ZOOMW
+            cen_y_in = ZOOMW
             DOFIT = False
 
        # Plot the sampled data from the selected source
@@ -1082,6 +1114,21 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.prev_widget_rect[init_idx] = init_rect
         
+        
+    def move_to_telescope(self, dra, ddec):
+        msg = "%s %.3f %.3f" % (OBSAPP_CAL_OFFSET, dra, ddec)
+        self.publish_to_queue(msg) 
+        
+        
+    def calc_pixel_to_arcsec(self, dx, dy):
+        dx, dy = dx*PIXELSCALE, dy*PIXELSCALE
+        
+        PA = SLIT_ANG
+        
+        dra  = - ( dx*np.cos(np.deg2rad(PA)) - dy*np.sin(np.deg2rad(PA)) )
+        ddec =   ( dx*np.sin(np.deg2rad(PA)) + dy*np.cos(np.deg2rad(PA)) )
+        
+        return dra, ddec
     
     #--------------------------------------------------------
     # button, event
@@ -1148,7 +1195,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.click_y = event.ydata + self.svc_cut_y
         print("Press (svc):", self.click_x, self.click_y)
         
-        self.display_click(int(self.click_x), int(self.click_y))
+        if self.display_click(self.click_x, self.click_y):
+            self.find_center = True
+        else:
+            self.find_center = False
+        self.reload_img(True)
                 
                 
     def fitting_leftclick(self, event):
@@ -1159,11 +1210,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             
         self.show_GaussianFitting()
         
-        
-    def profile_leftclick(self, event):
-        pass
-        
-    
+            
     def set_continue_mode(self):
         if self.chk_continue.isChecked():
             self.svc_mode = CONT_MODE
@@ -1229,30 +1276,61 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
     
     def set_center(self):
-        pass
+        dx = self.click_x - float(SLIT_CEN[0])
+        dy = self.click_y - float(SLIT_CEN[1])
+        
+        if dx == 0 and dy == 0:
+           return
+        
+        #pixel -> arcsec
+        dra, ddec = self.calc_pixel_to_arcsec(dx, dy)    
+        self.move_to_telescope(dra, ddec)
     
     
     def set_off_slit(self):
+        if self.chk_off_slit.isChecked():
+            self.cur_frame = OFF_BOX
+        else:
+            self.cur_frame = A_BOX
+            
         self.clean_ax(self.image_ax[IMG_SVC])
         self.bt_set_guide_star.setEnabled(self.chk_off_slit.isChecked())
         if self.chk_off_slit.isChecked():
-            self.display_box(self.image_ax[IMG_SVC], self.guide_x, self.guide_y, G_BOX_CLR)            
+            self.display_box(self.image_ax[IMG_SVC], self.off_x, self.off_y, OFF_BOX_CLR)            
         self.reload_img()
     
     
     def set_guide_star(self):
-        pass
+        self.off_x, self.off_y = self.click_x, self.click_y
+        self.set_off_slit()
         
         
+    #p, q coordiation!!!!
     def move_p(self, north): #+:True, -:Minus 
-        pass
+        
+        # p-q => dra-ddec ???
+        dy = float(self.e_offset.text())
+        if not north:
+            dy *= (-1)
+         
+        dra, ddec = self.calc_pixel_to_arcsec(0, dy)    
+        self.move_to_telescope(dra, ddec)
+        
     
-    
+    #p, q coordiation!!!!
     def move_q(self, west): #+:True, -:Minus 
-        pass
+        # p-q => dra-ddec ???
+        dx = float(self.e_offset.text())
+        if not west:
+            dx *= (-1)
+         
+        dra, ddec = self.calc_pixel_to_arcsec(dx, 0)    
+        self.move_to_telescope(dra, ddec)
+        
     
     
     def slow_guide(self):
+                
         self.svc_mode = GUIDE_MODE
         
         if self.bt_slow_guide.text() == "Slow Guide":
@@ -1269,6 +1347,18 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.stop_clicked = True
             
             self.bt_single.setEnabled(True)
+            
+            
+    def select_raw(self):
+        pass
+    
+    
+    def select_sub(self):
+        pass
+    
+    
+    def mark_sky(self):
+        pass
     
     
     def select_log_none(self):
@@ -1417,6 +1507,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # PA
         if param[0] == INSTSEQ_SHOW_TCS_INFO:
             self.label_IPA.setText(param[1])
+            
                     
         elif param[0] == CMD_SETFSPARAM_ICS:            
             if param[1] == "SVC" or param[1] == "all":
@@ -1547,9 +1638,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
                 else:
                     #calculate center
-                    center = [0, 0]
-                    self.center_ra.append(center[0])
-                    self.center_dec.append(center[1])
+                    dx = self.guide_x - self.cen_x
+                    dy = self.guide_y - self.cen_y
+                    dra, ddec = self.calc_pixel_to_arcsec(dx, dy)
+                    self.center_ra.append(dra)
+                    self.center_dec.append(ddec)
                     
                     if self.svc_mode == GUIDE_MODE:
                         self.cur_guide_cnt += 1
@@ -1560,10 +1653,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             #tmp, no show in plot!!!               
                             
                             # send to TCS (offset)
-                            msg = "%s %.3f %.3f" % (OBSAPP_CAL_OFFSET, cen_ra_mean, cen_dec_mean)
-                            self.publish_to_queue(msg) 
+                            self.move_to_telescope(cen_ra_mean, cen_dec_mean)
                             
-                            self.cur_guide_cnt = 0         
+                            self.cur_guide_cnt = 0 
+                            self.center_ra = []
+                            self.center_dec = []
                             
                     self.cur_save_cnt += 1
                     if self.chk_auto_save.isChecked() and self.cur_save_cnt >= int(self.e_saving_number.text()):
@@ -1599,7 +1693,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                         elif self.svc_mode == GUIDE_MODE:
                             self.QWidgetBtnColor(self.bt_slow_guide, "black")
                         
-                        #self.svc_mode = SINGLE_MODE
+                        self.set_continue_mode()
+                        
                         self.enable_dcss(True)
                         
                         self.bt_single.setEnabled(True)
@@ -1682,7 +1777,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         #nodding_mode = self._nodding_mode
 
         #if cur_pos not in "AB" or (cur_pos == "B" and nodding_mode != 0):
-        if self.cur_frame == "" or self.svc_mode != GUIDE_MODE:
+        if self.cur_frame == "" or self.svc_mode != GUIDE_MODE or self.chk_off_slit.isChecked():
             self._sw_offset_finder.reset_image()
             return
 

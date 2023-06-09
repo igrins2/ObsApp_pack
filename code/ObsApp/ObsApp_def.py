@@ -62,6 +62,10 @@ SINGLE_MODE = 0
 CONT_MODE = 1
 GUIDE_MODE = 2
 
+A_BOX = "A"
+B_BOX = "B"
+OFF_BOX = "OFF"
+
 DC_CNT = 3
 SVC = 0
 H_K = 1
@@ -93,7 +97,7 @@ FWHM_GUESS = 0
 FWHM_FIT = 1
 FWHM_FIX = 2
 
-G_BOX_CLR = "pink"
+OFF_BOX_CLR = "pink"
 A_BOX_CLR = "red"
 B_BOX_CLR = "cyan"
 BOX_CLR = "green"
