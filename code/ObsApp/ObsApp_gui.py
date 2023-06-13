@@ -189,7 +189,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
         self.fitting_clicked = False  #False: fitting, True: contour
         
-        self.cur_frame = "" #A, B or nothing
+        self.cur_frame = A_BOX #A, B or nothing
         
         self.find_center = False
                 
@@ -212,10 +212,13 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.svc_header = None
         self.svc_img = None
         self.svc_img_cut = None
-        self.fitsfullpath = ""
         
-        mask = fits.open(WORKING_DIR + "ObsApp/slitmaskv4.fits")[0].data
-        self.mask = self.slit_image_flip_func(mask)
+        self.sky_data = None
+        self.sky_exp_time = 0.
+        
+        self.fitsfullpath = ""
+           
+        self._init_mask()
         
         self.resize_enable = True
                 
@@ -383,6 +386,16 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.bt_slow_guide.setEnabled(False)
         self.bt_set_guide_star.setEnabled(False)
         
+        
+    def _init_mask(self):
+        # make the mask from mask.template
+        mask = fits.open(WORKING_DIR + "ObsApp/slitmaskv4.fits")[0].data     
+        mask_for_compress = fits.open(WORKING_DIR + "ObsApp/slitmaskv4_for_save_gemini2018a.fits")[0].data
+        mask_new = ~ (fits.open(WORKING_DIR + "ObsApp/slitmask_new_ver3_bin.fits")[0].data > 0)
+
+        self.mask = self.slit_image_flip_func(mask)
+        #self.mask_for_compress = self.slit_image_flip_func(mask_for_compress)
+        #self.mask_new = self.slit_image_flip_func(mask_new) 
         
         
     #--------------------------------------------------------
@@ -593,7 +606,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.publish_to_queue(msg)  
     
     
-    #for observation
+    
+    #data load for observation from DCSS
     def load_data(self, folder_name):
         
         self.label_svc_state.setText("Transfer")
@@ -617,42 +631,46 @@ class MainWindow(Ui_Dialog, QMainWindow):
             #self.svc_img = rotate(_svc_img, -45, axes=(1,0), reshape=None)      
                         
             ny, nx = self.svc_img.shape
+            self.svc_img_cut = self.svc_img[self.svc_cut_y:ny-self.svc_cut_y, self.svc_cut_x:nx-self.svc_cut_x] 
+            self.image_display(self.svc_img_cut)
             
-            self.svc_img_cut = self.svc_img[self.svc_cut_y:ny-self.svc_cut_y, self.svc_cut_x:nx-self.svc_cut_x]    
-            
-            self.zmin, self.zmax = zs.zscale(self.svc_img_cut)
-            range = "%d ~ %d" % (self.zmin, self.zmax)
-            
-            self.label_zscale.setText(range)
-        
-            self.mmin, self.mmax = np.min(self.svc_img_cut), np.max(self.svc_img_cut)
-            self.e_mscale_min.setText("%.1f" % self.mmin)
-            self.e_mscale_max.setText("%.1f" % self.mmax)
-                
-            #if self.chk_autosave.isChecked():
-            #    self.save_fits(dc_idx)
-            
-            if self.svc_mode == GUIDE_MODE:    
-                if self.cur_frame == A_BOX:
-                    self.guide_x, self.guide_y = self.A_x, self.A_y
-                elif self.cur_frame == B_BOX:
-                    self.guide_x, self.guide_y = self.B_x, self.B_y   
-                elif self.cur_frame == OFF_BOX:
-                    self.guide_x, self.guide_y = self.off_x, self.off_y
-            else:
-                self.guide_x, self.guide_y= self.A_x, self.A_y
-                    
-            if self.display_click(self.guide_x, self.guide_y):
-                self.find_center = True
-            else:
-                self.find_center = False
-            self.reload_img()   
-        
             self.update_sw_offset(self.svc_img, self.mask)
         
+            self.label_svc_state.setText("Idle")
+
         except:
             self.svc_img = None
             self.editlist_loglist.appendPlainText(self.log.send(self.iam, WARNING, "No image"))            
+        
+        
+    def image_display(self, imgdata, new = True):
+        self.zmin, self.zmax = zs.zscale(imgdata)
+        range = "%d ~ %d" % (self.zmin, self.zmax)
+        
+        self.label_zscale.setText(range)
+        self.mmin, self.mmax = np.min(imgdata), np.max(imgdata)
+        self.e_mscale_min.setText("%.1f" % self.mmin)
+        self.e_mscale_max.setText("%.1f" % self.mmax)
+            
+        #if self.chk_autosave.isChecked():
+        #    self.save_fits(dc_idx)
+        
+        if self.svc_mode == GUIDE_MODE:    
+            if self.cur_frame == A_BOX:
+                self.guide_x, self.guide_y = self.A_x, self.A_y
+            elif self.cur_frame == B_BOX:
+                self.guide_x, self.guide_y = self.B_x, self.B_y   
+            elif self.cur_frame == OFF_BOX:
+                self.guide_x, self.guide_y = self.off_x, self.off_y
+        else:
+            self.guide_x, self.guide_y= self.A_x, self.A_y
+                
+        if new and self.display_click(self.guide_x, self.guide_y):
+            self.find_center = True
+        else:
+            self.find_center = False
+            
+        self.reload_img(imgdata)   
         
         
     def display_click(self, x_pos, y_pos):
@@ -712,7 +730,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     
     #sky, mask        
-    def reload_img(self, left_click=False):
+    def reload_img(self, imgdata, left_click=False):
         
         self.clean_ax(self.image_ax[IMG_SVC])
         
@@ -724,7 +742,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             elif self.radio_mscale.isChecked():
                 _min, _max = self.mmin, self.mmax
                             
-            self.display_coordinate(self.image_ax[IMG_SVC], self.svc_img_cut, _min, _max, self.PA)
+            self.display_coordinate(self.image_ax[IMG_SVC], imgdata, _min, _max, self.PA)
             if self.chk_off_slit.isChecked():
                 self.display_box(self.image_ax[IMG_SVC], self.off_x, self.off_y, OFF_BOX_CLR)
             
@@ -735,8 +753,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.display_box(self.image_ax[IMG_SVC], self.click_x, self.click_y, BOX_CLR) 
                 
             self.image_canvas[IMG_SVC].draw()
-                        
-            self.label_svc_state.setText("Idle")
                 
         except:
             pass
@@ -807,19 +823,19 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     
     # FITTING_2D_MASK from original IGRINS
-    def FindingCentroid(self, data, mask): 
+    def FindingCentroid(self, imgdata, mask): 
 
         height, sx, sy, sigma , background= (0, 0, 0, 0, 0)
 
         if self.fwhm_mode == FWHM_FIX:
             fit_gaussian_func = tmcfmask.fitgaussian2d_mask_with_saturation_fixed_width
             fwhm_width = self.fwhm_mode_value / PIXELSCALE / 2.35
-            params = fit_gaussian_func(data, mask > 0, width=fwhm_width)
+            params = fit_gaussian_func(imgdata, mask > 0, width=fwhm_width)
         else:
             if self.fwhm_mode == FWHM_GUESS:
-                params = tmcfmask.fitgaussian2d_mask_with_saturation(data, mask>0, fit_width=False)
+                params = tmcfmask.fitgaussian2d_mask_with_saturation(imgdata, mask>0, fit_width=False)
             else:
-                params = tmcfmask.fitgaussian2d_mask_with_saturation(data, mask>0, fit_width=True)
+                params = tmcfmask.fitgaussian2d_mask_with_saturation(imgdata, mask>0, fit_width=True)
         # fit_gaussian_func = tmcfmask.fitgaussian2d_mask_with_saturation_fixed_width
         # params = fit_gaussian_func(data, mask>0, width=4.)
         height, sx, sy, sigma, background = params[0], params[1], params[2], params[3], params[4]
@@ -1199,7 +1215,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.find_center = True
         else:
             self.find_center = False
-        self.reload_img(True)
+            
+        self.reload_img(self.svc_img_cut, True)
                 
                 
     def fitting_leftclick(self, event):
@@ -1272,7 +1289,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         copyfile(self.fitsfullpath, newfile)
         
         self.fitsfullpath = ""
-        
 
     
     def set_center(self):
@@ -1297,7 +1313,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.bt_set_guide_star.setEnabled(self.chk_off_slit.isChecked())
         if self.chk_off_slit.isChecked():
             self.display_box(self.image_ax[IMG_SVC], self.off_x, self.off_y, OFF_BOX_CLR)            
-        self.reload_img()
+        self.reload_img(self.svc_img_cut)
     
     
     def set_guide_star(self):
@@ -1350,15 +1366,27 @@ class MainWindow(Ui_Dialog, QMainWindow):
             
             
     def select_raw(self):
-        pass
+        self.image_display(self.svc_img_cut)
     
     
     def select_sub(self):
-        pass
-    
+        cor = float(self.e_svc_exp_time.text()) / self.sky_exp_time
+        imgSub_data = self.svc_img - self.sky_data*cor
+        
+        ny, nx = imgSub_data.shape
+        
+        imgSub_data_cut = imgSub_data[self.svc_cut_y:ny-self.svc_cut_y, self.svc_cut_x:nx-self.svc_cut_x]
+        
+        self.image_display(imgSub_data_cut, False)
+
     
     def mark_sky(self):
-        pass
+        # data copy?
+        
+        # read image and exposure time
+        self.sky_data = self.svc_img
+        self.sky_exp_time = float(self.svc_header["EXPTIME"])
+        
     
     
     def select_log_none(self):
@@ -1507,6 +1535,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # PA
         if param[0] == INSTSEQ_SHOW_TCS_INFO:
             self.label_IPA.setText(param[1])
+            
+        
+        # current frame - A or B, A and B coordination
             
                     
         elif param[0] == CMD_SETFSPARAM_ICS:            
@@ -1771,7 +1802,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         #self._sw_offset_finder.pack(side="top")
         
         
-    def update_sw_offset(self, imgdata, maskdata):
+    def update_sw_offset(self, imgdata, mask):
 
         #cur_pos = self.cur_frame
         #nodding_mode = self._nodding_mode
@@ -1801,9 +1832,13 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
         to_keep = self.sw_slit_star_get_height()
         sw_slit, sw_star = self._sw_offset_finder.update_image(
-            imgdata, maskdata>0, gx, gy, PA,
+            imgdata, mask>0, gx, gy, PA,
             sw_slit_star_stack=(sw_slit_star_stack, to_keep))
-
+        
+        self.label_sw_slit.setText("{:.2}".format(float(sw_slit)))
+        self.label_sw_star.setText("{:.2}".format(float(sw_star)))
+        self.label_sw_star_slit.setText("{:.2}".format(float(sw_star - sw_slit)))
+        
         self.sw_slit_star_push_offset(sw_slit, sw_star)
         
     
