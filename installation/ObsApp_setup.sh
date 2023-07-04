@@ -9,7 +9,7 @@ fi
 
 
 # configuration file
-cp $HOME/ObsApp_pack/installation/ObsApp $HOME
+cp -r $HOME/ObsApp_pack/installation/ObsApp $HOME
 
 
 # install python library
@@ -25,7 +25,7 @@ conda activate ObsApp
 pip install numpy
 pip install astropy
 pip install matplotlib
-pip install pyside6
+pip install pyside6==6.4.2
 pip install PyQt5
 pip install pika
 pip install scipy

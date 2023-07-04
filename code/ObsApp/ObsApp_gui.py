@@ -44,6 +44,10 @@ from shutil import copyfile
 
 from distutils.util import strtobool
 
+import glob
+#import FITSHD_v2 as LFHD
+
+
 class MainWindow(Ui_Dialog, QMainWindow):
     
     def __init__(self, simul):  #simulation mode: True
@@ -1051,6 +1055,119 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.image_canvas[IMG_FITTING].draw()
     
     
+    def save_image(self, obs_date, skip_if_exists=False):
+        '''
+        Save the current image to storage
+        '''
+        file_seq = self.NewSeq(obs_date)
+        file_name = 'SDCS_%s_%04d.fits' % (obs_date, file_seq)
+
+        fpath = self.svc_path + obs_date
+        if fpath[-1] != '/': fpath = fpath + '/'
+
+        if not os.path.exists(fpath):
+            os.makedirs(fpath)
+
+        save_path = fpath + file_name
+
+        if skip_if_exists and os.path.exists(save_path):
+            msg = "Already saved: %s " % save_path
+            self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
+            return save_path
+        else:            
+            msg = "Saving %s " % save_path
+            self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
+
+        #============================================================================
+        # make FITS header / UJ
+        #============================================================================
+
+        imgheader = self.svc_header.copy()
+
+        ValHD=[]
+        for ARR in LFHD.FHDARR:
+            try:
+                v = LFHD.ValHDLF(ARR[1], ARR[2], self, self.FHD_TEL)
+            except (KeyError, AttributeError):
+                msg = "Keyword ({}) not found in the TCS_INFO.".format(ARR[0])
+                self.StatusInsert(msg)
+                self.logger.warning(msg)
+                v = pyfits.card.UNDEFINED
+            except ValueError as e:
+                msg = "Error in formatting : {} {} {}".format(*ARR)
+                self.logger.error(msg, exc_info=1)
+                v = pyfits.card.UNDEFINED
+                # raise e
+            else:
+                if isinstance(v, float) and np.isnan(v):
+                    v = pyfits.card.UNDEFINED
+
+            ValHD.append((ARR[0], v, ARR[3]))
+
+        # Inser seq numbers for H/K detectors
+        ValHD.append(("hierarch IGR_HK_SEQ", self._hk_seq, "Seq # for H/K"))
+
+        InsHdInd = 6
+        for i, hdrTup in enumerate(ValHD):
+            imgheader.insert(InsHdInd+i,hdrTup)
+
+        # # For degugging
+        # if False:
+        #     import pprint
+        #     pprint.pprint(self.FHD_TEL["start"],
+        #                   stream=open("fhd_tel_start.pp","w"))
+        #     pprint.pprint(self.FHD_TEL["end"],
+        #                   stream=open("fhd_tel_end.pp","w"))
+
+        #============================================================================
+        # input the image saving routine
+        #============================================================================
+
+        if psfmode == True:
+            pyfits.writeto(self.savepath, self.psfdata, header=imgheader, clobber=True, output_verify='ignore')
+        else:
+            from add_wcs_header import update_header2
+            cx, cy = int(SLIT_CEN[0]), int(SLIT_CEN[1])
+            pixelscale = PIXELSCALE / 3600.
+
+            if self.compsave_flag.get():
+                slices = slice(cx-128, cx+128), slice(cx-128, cy+128)
+                get_hdulist = self.svc_compressor.get_compressed_hdulist
+                hdu_list = get_hdulist(imgheader, self.imgdata,
+                                       slices)
+                update_header2(hdu_list[1].header, cx, cy, pixelscale)
+
+                update_header2(hdu_list[2].header, 128, 128, pixelscale)
+                hdu_list.writeto(self.savepath,
+                                 clobber=True, output_verify='ignore')
+            else:
+                update_header2(imgheader, cx, cy, pixelscale)
+                pyfits.writeto(self.savepath, self.imgdata, 
+                               header=imgheader, clobber=True,
+                               output_verify='ignore')
+
+        self._obsid_increase(self.fileseq)
+
+        return self.savepath
+        
+        
+    def LastSeq(self, date):
+        fpath = self.svc_path + date
+        if fpath[-1] != '/': fpath = fpath + '/'
+
+        sfiles = glob.glob(fpath +'SDCS_%s_????.fits' % (date,))
+        if sfiles:
+            mseq = int(max(sfiles).split("_")[-1][:4])
+        else:
+            mseq = 0
+        # mseq = len(sfiles)
+        return mseq
+
+
+    def NewSeq(self, date):
+        return self.LastSeq(date) + 1
+    
+    
     #--------------------------------------------------------
     # gui set
     def QShowValue(self, widget, label):
@@ -1693,11 +1810,15 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     self.cur_save_cnt += 1
                     if self.chk_auto_save.isChecked() and self.cur_save_cnt >= int(self.e_saving_number.text()):
                         ori_file = param[2].split('/')
-                        foldername = ti.strftime("%02Y%02m%02d/", ti.localtime())
-                        self.createFolder(self.svc_path + foldername)
+                        obs_info = ori_file[0].split('_')
+                        
+                        self.save_image(obs_info[1])
+                        self.cur_save_cnt = 0  
+                        #foldername = ti.strftime("%02Y%02m%02d/", ti.localtime())
+                        #self.createFolder(self.svc_path + foldername)
                         # if someone want to rename the svc file name, it can be changed...
                         # save fname
-                        
+                        '''
                         path = self.svc_path + foldername
                         dir_names = []
                         for names in os.listdir(path):
@@ -1708,11 +1829,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
                         else:
                             next_idx = 1
         
-                        tmp = ori_file[0].split('_')
-                        newfile = "%s%sO_%s_%s_%d.fits" % (self.svc_path, foldername, tmp[0], tmp[1], next_idx)
+                        newfile = "%s%sO_%s_%s_%d.fits" % (self.svc_path, foldername, obs_info[0], obs_info[1], next_idx)
                         copyfile(self.fitsfullpath, newfile)
-                                        
-                        self.cur_save_cnt = 0                          
+                        '''                        
                         
                     if self.stop_clicked:
                         self.stop_clicked = False
