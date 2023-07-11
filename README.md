@@ -27,9 +27,9 @@
 4. Start software
 	- If simulation
 	```
-	$ sh ../OpsApp_pack/run_ObsApp.sh True
+	$ sh ../OpsApp_pack/run_ObsApp.sh simul
 	```
 	- Else
 	```
-	$ sh ../OpsApp_pack/run_ObsApp.sh
+	$ sh ../OpsApp_pack/run_ObsApp.sh obs
 	```

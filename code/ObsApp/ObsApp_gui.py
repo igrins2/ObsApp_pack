@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on May 2, 2023
+Modified on July 3, 2023
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -183,6 +183,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.svc_cut_x, self.svc_cut_y = 400, 400
         self.click_x, self.click_y = _svc_x, _svc_y
         self.off_x, self.off_y = self.click_x, self.click_y
+        self.click_p, self.click_q = 0, 0
         
         self.height, self.sigma, self.background = 0.0, 0.0, 0.0
         self.cen_x, self.cen_y = 0, 0   # center in full coordination after fitting
@@ -369,8 +370,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.bt_plus_p.clicked.connect(lambda: self.move_p(True))
         self.bt_minus_p.clicked.connect(lambda: self.move_p(False))
-        self.bt_plus_q.clicked.connect(lambda: self.move_p(True))
-        self.bt_minus_q.clicked.connect(lambda: self.move_p(False))
+        self.bt_plus_q.clicked.connect(lambda: self.move_q(True))
+        self.bt_minus_q.clicked.connect(lambda: self.move_q(False))
         
         self.bt_slow_guide.clicked.connect(self.slow_guide)
         
@@ -1131,20 +1132,24 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.prev_widget_rect[init_idx] = init_rect
         
         
-    def move_to_telescope(self, dra, ddec):
-        msg = "%s %.3f %.3f" % (OBSAPP_CAL_OFFSET, dra, ddec)
+    def move_to_telescope(self, dp, dq):
+        msg = "%s %.3f %.3f" % (OBSAPP_CAL_OFFSET, dp, dq)
         self.publish_to_queue(msg) 
         
         
-    def calc_pixel_to_arcsec(self, dx, dy):
-        dx, dy = dx*PIXELSCALE, dy*PIXELSCALE
-        
+    def calc_xy_to_pq(self, para1, para2, opposite=False):    # x-y => p-q       
         PA = SLIT_ANG
         
-        dra  = - ( dx*np.cos(np.deg2rad(PA)) - dy*np.sin(np.deg2rad(PA)) )
-        ddec =   ( dx*np.sin(np.deg2rad(PA)) + dy*np.cos(np.deg2rad(PA)) )
+        if opposite:
+            _p, _q = para1, para2
+            para3 = - ( _p*np.cos(np.deg2rad(PA)) - _q*np.sin(np.deg2rad(PA)) ) / PIXELSCALE
+            para4 =   ( _p*np.sin(np.deg2rad(PA)) + _q*np.cos(np.deg2rad(PA)) ) / PIXELSCALE
+        else: 
+            _x, _y = para1, para2
+            para3  = - ( _x*np.cos(np.deg2rad(PA)) - _y*np.sin(np.deg2rad(PA)) ) * PIXELSCALE
+            para4 =   ( _x*np.sin(np.deg2rad(PA)) + _y*np.cos(np.deg2rad(PA)) ) * PIXELSCALE
         
-        return dra, ddec
+        return para3, para4
     
     #--------------------------------------------------------
     # button, event
@@ -1210,6 +1215,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.click_x = event.xdata + self.svc_cut_x
         self.click_y = event.ydata + self.svc_cut_y
         print("Press (svc):", self.click_x, self.click_y)
+        
+        click_p, click_q = self.calc_xy_to_pq(self.click_x-SLIT_CEN[0], self.click_y-SLIT_CEN[1])
+        print("Press (p-q):", click_p, click_q)
         
         if self.display_click(self.click_x, self.click_y):
             self.find_center = True
@@ -1292,15 +1300,15 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
     
     def set_center(self):
-        dx = self.click_x - float(SLIT_CEN[0])
-        dy = self.click_y - float(SLIT_CEN[1])
+        dx = self.click_x - SLIT_CEN[0]
+        dy = self.click_y - SLIT_CEN[1]
         
         if dx == 0 and dy == 0:
            return
         
         #pixel -> arcsec
-        dra, ddec = self.calc_pixel_to_arcsec(dx, dy)    
-        self.move_to_telescope(dra, ddec)
+        dp, dq = self.calc_xy_to_pq(dx, dy)    
+        self.move_to_telescope(dp, dq)
     
     
     def set_off_slit(self):
@@ -1322,26 +1330,21 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         
     #p, q coordiation!!!!
-    def move_p(self, north): #+:True, -:Minus 
-        
-        # p-q => dra-ddec ???
-        dy = float(self.e_offset.text())
-        if not north:
-            dy *= (-1)
+    def move_p(self, positive): #+:True, -:Minus 
+        dp = float(self.e_offset.text())
+        if not positive:
+            dp *= (-1)
          
-        dra, ddec = self.calc_pixel_to_arcsec(0, dy)    
-        self.move_to_telescope(dra, ddec)
+        self.move_to_telescope(dp, 0)
         
     
     #p, q coordiation!!!!
-    def move_q(self, west): #+:True, -:Minus 
-        # p-q => dra-ddec ???
-        dx = float(self.e_offset.text())
-        if not west:
-            dx *= (-1)
+    def move_q(self, positive): #+:True, -:Minus 
+        dq = float(self.e_offset.text())
+        if not positive:
+            dq *= (-1)
          
-        dra, ddec = self.calc_pixel_to_arcsec(dx, 0)    
-        self.move_to_telescope(dra, ddec)
+        self.move_to_telescope(0, dq)
         
     
     
@@ -1671,9 +1674,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     #calculate center
                     dx = self.guide_x - self.cen_x
                     dy = self.guide_y - self.cen_y
-                    dra, ddec = self.calc_pixel_to_arcsec(dx, dy)
-                    self.center_ra.append(dra)
-                    self.center_dec.append(ddec)
+                    dp, dq = self.calc_xy_to_pq(dx, dy)
+                    self.center_ra.append(dp)
+                    self.center_dec.append(dq)
                     
                     if self.svc_mode == GUIDE_MODE:
                         self.cur_guide_cnt += 1
