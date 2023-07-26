@@ -475,11 +475,15 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
         param = cmd.split()
                 
-        if param[0] == HK_REQ_GETVALUE:
-            self.dtvalue[self.label_list[TMC2_A]] = self.judge_value(param[1])
-            self.dtvalue[self.label_list[TMC2_B]] = self.judge_value(param[2])
-            self.heatlabel[self.label_list[TMC2_A]] = self.judge_value(param[3])
-            self.heatlabel[self.label_list[TMC2_B]] = self.judge_value(param[4])
+        try:
+            if param[0] == HK_REQ_GETVALUE:
+                self.dtvalue[self.label_list[TMC2_A]] = self.judge_value(param[1])
+                self.dtvalue[self.label_list[TMC2_B]] = self.judge_value(param[2])
+                self.heatlabel[self.label_list[TMC2_A]] = self.judge_value(param[3])
+                self.heatlabel[self.label_list[TMC2_B]] = self.judge_value(param[4])
+        
+        except:
+            self.log.send(self.iam, WARNING, "parsing error")
             
     
     def callback_tmc3(self, ch, method, properties, body):
@@ -488,9 +492,13 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
         param = cmd.split()
                 
-        if param[0] == HK_REQ_GETVALUE:
-            self.dtvalue[self.label_list[TMC3_B]] = self.judge_value(param[2])
-            self.heatlabel[self.label_list[TMC3_B]] = self.judge_value(param[3])
+        try:
+            if param[0] == HK_REQ_GETVALUE:
+                self.dtvalue[self.label_list[TMC3_B]] = self.judge_value(param[2])
+                self.heatlabel[self.label_list[TMC3_B]] = self.judge_value(param[3])
+                
+        except:
+            self.log.send(self.iam, WARNING, "parsing error")
             
     
     def callback_vm(self, ch, method, properties, body):
@@ -500,11 +508,15 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
         param = cmd.split()
                     
-        if param[0] == HK_REQ_GETVALUE:
-            if len(param[1]) > 10 or param[1] == DEFAULT_VALUE:
-                self.dpvalue = DEFAULT_VALUE
-            else:
-                self.dpvalue = param[1]
+        try:
+            if param[0] == HK_REQ_GETVALUE:
+                if len(param[1]) > 10 or param[1] == DEFAULT_VALUE:
+                    self.dpvalue = DEFAULT_VALUE
+                else:
+                    self.dpvalue = param[1]
+        
+        except:
+            self.log.send(self.iam, WARNING, "parsing error")
                    
     
     #--------------------------------------------------------
@@ -1535,88 +1547,92 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         param = self.param_InstSeq.split()
             
-        # PA
-        if param[0] == INSTSEQ_SHOW_TCS_INFO:
-            self.label_IPA.setText(param[1])
+        try:
+            # PA
+            if param[0] == INSTSEQ_SHOW_TCS_INFO:
+                self.label_IPA.setText(param[1])
+                
             
-        
-        # current frame - A or B, A and B coordination
-            
+            # current frame - A or B, A and B coordination
+                
+                        
+            elif param[0] == CMD_SETFSPARAM_ICS:            
+                if param[1] == "SVC" or param[1] == "all":
                     
-        elif param[0] == CMD_SETFSPARAM_ICS:            
-            if param[1] == "SVC" or param[1] == "all":
-                
-                if self.acquiring[SVC]:
-                    self.publish_to_queue(OBSAPP_BUSY)
-                    # continuous, single, or guiding mode -> stop!!!
-                    self.bt_single.click()
-                    return
+                    if self.acquiring[SVC]:
+                        self.publish_to_queue(OBSAPP_BUSY)
+                        # continuous, single, or guiding mode -> stop!!!
+                        self.bt_single.click()
+                        return
+                        
+                    self.e_svc_exp_time.setText(param[3])
+                    self.e_svc_fowler_number.setText(param[5])
+                    _fowlerTime = float(param[7])
+                    self.cal_waittime[SVC] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[5])))
                     
-                self.e_svc_exp_time.setText(param[3])
-                self.e_svc_fowler_number.setText(param[5])
-                _fowlerTime = float(param[7])
-                self.cal_waittime[SVC] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[5])))
+                    self.acquiring[SVC] = True
                 
-                self.acquiring[SVC] = True
-            
-            if param[1] == "H_K" or param[1] == "all":
-                self.label_exp_time.setText(param[3])
-                self.label_sampling_number.setText(param[5])
-                _fowlerTime = float(param[7])
-                self.cal_waittime[H_K] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[5])))
-                
-                self.acquiring[H] = True
-                self.acquiring[K] = True
-                
-        elif param[0] == CMD_ACQUIRERAMP_ICS:            
-            if param[1] == "SVC" or param[1] == "all":
-                self.enable_dcss(False)
-                self.label_svc_state.setText("Running")
-                
-                #SVC progressbar
-                self.prog_timer[SVC] = QTimer(self)
-                self.prog_timer[SVC].setInterval(int(self.cal_waittime[SVC]*10))   
-                self.prog_timer[SVC].timeout.connect(lambda: self.show_progressbar(SVC)) 
-                
-                self.cur_prog_step[SVC] = 0
-                self.progressBar_obs.setValue(self.cur_prog_step[SVC])    
-                self.prog_timer[SVC].start()   
-                
-                self.acquiring[SVC] = True
-                            
-            if param[1] == "H_K" or param[1] == "all":
-                self.label_obs_state.setText("Running")
-                
-                #H, K progressbar
-                self.prog_timer[H_K] = QTimer(self)
-                self.prog_timer[H_K].setInterval(int(self.cal_waittime[H_K]*10))   
-                self.prog_timer[H_K].timeout.connect(lambda: self.show_progressbar(H_K)) 
-                
-                self.cur_prog_step[H_K] = 0
-                self.progressBar_obs.setValue(self.cur_prog_step[H_K])    
-                self.prog_timer[H_K].start() 
-                
-                # elapsed               
-                self.elapsed_obs_timer = QTimer(self) 
-                self.elapsed_obs_timer.setInterval(0.001)
-                self.elapsed_obs_timer.timeout.connect(self.show_elapsed)
+                if param[1] == "H_K" or param[1] == "all":
+                    self.label_exp_time.setText(param[3])
+                    self.label_sampling_number.setText(param[5])
+                    _fowlerTime = float(param[7])
+                    self.cal_waittime[H_K] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[5])))
+                    
+                    self.acquiring[H] = True
+                    self.acquiring[K] = True
+                    
+            elif param[0] == CMD_ACQUIRERAMP_ICS:            
+                if param[1] == "SVC" or param[1] == "all":
+                    self.enable_dcss(False)
+                    self.label_svc_state.setText("Running")
+                    
+                    #SVC progressbar
+                    self.prog_timer[SVC] = QTimer(self)
+                    self.prog_timer[SVC].setInterval(int(self.cal_waittime[SVC]*10))   
+                    self.prog_timer[SVC].timeout.connect(lambda: self.show_progressbar(SVC)) 
+                    
+                    self.cur_prog_step[SVC] = 0
+                    self.progressBar_obs.setValue(self.cur_prog_step[SVC])    
+                    self.prog_timer[SVC].start()   
+                    
+                    self.acquiring[SVC] = True
+                                
+                if param[1] == "H_K" or param[1] == "all":
+                    self.label_obs_state.setText("Running")
+                    
+                    #H, K progressbar
+                    self.prog_timer[H_K] = QTimer(self)
+                    self.prog_timer[H_K].setInterval(int(self.cal_waittime[H_K]*10))   
+                    self.prog_timer[H_K].timeout.connect(lambda: self.show_progressbar(H_K)) 
+                    
+                    self.cur_prog_step[H_K] = 0
+                    self.progressBar_obs.setValue(self.cur_prog_step[H_K])    
+                    self.prog_timer[H_K].start() 
+                    
+                    # elapsed               
+                    self.elapsed_obs_timer = QTimer(self) 
+                    self.elapsed_obs_timer.setInterval(0.001)
+                    self.elapsed_obs_timer.timeout.connect(self.show_elapsed)
 
-                self.elapsed_obs = self.cal_waittime[H_K]
-                self.label_time_left.setText(self.elapsed_obs)    
-                self.elapsed_obs_timer.start()
-                
-        
-        elif param[0] == CMD_STOPACQUISITION:
-            if param[1] == "SVC" or param[1] == "all":
-                self.prog_timer[SVC].stop()     
-                
-            if param[1] == "H_K" or param[1] == "all":
-                self.prog_timer[H_K].stop()
-                
-                self.acquiring[H] = True
-                self.acquiring[K] = True
+                    self.elapsed_obs = self.cal_waittime[H_K]
+                    self.label_time_left.setText(self.elapsed_obs)    
+                    self.elapsed_obs_timer.start()
+                    
             
-        self.param_InstSeq = "" 
+            elif param[0] == CMD_STOPACQUISITION:
+                if param[1] == "SVC" or param[1] == "all":
+                    self.prog_timer[SVC].stop()     
+                    
+                if param[1] == "H_K" or param[1] == "all":
+                    self.prog_timer[H_K].stop()
+                    
+                    self.acquiring[H] = True
+                    self.acquiring[K] = True
+                
+            self.param_InstSeq = "" 
+            
+        except:
+            self.log.send(self.iam, WARNING, "parsing error")
                             
                         
     def sub_data_processing(self):   
@@ -1640,159 +1656,171 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if self.param_dcs[SVC] != "":
             param = self.param_dcs[SVC].split()
             
-            if param[0] == CMD_INIT2_DONE or param[0] == CMD_INITIALIZE2_ICS:
-                self.dcss_ready = True
-                self.bt_single.setEnabled(True)
-                self.bt_slow_guide.setEnabled(True)
+            try:
+                if param[0] == CMD_INIT2_DONE or param[0] == CMD_INITIALIZE2_ICS:
+                    self.dcss_ready = True
+                    self.bt_single.setEnabled(True)
+                    self.bt_slow_guide.setEnabled(True)
 
-            elif param[0] == CMD_SETFSPARAM_ICS:                
-                msg = "%s DCSS %d" % (CMD_ACQUIRERAMP_ICS, self.simulation)
-                self.publish_to_queue(msg)
+                elif param[0] == CMD_SETFSPARAM_ICS:                
+                    msg = "%s DCSS %d" % (CMD_ACQUIRERAMP_ICS, self.simulation)
+                    self.publish_to_queue(msg)
+                
+                elif param[0] == CMD_ACQUIRERAMP_ICS:        
+                    self.acquiring[SVC] = False
+                    
+                    self.NFS_load_time = ti.time()
+                            
+                    self.prog_timer[SVC].stop()
+                    self.cur_prog_step[SVC] = 100
+                    self.progressBar_svc.setValue(self.cur_prog_step[SVC])
+                    
+                    self.label_svc_state.setText("Done")
+                    self.label_svc_filename.setText(param[2]) 
+                    
+                    self.load_data(param[2])
+                    
+                    if self.svc_mode == SINGLE_MODE:
+                        self.QWidgetBtnColor(self.bt_single, "black")
+                        self.bt_single.setText("Exposure")
+                        self.enable_dcss(True)
+                                                
+                        self.bt_slow_guide.setEnabled(True)
+                    
+                    else:
+                        #calculate center
+                        dx = self.guide_x - self.cen_x
+                        dy = self.guide_y - self.cen_y
+                        dp, dq = self.calc_xy_to_pq(dx, dy)
+                        self.center_ra.append(dp)
+                        self.center_dec.append(dq)
+                        
+                        if self.svc_mode == GUIDE_MODE:
+                            self.cur_guide_cnt += 1
+                            cen_ra_mean, cen_dec_mean = 0, 0
+                            if self.cur_guide_cnt >= int(self.e_averaging_number.text()):
+                                cen_ra_mean = np.mean(self.center_ra)
+                                cen_dec_mean = np.mean(self.center_dec)
+                                #tmp, no show in plot!!!               
+                                
+                                # send to TCS (offset)
+                                self.move_to_telescope(cen_ra_mean, cen_dec_mean)
+                                
+                                self.cur_guide_cnt = 0 
+                                self.center_ra = []
+                                self.center_dec = []
+                                
+                        self.cur_save_cnt += 1
+                        if self.chk_auto_save.isChecked() and self.cur_save_cnt >= int(self.e_saving_number.text()):
+                            ori_file = param[2].split('/')
+                            foldername = ti.strftime("%02Y%02m%02d/", ti.localtime())
+                            self.createFolder(self.svc_path + foldername)
+                            # if someone want to rename the svc file name, it can be changed...
+                            # save fname
+                            
+                            path = self.svc_path + foldername
+                            dir_names = []
+                            for names in os.listdir(path):
+                                if names.find(".fits") >= 0:
+                                    dir_names.append(names)
+                            if len(dir_names) > 0:
+                                next_idx = len(dir_names) + 1
+                            else:
+                                next_idx = 1
             
-            elif param[0] == CMD_ACQUIRERAMP_ICS:        
-                self.acquiring[SVC] = False
-                
-                self.NFS_load_time = ti.time()
-                           
-                self.prog_timer[SVC].stop()
-                self.cur_prog_step[SVC] = 100
-                self.progressBar_svc.setValue(self.cur_prog_step[SVC])
-                
-                self.label_svc_state.setText("Done")
-                self.label_svc_filename.setText(param[2]) 
-                
-                self.load_data(param[2])
-                
-                if self.svc_mode == SINGLE_MODE:
+                            tmp = ori_file[0].split('_')
+                            newfile = "%s%sO_%s_%s_%d.fits" % (self.svc_path, foldername, tmp[0], tmp[1], next_idx)
+                            copyfile(self.fitsfullpath, newfile)
+                                            
+                            self.cur_save_cnt = 0                          
+                            
+                        if self.stop_clicked:
+                            self.stop_clicked = False
+                            
+                            self.cur_save_cnt = 0
+                            
+                            if self.svc_mode == CONT_MODE:
+                                self.QWidgetBtnColor(self.bt_single, "black")
+                            elif self.svc_mode == GUIDE_MODE:
+                                self.QWidgetBtnColor(self.bt_slow_guide, "black")
+                            
+                            self.set_continue_mode()
+                            
+                            self.enable_dcss(True)
+                            
+                            self.bt_single.setEnabled(True)
+                            self.bt_slow_guide.setEnabled(True)
+                            
+                            self.param_dcs[SVC] = ""
+                            return      
+                                        
+                        self.set_fs_param()                
+                                        
+                        
+                elif param[0] == CMD_STOPACQUISITION:   # for single mode                
+                    self.label_svc_state.setText("Idle")
                     self.QWidgetBtnColor(self.bt_single, "black")
                     self.bt_single.setText("Exposure")
                     self.enable_dcss(True)
-                                            
-                    self.bt_slow_guide.setEnabled(True)
-                
-                else:
-                    #calculate center
-                    dx = self.guide_x - self.cen_x
-                    dy = self.guide_y - self.cen_y
-                    dp, dq = self.calc_xy_to_pq(dx, dy)
-                    self.center_ra.append(dp)
-                    self.center_dec.append(dq)
                     
-                    if self.svc_mode == GUIDE_MODE:
-                        self.cur_guide_cnt += 1
-                        cen_ra_mean, cen_dec_mean = 0, 0
-                        if self.cur_guide_cnt >= int(self.e_averaging_number.text()):
-                            cen_ra_mean = np.mean(self.center_ra)
-                            cen_dec_mean = np.mean(self.center_dec)
-                            #tmp, no show in plot!!!               
-                            
-                            # send to TCS (offset)
-                            self.move_to_telescope(cen_ra_mean, cen_dec_mean)
-                            
-                            self.cur_guide_cnt = 0 
-                            self.center_ra = []
-                            self.center_dec = []
-                            
-                    self.cur_save_cnt += 1
-                    if self.chk_auto_save.isChecked() and self.cur_save_cnt >= int(self.e_saving_number.text()):
-                        ori_file = param[2].split('/')
-                        foldername = ti.strftime("%02Y%02m%02d/", ti.localtime())
-                        self.createFolder(self.svc_path + foldername)
-                        # if someone want to rename the svc file name, it can be changed...
-                        # save fname
-                        
-                        path = self.svc_path + foldername
-                        dir_names = []
-                        for names in os.listdir(path):
-                            if names.find(".fits") >= 0:
-                                dir_names.append(names)
-                        if len(dir_names) > 0:
-                            next_idx = len(dir_names) + 1
-                        else:
-                            next_idx = 1
-        
-                        tmp = ori_file[0].split('_')
-                        newfile = "%s%sO_%s_%s_%d.fits" % (self.svc_path, foldername, tmp[0], tmp[1], next_idx)
-                        copyfile(self.fitsfullpath, newfile)
-                                        
-                        self.cur_save_cnt = 0                          
-                        
-                    if self.stop_clicked:
-                        self.stop_clicked = False
-                        
-                        self.cur_save_cnt = 0
-                        
-                        if self.svc_mode == CONT_MODE:
-                            self.QWidgetBtnColor(self.bt_single, "black")
-                        elif self.svc_mode == GUIDE_MODE:
-                            self.QWidgetBtnColor(self.bt_slow_guide, "black")
-                        
-                        self.set_continue_mode()
-                        
-                        self.enable_dcss(True)
-                        
-                        self.bt_single.setEnabled(True)
-                        self.bt_slow_guide.setEnabled(True)
-                        
-                        self.param_dcs[SVC] = ""
-                        return      
-                                     
-                    self.set_fs_param()                
-                                    
-                    
-            elif param[0] == CMD_STOPACQUISITION:   # for single mode                
-                self.label_svc_state.setText("Idle")
-                self.QWidgetBtnColor(self.bt_single, "black")
-                self.bt_single.setText("Exposure")
-                self.enable_dcss(True)
+                self.param_dcs[SVC] = ""
                 
-            self.param_dcs[SVC] = ""
+            except:
+                self.log.send(self.iam, WARNING, "parsing error")
         
         #------------------------------------
         # H    
         if self.param_dcs[H] != "":
             param = self.param_dcs[H].split()
             
-            if param[0] == CMD_ACQUIRERAMP_ICS:
-                self.acquiring[H] = False
-                if not self.acquiring[H] and not self.acquiring[K]:
-                    self.prog_timer[H_K].stop()
-                    self.elapsed_obs_timer.stop()
-                    
-                    self.cur_prog_step[H_K] = 100
-                    self.progressBar_obs.setValue(self.cur_prog_step[H_K])
+            try:
+                if param[0] == CMD_ACQUIRERAMP_ICS:
+                    self.acquiring[H] = False
+                    if not self.acquiring[H] and not self.acquiring[K]:
+                        self.prog_timer[H_K].stop()
+                        self.elapsed_obs_timer.stop()
+                        
+                        self.cur_prog_step[H_K] = 100
+                        self.progressBar_obs.setValue(self.cur_prog_step[H_K])
 
-                    self.label_obs_state.setText("Done")
-                    
-            elif param[0] == CMD_STOPACQUISITION:
-                self.acquiring[H] = False
-                if not self.acquiring[H] and not self.acquiring[K]:
-                    self.label_obs_state.setText("Idle")
-                    
-            self.param_dcs[H] = ""
+                        self.label_obs_state.setText("Done")
+                        
+                elif param[0] == CMD_STOPACQUISITION:
+                    self.acquiring[H] = False
+                    if not self.acquiring[H] and not self.acquiring[K]:
+                        self.label_obs_state.setText("Idle")
+                        
+                self.param_dcs[H] = ""
+                
+            except:
+                self.log.send(self.iam, WARNING, "parsing error")
             
         #------------------------------------
         # K    
         if self.param_dcs[K] != "":
             param = self.param_dcs[K].split()
             
-            if param[0] == CMD_ACQUIRERAMP_ICS:
-                self.acquiring[K] = False
-                if not self.acquiring[H] and not self.acquiring[K]:
-                    self.prog_timer[H_K].stop()
-                    self.elapsed_obs_timer.stop()
-                    
-                    self.cur_prog_step[H_K] = 100
-                    self.progressBar_obs.setValue(self.cur_prog_step[H_K])
+            try:
+                if param[0] == CMD_ACQUIRERAMP_ICS:
+                    self.acquiring[K] = False
+                    if not self.acquiring[H] and not self.acquiring[K]:
+                        self.prog_timer[H_K].stop()
+                        self.elapsed_obs_timer.stop()
+                        
+                        self.cur_prog_step[H_K] = 100
+                        self.progressBar_obs.setValue(self.cur_prog_step[H_K])
 
-                    self.label_obs_state.setText("Done")
-                    
-            elif param[0] == CMD_STOPACQUISITION:
-                self.acquiring[K] = False
-                if not self.acquiring[H] and not self.acquiring[K]:
-                    self.label_obs_state.setText("Idle")
-                    
-            self.param_dcs[K] = ""
+                        self.label_obs_state.setText("Done")
+                        
+                elif param[0] == CMD_STOPACQUISITION:
+                    self.acquiring[K] = False
+                    if not self.acquiring[H] and not self.acquiring[K]:
+                        self.label_obs_state.setText("Idle")
+                        
+                self.param_dcs[K] = ""
+            
+            except:
+                self.log.send(self.iam, WARNING, "parsing error")
             
 
     #-----------------------------------------------------------------------------------
