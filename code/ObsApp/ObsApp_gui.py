@@ -772,7 +772,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         arrow_size = 100
         text_ratio = 2
         
-        PA = pa_tel
+        PA = pa_tel + SLIT_ANG
         s_color = "limegreen"
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
@@ -783,7 +783,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         imageax.text(cx+u*text_ratio-10, cy+v*text_ratio-30, "E", color=s_color, size=10)
         
         cx = SVC_FRAME_X-self.svc_cut_x*2-100
-        PA = 0
+        PA = PQ_ROT
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
         imageax.text(cx+u*text_ratio-60, cy+v*text_ratio*0.8, "+p", color=s_color, size=10)
@@ -1135,10 +1135,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def move_to_telescope(self, dp, dq):
         msg = "%s %.3f %.3f" % (OBSAPP_CAL_OFFSET, dp, dq)
         self.publish_to_queue(msg) 
-        
-        
+
+
+    # unit pixel -> arcsec
     def calc_xy_to_pq(self, para1, para2, opposite=False):    # x-y => p-q       
-        PA = SLIT_ANG
+        PA = PQ_ROT
         
         if opposite:
             _p, _q = para1, para2
@@ -1150,6 +1151,17 @@ class MainWindow(Ui_Dialog, QMainWindow):
             para4 =   ( _x*np.sin(np.deg2rad(PA)) + _y*np.cos(np.deg2rad(PA)) ) * PIXELSCALE
         
         return para3, para4
+    
+
+    # unit arcsec
+    def calc_pq_to_radec(self, dp, dq):
+        PA = self.PA + SLIT_ANG
+
+        dra = - ( dp*np.cos(np.deg2rad(PA)) - dq*np.sin(np.deg2rad(PA)) )
+        ddec =   ( dp*np.sin(np.deg2rad(PA)) + dq*np.cos(np.deg2rad(PA)) )
+
+        return dra, ddec
+
     
     #--------------------------------------------------------
     # button, event
@@ -1307,8 +1319,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
            return
         
         #pixel -> arcsec
-        dp, dq = self.calc_xy_to_pq(dx, dy)    
-        self.move_to_telescope(dp, dq)
+        dp, dq = self.calc_xy_to_pq(dx, dy)   
+        dra, ddec = self.calc_pq_to_radec(dp, dq)
+        self.move_to_telescope(dra, ddec)
     
     
     def set_off_slit(self):
@@ -1675,8 +1688,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     dx = self.guide_x - self.cen_x
                     dy = self.guide_y - self.cen_y
                     dp, dq = self.calc_xy_to_pq(dx, dy)
-                    self.center_ra.append(dp)
-                    self.center_dec.append(dq)
+                    dra, ddec = self.calc_pq_to_radec(dp, dq)
+                    self.center_ra.append(dra)
+                    self.center_dec.append(ddec)
                     
                     if self.svc_mode == GUIDE_MODE:
                         self.cur_guide_cnt += 1
