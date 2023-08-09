@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on July 3, 2023
+Modified on Aug 9, 2023
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -264,7 +264,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # Slit View Camera
         self.label_svc_filename.setText("---")
         self.label_svc_state.setText("---")
-        self.e_svc_fowler_number.setText("16")
+        self.e_svc_fowler_number.setText("1")
         self.e_svc_exp_time.setText("1.63")
         
         self.bt_single.setText("Exposure")
@@ -390,15 +390,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
     def _init_mask(self):
         # make the mask from mask.template
-        mask = fits.open(WORKING_DIR + "ObsApp/slitmaskv4.fits")[0].data     
-        mask_for_compress = fits.open(WORKING_DIR + "ObsApp/slitmaskv4_for_save_gemini2018a.fits")[0].data
-        mask_new = ~ (fits.open(WORKING_DIR + "ObsApp/slitmask_new_ver3_bin.fits")[0].data > 0)
-
+        mask = fits.open(WORKING_DIR + "ObsApp_pack/code/ObsApp/slitmaskv0_igrins2.fits")[0].data     
         self.mask = self.slit_image_flip_func(mask)
-        #self.mask_for_compress = self.slit_image_flip_func(mask_for_compress)
-        #self.mask_new = self.slit_image_flip_func(mask_new) 
-        
-        
+         
     #--------------------------------------------------------
     # ObsApp publisher
     def connect_to_server_ObsApp_ex(self):
@@ -594,8 +588,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         if first:
             msg = "%s DCSS %d %.3f 1 %d 1 %.3f 1" % (CMD_SETFSPARAM_ICS, self.simulation, _exptime, _FS_number, _fowlerTime)
+            print(_exptime, _FS_number)
         else:
-            msg = "%s DCSS %d" % (CMD_ACQUIRERAMP_ICS, self.simulation)
+            msg = "%s DCSS %d 0" % (CMD_ACQUIRERAMP_ICS, self.simulation)
         self.publish_to_queue(msg)
 
         
@@ -614,10 +609,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.label_svc_state.setText("Transfer")
         
         try:
-            if self.simulation:
-                self.fitsfullpath = "%sObsApp/SDCS_demo.fits" % WORKING_DIR
-            else:
-                self.fitsfullpath = "%sObsApp/dcss/Fowler/%s" % (WORKING_DIR, folder_name)
+            #if self.simulation:
+            #    self.fitsfullpath = "%sObsApp/SDCS_demo.fits" % WORKING_DIR
+            #else:
+            self.fitsfullpath = "%sObsApp/dcss/Fowler/%s" % (WORKING_DIR, folder_name)
 
             frm = fits.open(self.fitsfullpath)
             msg = "%.5f" % (ti.time() - self.NFS_load_time)
@@ -1153,6 +1148,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         return para3, para4
     
 
+    '''
     # unit arcsec
     def calc_pq_to_radec(self, dp, dq):
         PA = self.PA + SLIT_ANG
@@ -1161,6 +1157,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         ddec =   ( dp*np.sin(np.deg2rad(PA)) + dq*np.cos(np.deg2rad(PA)) )
 
         return dra, ddec
+    '''
 
     
     #--------------------------------------------------------
@@ -1320,8 +1317,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         #pixel -> arcsec
         dp, dq = self.calc_xy_to_pq(dx, dy)   
-        dra, ddec = self.calc_pq_to_radec(dp, dq)
-        self.move_to_telescope(dra, ddec)
+        #dra, ddec = self.calc_pq_to_radec(dp, dq)
+        self.move_to_telescope(dp, dq)
     
     
     def set_off_slit(self):
@@ -1366,6 +1363,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.svc_mode = GUIDE_MODE
         
         if self.bt_slow_guide.text() == "Slow Guide":
+            
+            self.cur_guide_cnt = 0 
+            self.center_ra = []
+            self.center_dec = []
+                            
             self.bt_slow_guide.setText("Slow Guide Stop")
             self.stop_clicked = False
             
@@ -1653,16 +1655,27 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if self.param_dcs[SVC] != "":
             param = self.param_dcs[SVC].split()
             
-            if param[0] == CMD_INIT2_DONE or param[0] == CMD_INITIALIZE2_ICS:
+            if param[0] == CMD_INITIALIZE1:
+                if not self.simulation and int(param[2]) == 0:
+                    self.dcss_ready = False
+                    self.bt_single.setEnabled(False)
+                    self.bt_slow_guide.setEnabled(False)
+                else:
+                    self.dcss_ready = True
+                    self.bt_single.setEnabled(True)
+                    self.bt_slow_guide.setEnabled(True)
+                    
+            elif param[0] == CMD_INIT2_DONE or param[0] == CMD_INITIALIZE2_ICS:
                 self.dcss_ready = True
                 self.bt_single.setEnabled(True)
                 self.bt_slow_guide.setEnabled(True)
 
             elif param[0] == CMD_SETFSPARAM_ICS:                
-                msg = "%s DCSS %d" % (CMD_ACQUIRERAMP_ICS, self.simulation)
+                msg = "%s DCSS %d 0" % (CMD_ACQUIRERAMP_ICS, self.simulation)
                 self.publish_to_queue(msg)
             
-            elif param[0] == CMD_ACQUIRERAMP_ICS:        
+            elif param[0] == CMD_ACQUIRERAMP_ICS:  
+                print(param[1])      
                 self.acquiring[SVC] = False
                 
                 self.NFS_load_time = ti.time()
@@ -1672,7 +1685,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.progressBar_svc.setValue(self.cur_prog_step[SVC])
                 
                 self.label_svc_state.setText("Done")
-                self.label_svc_filename.setText(param[2]) 
+                self.label_svc_filename.setText(param[2].split('/')[1]) 
                 
                 self.load_data(param[2])
                 
@@ -1688,13 +1701,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     dx = self.guide_x - self.cen_x
                     dy = self.guide_y - self.cen_y
                     dp, dq = self.calc_xy_to_pq(dx, dy)
-                    dra, ddec = self.calc_pq_to_radec(dp, dq)
-                    self.center_ra.append(dra)
-                    self.center_dec.append(ddec)
+                    #dra, ddec = self.calc_pq_to_radec(dp, dq)
+                    self.center_ra.append(dp)
+                    self.center_dec.append(dq)
                     
                     if self.svc_mode == GUIDE_MODE:
                         self.cur_guide_cnt += 1
-                        cen_ra_mean, cen_dec_mean = 0, 0
                         if self.cur_guide_cnt >= int(self.e_averaging_number.text()):
                             cen_ra_mean = np.mean(self.center_ra)
                             cen_dec_mean = np.mean(self.center_dec)
@@ -1725,7 +1737,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                         else:
                             next_idx = 1
         
-                        tmp = ori_file[0].split('_')
+                        tmp = ori_file[1].split('_')
                         newfile = "%s%sO_%s_%s_%d.fits" % (self.svc_path, foldername, tmp[0], tmp[1], next_idx)
                         copyfile(self.fitsfullpath, newfile)
                                         

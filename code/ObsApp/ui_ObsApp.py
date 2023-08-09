@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ObsAppdcRIvO.ui'
+## Form generated from reading UI file 'ObsAppnLDQuS.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.4.2
 ##
@@ -24,6 +24,7 @@ class Ui_Dialog(object):
     def setupUi(self, Dialog):
         if not Dialog.objectName():
             Dialog.setObjectName(u"Dialog")
+        Dialog.setWindowModality(Qt.NonModal)
         Dialog.resize(1211, 662)
         sizePolicy = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy.setHorizontalStretch(0)
@@ -629,15 +630,6 @@ class Ui_Dialog(object):
 
         self.gridLayout_5.addWidget(self.label_svc_state, 2, 3, 1, 6)
 
-        self.label_svc_filename = QLabel(self.groupBox_SlitViewCamera)
-        self.label_svc_filename.setObjectName(u"label_svc_filename")
-        sizePolicy.setHeightForWidth(self.label_svc_filename.sizePolicy().hasHeightForWidth())
-        self.label_svc_filename.setSizePolicy(sizePolicy)
-        self.label_svc_filename.setFont(font2)
-        self.label_svc_filename.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout_5.addWidget(self.label_svc_filename, 1, 3, 1, 6)
-
         self.label_g3_2 = QLabel(self.groupBox_SlitViewCamera)
         self.label_g3_2.setObjectName(u"label_g3_2")
         sizePolicy.setHeightForWidth(self.label_g3_2.sizePolicy().hasHeightForWidth())
@@ -646,15 +638,6 @@ class Ui_Dialog(object):
         self.label_g3_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.label_g3_2, 2, 0, 1, 3)
-
-        self.label_g3_1 = QLabel(self.groupBox_SlitViewCamera)
-        self.label_g3_1.setObjectName(u"label_g3_1")
-        sizePolicy.setHeightForWidth(self.label_g3_1.sizePolicy().hasHeightForWidth())
-        self.label_g3_1.setSizePolicy(sizePolicy)
-        self.label_g3_1.setFont(font1)
-        self.label_g3_1.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout_5.addWidget(self.label_g3_1, 1, 0, 1, 3)
 
         self.bt_set_guide_star = QPushButton(self.groupBox_SlitViewCamera)
         self.bt_set_guide_star.setObjectName(u"bt_set_guide_star")
@@ -689,6 +672,26 @@ class Ui_Dialog(object):
         self.e_offset.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_5.addWidget(self.e_offset, 11, 7, 1, 2)
+
+        self.label_svc_filename = QLabel(self.groupBox_SlitViewCamera)
+        self.label_svc_filename.setObjectName(u"label_svc_filename")
+        sizePolicy.setHeightForWidth(self.label_svc_filename.sizePolicy().hasHeightForWidth())
+        self.label_svc_filename.setSizePolicy(sizePolicy)
+        self.label_svc_filename.setFont(font2)
+        self.label_svc_filename.setLayoutDirection(Qt.LeftToRight)
+        self.label_svc_filename.setFrameShape(QFrame.StyledPanel)
+        self.label_svc_filename.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout_5.addWidget(self.label_svc_filename, 1, 2, 1, 7)
+
+        self.label_g3_1 = QLabel(self.groupBox_SlitViewCamera)
+        self.label_g3_1.setObjectName(u"label_g3_1")
+        sizePolicy.setHeightForWidth(self.label_g3_1.sizePolicy().hasHeightForWidth())
+        self.label_g3_1.setSizePolicy(sizePolicy)
+        self.label_g3_1.setFont(font1)
+        self.label_g3_1.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout_5.addWidget(self.label_g3_1, 1, 0, 1, 2)
 
         self.groupBox_zscale = QGroupBox(Dialog)
         self.groupBox_zscale.setObjectName(u"groupBox_zscale")
@@ -926,12 +929,12 @@ class Ui_Dialog(object):
         self.label_g3_3.setText(QCoreApplication.translate("Dialog", u"Fowler Sampling:", None))
         self.bt_single.setText(QCoreApplication.translate("Dialog", u"Exposure", None))
         self.label_svc_state.setText(QCoreApplication.translate("Dialog", u"---", None))
-        self.label_svc_filename.setText(QCoreApplication.translate("Dialog", u"S20221020S0001", None))
         self.label_g3_2.setText(QCoreApplication.translate("Dialog", u"Observing State:", None))
-        self.label_g3_1.setText(QCoreApplication.translate("Dialog", u"File Name:", None))
         self.bt_set_guide_star.setText(QCoreApplication.translate("Dialog", u"Set Guide star", None))
         self.chk_off_slit.setText(QCoreApplication.translate("Dialog", u"Off-slit", None))
         self.label_g3_6.setText(QCoreApplication.translate("Dialog", u"Offset(\") =", None))
+        self.label_svc_filename.setText(QCoreApplication.translate("Dialog", u"S20221020S0001", None))
+        self.label_g3_1.setText(QCoreApplication.translate("Dialog", u"File Name:", None))
         self.groupBox_zscale.setTitle("")
         self.radio_zscale.setText(QCoreApplication.translate("Dialog", u"zscale", None))
         self.radio_mscale.setText(QCoreApplication.translate("Dialog", u"manual", None))
