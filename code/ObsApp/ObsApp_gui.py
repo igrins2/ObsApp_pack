@@ -763,7 +763,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         imageax.set_xlim(0, SVC_FRAME_X-self.svc_cut_x*2)
         imageax.set_xlim(0, SVC_FRAME_Y-self.svc_cut_y*2)
         
-        cx, cy = 300, SVC_FRAME_Y-self.svc_cut_y*2-300
+        cx, cy = 250, SVC_FRAME_Y-self.svc_cut_y*2-200
         arrow_size = 100
         text_ratio = 2
         
@@ -777,7 +777,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
         imageax.text(cx+u*text_ratio-10, cy+v*text_ratio-30, "E", color=s_color, size=10)
         
-        cx = SVC_FRAME_X-self.svc_cut_x*2-100
+        cx = SVC_FRAME_X-self.svc_cut_x*2-250
         PA = PQ_ROT
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
@@ -1904,7 +1904,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
 if __name__ == "__main__":
     
     app = QApplication()
-    sys.argv.append("True")
+    #sys.argv.append("True")
     ObsApp = MainWindow(sys.argv[1])
     ObsApp.show()
         
