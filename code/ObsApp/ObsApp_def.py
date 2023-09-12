@@ -108,7 +108,9 @@ HK_REQ_GETVALUE = "GetValue"  #temp_ctrl, tm, vm
 
 INSTSEQ_SHOW_TCS_INFO = "ShowTCSInfo"
 OBSAPP_CAL_OFFSET = "CalOffset"
-OBSAPP_BUSY = "ObsAppBusy"
+OBSAPP_SAVE_SVC = "SaveSVC"
+
+CMD_BUSY = "Busy"
 
 CMD_INITIALIZE1 = "Initialize1"
 CMD_INIT2_DONE = "Initialize2_Done" # to DCS
@@ -118,4 +120,4 @@ CMD_ACQUIRERAMP_ICS = "ACQUIRERAMP_ics"
 CMD_STOPACQUISITION = "STOPACQUISITION"
 
 #CMD_COMPLETED = "Completed"
-EXIT = "Exit"
+#EXIT = "Exit"

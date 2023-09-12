@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on Aug 9, 2023
+Modified on Aug 25, 2023
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -175,8 +175,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.consumer_dcs = [None for _ in range(DC_CNT)]
         self.consumer_sub = [None for _ in range(SUB_CNT)]
         
-        self.param_InstSeq = ""
-        self.param_dcs = ["" for _ in range(DC_CNT)]
+        self.param_InstSeq = None
+        self.param_dcs = [None for _ in range(DC_CNT)]
         
         _svc_x, _svc_y = float(SLIT_CEN[0]), float(SLIT_CEN[1])
         self.guide_x, self.guide_y = _svc_x, _svc_y
@@ -199,6 +199,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.dcss_ready = False
         self.acquiring = [False for _ in range(DC_CNT)]
+        self.dcss_setparam = False
         
         self.cur_save_cnt = 0
         self.cur_guide_cnt = 0
@@ -217,7 +218,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.sky_data = None
         self.sky_exp_time = 0.
         
-        self.fitsfullpath = ""
+        self.fitsfullpath = None
+        self.file_name = None
            
         self._init_mask()
         
@@ -229,7 +231,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         # elapsed
         self.elapsed_obs_timer = None
-        self.elapsed_obs = None
+        self.elapsed_obs = 0.0
         self.measure_T = 0
         
         # from InstSeq, Position angle
@@ -331,9 +333,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
         for th in threading.enumerate():
             self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, th.name + " exit."))
-        
-        self.publish_to_queue(EXIT)
-        
+                
         if self.producer != None:
             self.producer.__del__()
         
@@ -406,7 +406,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             return
         
         msg = "%s %s %d" % (cmd, "DCSS", self.simulation)
-        if param != "":
+        if param != None:
             msg += " " + param
         self.producer.send_message(self.ObsApp_q, msg)
         
@@ -527,6 +527,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         msg = "<- [SVC] %s" % cmd
         self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
         self.param_dcs[SVC] = cmd  
+        print(self.param_dcs[SVC])
                 
         
     def callback_h(self, ch, method, properties, body):
@@ -567,6 +568,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if not self.dcss_ready:
             return
 
+        self.acquiring[SVC] = True
+        
         self.enable_dcss(False)  
 
         #setparam
@@ -587,6 +590,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.prog_timer[SVC].start()   
         
         if first:
+            self.dcss_setparam = True
             msg = "%s DCSS %d %.3f 1 %d 1 %.3f 1" % (CMD_SETFSPARAM_ICS, self.simulation, _exptime, _FS_number, _fowlerTime)
             print(_exptime, _FS_number)
         else:
@@ -1057,12 +1061,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         if float(self.temp_lower_normal[label]) <= float(value) <= float(self.temp_upper_normal[label]):
             self.QWidgetLabelColor(widget, "green")
-            msgbar = ""
+            msgbar = None
             
             self.det_sts[label] = "good"
         
         else:
-            color = ""
+            color = None
             if value == DEFAULT_VALUE:
                 color = "dimgray"
                 msgbar = "%s is ERROR!!!" % name        
@@ -1294,7 +1298,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         
     def manual_filesave(self):        
-        if self.fitsfullpath == "":
+        if self.fitsfullpath == None:
             return
        
         foldername = ti.strftime("%02Y%02m%02d/", ti.localtime()) 
@@ -1305,7 +1309,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
             newfile += ".fits"
         copyfile(self.fitsfullpath, newfile)
         
-        self.fitsfullpath = ""
+        msg = "%s %s" % (OBSAPP_SAVE_SVC, self.file_name)
+        self.publish_to_queue(msg)
+        
+        self.fitsfullpath = None
 
     
     def set_center(self):
@@ -1375,12 +1382,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.set_fs_param(True)
             
             self.bt_single.setEnabled(False)
+            self.QWidgetBtnColor(self.bt_single, "silver")
             
         else:
             self.bt_slow_guide.setText("Slow Guide") 
             self.stop_clicked = True
             
             self.bt_single.setEnabled(True)
+            self.QWidgetBtnColor(self.bt_single, "black")
             
             
     def select_raw(self):
@@ -1486,6 +1495,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def show_progressbar(self, dc_idx):
         if self.cur_prog_step[dc_idx] >= 100:
             self.prog_timer[dc_idx].stop()
+            if dc_idx == SVC:   
+                self.progressBar_svc.setValue(100)
+            else:
+                self.progressBar_obs.setValue(100)
             return
         
         self.cur_prog_step[dc_idx] += 1
@@ -1497,8 +1510,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     # for HK
     def show_elapsed(self):
-        if self.elapsed_obs <= 0:
+        if self.elapsed_obs <= 0 or self.cur_prog_step[H_K] >= 100:
             self.elapsed_obs_timer.stop()
+            self.prog_timer[H_K].stop()
+            self.label_time_left.setText("0.000 sec")
             return
         
         self.elapsed_obs -= 0.001
@@ -1545,34 +1560,22 @@ class MainWindow(Ui_Dialog, QMainWindow):
     # thread - with GUI
     # InstSeq -> DCS (ObsApp hooking)
     def InstSeq_data_processing(self):        
-        if self.param_InstSeq == "":
+        if self.param_InstSeq == None:
             return
         
         param = self.param_InstSeq.split()
             
         # PA
         if param[0] == INSTSEQ_SHOW_TCS_INFO:
-            self.label_IPA.setText(param[1])
+            self.label_IPA.setText(param[1])        
+            # current frame - A or B, A and B coordination
             
-        
-        # current frame - A or B, A and B coordination
-            
-                    
         elif param[0] == CMD_SETFSPARAM_ICS:            
-            if param[1] == "SVC" or param[1] == "all":
-                
-                if self.acquiring[SVC]:
-                    self.publish_to_queue(OBSAPP_BUSY)
-                    # continuous, single, or guiding mode -> stop!!!
-                    self.bt_single.click()
-                    return
-                    
+            if param[1] == "DCSS" or param[1] == "all":                    
                 self.e_svc_exp_time.setText(param[3])
                 self.e_svc_fowler_number.setText(param[5])
                 _fowlerTime = float(param[7])
                 self.cal_waittime[SVC] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[5])))
-                
-                self.acquiring[SVC] = True
             
             if param[1] == "H_K" or param[1] == "all":
                 self.label_exp_time.setText(param[3])
@@ -1580,11 +1583,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 _fowlerTime = float(param[7])
                 self.cal_waittime[H_K] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[5])))
                 
-                self.acquiring[H] = True
-                self.acquiring[K] = True
-                
         elif param[0] == CMD_ACQUIRERAMP_ICS:            
-            if param[1] == "SVC" or param[1] == "all":
+            if param[1] == "DCSS" or param[1] == "all":
                 self.enable_dcss(False)
                 self.label_svc_state.setText("Running")
                 
@@ -1596,9 +1596,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.cur_prog_step[SVC] = 0
                 self.progressBar_obs.setValue(self.cur_prog_step[SVC])    
                 self.prog_timer[SVC].start()   
-                
-                self.acquiring[SVC] = True
-                            
+                                            
             if param[1] == "H_K" or param[1] == "all":
                 self.label_obs_state.setText("Running")
                 
@@ -1617,21 +1615,26 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.elapsed_obs_timer.timeout.connect(self.show_elapsed)
 
                 self.elapsed_obs = self.cal_waittime[H_K]
-                self.label_time_left.setText(self.elapsed_obs)    
+                msg = "%.3f sec" % self.elapsed_obs
+                self.label_time_left.setText(msg)    
                 self.elapsed_obs_timer.start()
+                
+                self.acquiring[H] = True
+                self.acquiring[K] = True
                 
         
         elif param[0] == CMD_STOPACQUISITION:
             if param[1] == "SVC" or param[1] == "all":
-                self.prog_timer[SVC].stop()     
-                
+                self.cur_prog_step[SVC] = 100   
+                                
             if param[1] == "H_K" or param[1] == "all":
-                self.prog_timer[H_K].stop()
+                self.cur_prog_step[H_K] = 100
+                #self.elapsed_obs_timer.stop()
                 
-                self.acquiring[H] = True
-                self.acquiring[K] = True
+                self.acquiring[H] = False
+                self.acquiring[K] = False
             
-        self.param_InstSeq = "" 
+        self.param_InstSeq = None 
                             
                         
     def sub_data_processing(self):   
@@ -1652,37 +1655,77 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def dcs_data_processing(self):   
         #------------------------------------
         # svc             
-        if self.param_dcs[SVC] != "":
+        if self.param_dcs[SVC] != None:
             param = self.param_dcs[SVC].split()
             
+            if param[0] == CMD_BUSY:
+                if not self.simulation and not self.acquiring[SVC]:
+                #if not self.acquiring[SVC]:
+                    self.bt_single.setEnabled(False)
+                    self.bt_slow_guide.setEnabled(False)
+                    self.QWidgetBtnColor(self.bt_single, "silver")
+                
             if param[0] == CMD_INITIALIZE1:
                 if not self.simulation and int(param[2]) == 0:
                     self.dcss_ready = False
                     self.bt_single.setEnabled(False)
                     self.bt_slow_guide.setEnabled(False)
+                    self.QWidgetBtnColor(self.bt_single, "silver")
                 else:
                     self.dcss_ready = True
                     self.bt_single.setEnabled(True)
                     self.bt_slow_guide.setEnabled(True)
+                    self.QWidgetBtnColor(self.bt_single, "black")
                     
             elif param[0] == CMD_INIT2_DONE or param[0] == CMD_INITIALIZE2_ICS:
                 self.dcss_ready = True
                 self.bt_single.setEnabled(True)
                 self.bt_slow_guide.setEnabled(True)
+                self.QWidgetBtnColor(self.bt_single, "black")
 
-            elif param[0] == CMD_SETFSPARAM_ICS:                
+            elif param[0] == CMD_SETFSPARAM_ICS: 
+                if not self.acquiring[SVC]:
+                    self.param_dcs[SVC] = None
+                    return
+                
+                if not self.dcss_setparam:  
+                    self.param_dcs[SVC] = None
+                    return
+                self.dcss_setparam = False
                 msg = "%s DCSS %d 0" % (CMD_ACQUIRERAMP_ICS, self.simulation)
                 self.publish_to_queue(msg)
             
             elif param[0] == CMD_ACQUIRERAMP_ICS:  
-                print(param[1])      
+                if not self.acquiring[SVC]:
+                    self.bt_single.setEnabled(True)
+                    self.bt_slow_guide.setEnabled(True)
+                    self.QWidgetBtnColor(self.bt_single, "black")
+                   
+                if len(param) == 1: 
+                    self.param_dcs[SVC] = None
+                    return
+                
+                self.file_name = param[2]
+                    
+                if self.simulation and param[2].find("K") > 0:                   
+                    self.acquiring[H] = False
+                    self.acquiring[K] = False
+                    
+                    self.cur_prog_step[H_K] = 100
+                    self.progressBar_obs.setValue(self.cur_prog_step[H_K])
+
+                    self.label_obs_state.setText("Done")
+                
+                    self.param_dcs[SVC] = None
+                    return 
+                    
                 self.acquiring[SVC] = False
                 
                 self.NFS_load_time = ti.time()
                            
-                self.prog_timer[SVC].stop()
+                #self.prog_timer[SVC].stop()
                 self.cur_prog_step[SVC] = 100
-                self.progressBar_svc.setValue(self.cur_prog_step[SVC])
+                #self.progressBar_svc.setValue(self.cur_prog_step[SVC])
                 
                 self.label_svc_state.setText("Done")
                 self.label_svc_filename.setText(param[2].split('/')[1]) 
@@ -1693,8 +1736,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     self.QWidgetBtnColor(self.bt_single, "black")
                     self.bt_single.setText("Exposure")
                     self.enable_dcss(True)
-                                            
+                    
+                    self.bt_single.setEnabled(True)                        
                     self.bt_slow_guide.setEnabled(True)
+                    
+                    self.QWidgetBtnColor(self.bt_single, "black")
                 
                 else:
                     #calculate center
@@ -1708,6 +1754,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     if self.svc_mode == GUIDE_MODE:
                         self.cur_guide_cnt += 1
                         if self.cur_guide_cnt >= int(self.e_averaging_number.text()):
+                            
                             cen_ra_mean = np.mean(self.center_ra)
                             cen_dec_mean = np.mean(self.center_dec)
                             #tmp, no show in plot!!!               
@@ -1715,6 +1762,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             # send to TCS (offset)
                             self.move_to_telescope(cen_ra_mean, cen_dec_mean)
                             
+                            msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
+                            self.publish_to_queue(msg)
+                        
                             self.cur_guide_cnt = 0 
                             self.center_ra = []
                             self.center_dec = []
@@ -1724,8 +1774,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
                         ori_file = param[2].split('/')
                         foldername = ti.strftime("%02Y%02m%02d/", ti.localtime())
                         self.createFolder(self.svc_path + foldername)
-                        # if someone want to rename the svc file name, it can be changed...
-                        # save fname
                         
                         path = self.svc_path + foldername
                         dir_names = []
@@ -1741,6 +1789,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
                         newfile = "%s%sO_%s_%s_%d.fits" % (self.svc_path, foldername, tmp[0], tmp[1], next_idx)
                         copyfile(self.fitsfullpath, newfile)
                                         
+                        msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
+                        self.publish_to_queue(msg)
+                        
                         self.cur_save_cnt = 0                          
                         
                     if self.stop_clicked:
@@ -1759,31 +1810,37 @@ class MainWindow(Ui_Dialog, QMainWindow):
                         
                         self.bt_single.setEnabled(True)
                         self.bt_slow_guide.setEnabled(True)
+                        self.QWidgetBtnColor(self.bt_single, "black")
                         
-                        self.param_dcs[SVC] = ""
+                        self.param_dcs[SVC] = None
                         return      
                                      
                     self.set_fs_param()                
                                     
                     
-            elif param[0] == CMD_STOPACQUISITION:   # for single mode                
+            elif param[0] == CMD_STOPACQUISITION:  
+                self.bt_single.setEnabled(True)
+                self.bt_slow_guide.setEnabled(True)
+                        
                 self.label_svc_state.setText("Idle")
                 self.QWidgetBtnColor(self.bt_single, "black")
                 self.bt_single.setText("Exposure")
                 self.enable_dcss(True)
                 
-            self.param_dcs[SVC] = ""
+                self.acquiring[SVC] = False
+                
+            self.param_dcs[SVC] = None
         
         #------------------------------------
         # H    
-        if self.param_dcs[H] != "":
+        if self.param_dcs[H] != None:
             param = self.param_dcs[H].split()
             
             if param[0] == CMD_ACQUIRERAMP_ICS:
                 self.acquiring[H] = False
                 if not self.acquiring[H] and not self.acquiring[K]:
-                    self.prog_timer[H_K].stop()
-                    self.elapsed_obs_timer.stop()
+                    #self.prog_timer[H_K].stop()
+                    #self.elapsed_obs_timer.stop()
                     
                     self.cur_prog_step[H_K] = 100
                     self.progressBar_obs.setValue(self.cur_prog_step[H_K])
@@ -1795,18 +1852,18 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 if not self.acquiring[H] and not self.acquiring[K]:
                     self.label_obs_state.setText("Idle")
                     
-            self.param_dcs[H] = ""
+            self.param_dcs[H] = None
             
         #------------------------------------
         # K    
-        if self.param_dcs[K] != "":
+        if self.param_dcs[K] != None:
             param = self.param_dcs[K].split()
             
             if param[0] == CMD_ACQUIRERAMP_ICS:
                 self.acquiring[K] = False
                 if not self.acquiring[H] and not self.acquiring[K]:
-                    self.prog_timer[H_K].stop()
-                    self.elapsed_obs_timer.stop()
+                    #self.prog_timer[H_K].stop()
+                    #self.elapsed_obs_timer.stop()
                     
                     self.cur_prog_step[H_K] = 100
                     self.progressBar_obs.setValue(self.cur_prog_step[H_K])
@@ -1818,7 +1875,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 if not self.acquiring[H] and not self.acquiring[K]:
                     self.label_obs_state.setText("Idle")
                     
-            self.param_dcs[K] = ""
+            self.param_dcs[K] = None
             
 
     #-----------------------------------------------------------------------------------
@@ -1837,7 +1894,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         #nodding_mode = self._nodding_mode
 
         #if cur_pos not in "AB" or (cur_pos == "B" and nodding_mode != 0):
-        if self.cur_frame == "" or self.svc_mode != GUIDE_MODE or self.chk_off_slit.isChecked():
+        if self.cur_frame == None or self.svc_mode != GUIDE_MODE or self.chk_off_slit.isChecked():
             self._sw_offset_finder.reset_image()
             return
 
@@ -1904,7 +1961,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
 if __name__ == "__main__":
     
     app = QApplication()
-    #sys.argv.append("True")
+    sys.argv.append("True")
     ObsApp = MainWindow(sys.argv[1])
     ObsApp.show()
         
