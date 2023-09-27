@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on Aug 25, 2023
+Modified on Sep 25, 2023
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -1131,8 +1131,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.prev_widget_rect[init_idx] = init_rect
         
         
-    def move_to_telescope(self, dp, dq):
-        msg = "%s %.3f %.3f" % (OBSAPP_CAL_OFFSET, dp, dq)
+    def move_to_telescope(self, dp, dq, mode=ACQ_MODE):
+        msg = "%s %.3f %.3f %d" % (OBSAPP_CAL_OFFSET, dp, dq, mode)
         self.publish_to_queue(msg) 
 
 
@@ -1760,37 +1760,40 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             #tmp, no show in plot!!!               
                             
                             # send to TCS (offset)
-                            self.move_to_telescope(cen_ra_mean, cen_dec_mean)
+                            self.move_to_telescope(cen_ra_mean, cen_dec_mean, SLOWGUIDING_MODE)
                             
-                            msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
-                            self.publish_to_queue(msg)
+                            #msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
+                            #self.publish_to_queue(msg)
                         
                             self.cur_guide_cnt = 0 
                             self.center_ra = []
                             self.center_dec = []
-                            
-                    self.cur_save_cnt += 1
-                    if self.chk_auto_save.isChecked() and self.cur_save_cnt >= int(self.e_saving_number.text()):
-                        ori_file = param[2].split('/')
-                        foldername = ti.strftime("%02Y%02m%02d/", ti.localtime())
-                        self.createFolder(self.svc_path + foldername)
-                        
-                        path = self.svc_path + foldername
-                        dir_names = []
-                        for names in os.listdir(path):
-                            if names.find(".fits") >= 0:
-                                dir_names.append(names)
-                        if len(dir_names) > 0:
-                            next_idx = len(dir_names) + 1
-                        else:
-                            next_idx = 1
-        
-                        tmp = ori_file[1].split('_')
-                        newfile = "%s%sO_%s_%s_%d.fits" % (self.svc_path, foldername, tmp[0], tmp[1], next_idx)
-                        copyfile(self.fitsfullpath, newfile)
-                                        
+                    
+                    if self.cur_save_cnt == 0:
                         msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
                         self.publish_to_queue(msg)
+                    
+                    self.cur_save_cnt += 1
+                    
+                    if self.cur_save_cnt >= int(self.e_saving_number.text()):
+                        if self.chk_auto_save.isChecked():
+                            ori_file = param[2].split('/')
+                            foldername = ti.strftime("%02Y%02m%02d/", ti.localtime())
+                            self.createFolder(self.svc_path + foldername)
+                            
+                            path = self.svc_path + foldername
+                            dir_names = []
+                            for names in os.listdir(path):
+                                if names.find(".fits") >= 0:
+                                    dir_names.append(names)
+                            if len(dir_names) > 0:
+                                next_idx = len(dir_names) + 1
+                            else:
+                                next_idx = 1
+            
+                            tmp = ori_file[1].split('_')
+                            newfile = "%s%sO_%s_%s_%d.fits" % (self.svc_path, foldername, tmp[0], tmp[1], next_idx)
+                            copyfile(self.fitsfullpath, newfile)
                         
                         self.cur_save_cnt = 0                          
                         
