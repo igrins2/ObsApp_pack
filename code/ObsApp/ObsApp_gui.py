@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on Sep 25, 2023
+Modified on Sep 29, 2023
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -175,6 +175,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.consumer_dcs = [None for _ in range(DC_CNT)]
         self.consumer_sub = [None for _ in range(SUB_CNT)]
         
+        self.consumer_virtual_tcs = None
+        
         self.param_InstSeq = None
         self.param_dcs = [None for _ in range(DC_CNT)]
         
@@ -295,6 +297,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.connect_to_server_InstSeq_q()  #InstSeq
         self.connect_to_server_sub_q()  #TC2, TC3, VM
         self.connect_to_server_dcs_q()  #DCSS, DCSH, DCSK
+        
+        self.connect_to_server_virtual_tcs_q()
                         
         self.InstSeq_timer = QTimer(self)
         self.InstSeq_timer.setInterval(0.1)
@@ -443,6 +447,30 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         
     #--------------------------------------------------------
+    # Vitual TCS queue
+    def connect_to_server_virtual_tcs_q(self):
+        self.consumer_virtual_tcs = MsgMiddleware(self.iam, self.ics_ip_addr, self.ics_id, self.ics_pwd, "MovePosition.ex")      
+        self.consumer_virtual_tcs.connect_to_server()
+        self.consumer_virtual_tcs.define_consumer("MovePosition.q", self.callback_virtual_tcs)       
+        
+        th = threading.Thread(target=self.consumer_virtual_tcs.start_consumer)
+        th.daemon = True
+        th.start()
+    
+    
+    def callback_virtual_tcs(self, ch, method, properties, body):
+        cmd = body.decode()
+        msg = "<- [MovePosition] %s" % cmd
+        self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
+        param = cmd.split()
+        
+        if param[0] == CUR_P_Q_POS:
+            self.A_x, self.A_y = self.calc_xy_to_pq(float(param[1]), float(param[2]), True)
+            print(self.A_x, self.A_y)
+        #if param[0] == p and param[1]
+        
+        
+    #--------------------------------------------------------
     # tmc2, tmc3, vm queue
     def connect_to_server_sub_q(self):
         sub_list = ["tmc2", "tmc3", "vm"]
@@ -527,7 +555,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         msg = "<- [SVC] %s" % cmd
         self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
         self.param_dcs[SVC] = cmd  
-        print(self.param_dcs[SVC])
+        #print(self.param_dcs[SVC])
                 
         
     def callback_h(self, ch, method, properties, body):
@@ -771,7 +799,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         arrow_size = 100
         text_ratio = 2
         
-        PA = pa_tel + SLIT_ANG
+        PA = pa_tel + PQ_ROT
         s_color = "limegreen"
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
@@ -1137,19 +1165,19 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
 
     # unit pixel -> arcsec
-    def calc_xy_to_pq(self, para1, para2, opposite=False):    # x-y => p-q       
-        PA = PQ_ROT
-        
+    def calc_xy_to_pq(self, para1, para2, opposite=False):    # x-y => p-q               
+        PA = SLIT_ANG
         if opposite:
+            #PA *= (-1)
             _p, _q = para1, para2
-            para3 = - ( _p*np.cos(np.deg2rad(PA)) - _q*np.sin(np.deg2rad(PA)) ) / PIXELSCALE
-            para4 =   ( _p*np.sin(np.deg2rad(PA)) + _q*np.cos(np.deg2rad(PA)) ) / PIXELSCALE
+            dx = - ( _q*np.cos(np.deg2rad(PA)) - _p*np.sin(np.deg2rad(PA)) ) / PIXELSCALE
+            dy = ( _q*np.sin(np.deg2rad(PA)) + _p*np.cos(np.deg2rad(PA)) ) / PIXELSCALE
+            return dx, dy
         else: 
             _x, _y = para1, para2
-            para3  = - ( _x*np.cos(np.deg2rad(PA)) - _y*np.sin(np.deg2rad(PA)) ) * PIXELSCALE
-            para4 =   ( _x*np.sin(np.deg2rad(PA)) + _y*np.cos(np.deg2rad(PA)) ) * PIXELSCALE
-        
-        return para3, para4
+            _q = ( _x*np.cos(np.deg2rad(PA)) - _y*np.sin(np.deg2rad(PA)) ) * PIXELSCALE
+            _p = ( _x*np.sin(np.deg2rad(PA)) + _y*np.cos(np.deg2rad(PA)) ) * PIXELSCALE
+            return _p, _q
     
 
     '''
@@ -1212,7 +1240,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        print("Move (frame):", event.x(), event.y())
+        #print("Move (frame):", event.x(), event.y())
                 
         self.mouse_x, self.mouse_y = event.x(), event.y()  
         
@@ -1223,14 +1251,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if event.xdata == None or event.ydata == None:
             return
         
-        print("Press (frame):", event.xdata, event.ydata)
+        #print("Press (frame):", event.xdata, event.ydata)
         #print("self.prev_widget_rect[FRM_SVC]: ", self.prev_widget_rect[FRM_SVC])
         self.click_x = event.xdata + self.svc_cut_x
         self.click_y = event.ydata + self.svc_cut_y
-        print("Press (svc):", self.click_x, self.click_y)
+        #print("Press (svc):", self.click_x, self.click_y)
         
         click_p, click_q = self.calc_xy_to_pq(self.click_x-SLIT_CEN[0], self.click_y-SLIT_CEN[1])
-        print("Press (p-q):", click_p, click_q)
+        #print("Press (p-q):", click_p, click_q)
         
         if self.display_click(self.click_x, self.click_y):
             self.find_center = True
@@ -1309,8 +1337,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
             newfile += ".fits"
         copyfile(self.fitsfullpath, newfile)
         
-        msg = "%s %s" % (OBSAPP_SAVE_SVC, self.file_name)
-        self.publish_to_queue(msg)
+        #msg = "%s %s" % (OBSAPP_SAVE_SVC, self.file_name)
+        #self.publish_to_queue(msg)
         
         self.fitsfullpath = None
 
@@ -1457,7 +1485,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def reset_resize(self):
         self.min_rect = self.geometry()
         self.prev_rect = self.min_rect
-        print(self.min_rect)
+        #print(self.min_rect)
         
         self.init_widget_rect[GROUPBOX_IS] = self.groupBox_InstrumentStatus.geometry()      # GROUPBOX_IS       
         self.init_widget_rect[GROUPBOX_SO] = self.groupBox_ScienceObservation.geometry()    # GROUPBOX_SO
@@ -1568,6 +1596,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # PA
         if param[0] == INSTSEQ_SHOW_TCS_INFO:
             self.label_IPA.setText(param[1])        
+            self.PA = int(param[1])
             # current frame - A or B, A and B coordination
             
         elif param[0] == CMD_SETFSPARAM_ICS:            
@@ -1761,17 +1790,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             
                             # send to TCS (offset)
                             self.move_to_telescope(cen_ra_mean, cen_dec_mean, SLOWGUIDING_MODE)
-                            
-                            #msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
-                            #self.publish_to_queue(msg)
-                        
+                                                    
                             self.cur_guide_cnt = 0 
                             self.center_ra = []
                             self.center_dec = []
                     
-                    if self.cur_save_cnt == 0:
-                        msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
-                        self.publish_to_queue(msg)
+                    #if self.cur_save_cnt == 0:
+                    #    msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
+                    #    self.publish_to_queue(msg)
                     
                     self.cur_save_cnt += 1
                     
