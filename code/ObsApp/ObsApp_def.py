@@ -109,13 +109,14 @@ BOX_CLR = "green"
 
 HK_REQ_GETVALUE = "GetValue"  #temp_ctrl, tm, vm
 
-INSTSEQ_SHOW_TCS_INFO = "ShowTCSInfo"
+INSTSEQ_TCS_INFO_PA = "TCSInfoPA"
+INSTSEQ_FRM_MODE = "FrameMode"
+
 OBSAPP_CAL_OFFSET = "CalOffset"
-#OBSAPP_SAVE_SVC = "SaveSVC"
+OBSAPP_OUTOF_NUMBER_SVC = "Out_of_Number_SVC"
+OBSAPP_TAKING_IMG = "StartTakingImage"
 
-CUR_P_Q_POS = "Current_p_and_q_Position"
-
-CMD_BUSY = "Busy"
+MOVEPOS_P_Q = "Current_p_and_q_Position"
 
 CMD_INITIALIZE1 = "Initialize1"
 CMD_INIT2_DONE = "Initialize2_Done" # to DCS
