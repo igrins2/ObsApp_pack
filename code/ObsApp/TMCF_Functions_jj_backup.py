@@ -34,14 +34,12 @@ of a 2D distribution by calculating its moments"""
         aX = aX[mask]
 
         fTotal = aData.sum()
-        if fTotal <= 0: #20231006
+        if fTotal <= 0:
             return
         fCenterX = (aX * aData).sum()/fTotal
         fCenterY = (aY * aData).sum()/fTotal
 
         fWidth = (((aY-fCenterY)**2+(aX-fCenterX)**2)**.5*aData).sum()/fTotal
-        if fWidth <= 0: #20231007
-            return
 
         fHeight =  fTotal/(np.pi*fWidth)**2 #- fBackground
         return fHeight,fCenterX,fCenterY,fWidth,fBackground
@@ -91,11 +89,6 @@ of a 2D distribution found by a fit.
 
                 _f = gaussian2d(*params)
                 return _f(aY, aX) - aData
-
-            #print(errorfunction_ls, aParams)
-            #20231007
-            if aParams == None:
-                return
 
             r_ = leastsq(errorfunction_ls, aParams[:-2])[0]
             r = list(r_) + list(aParams[-2:])

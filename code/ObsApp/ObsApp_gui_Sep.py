@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on Sep 29, 2023
+Modified on Sep 25, 2023
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -26,7 +26,6 @@ from Libs.logger import *
 import Libs.SetConfig as sc
 
 import time as ti
-from distutils.util import strtobool
 
 import subprocess
 import numpy as np
@@ -40,6 +39,10 @@ import TMCF_Functions_jj as tmcfmask
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle, Circle
+
+from shutil import copyfile
+
+from distutils.util import strtobool
 
 class MainWindow(Ui_Dialog, QMainWindow):
     
@@ -110,10 +113,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         slit_img_flip = bool(int(cfg.get(SC, 'slit-image-flip')))
         if slit_img_flip:
-            self.slit_image_flip_func = lambda im: np.rot90(im, 2) #np.fliplr(np.rot90(im))
+            self.slit_image_flip_func = lambda im: np.fliplr(np.rot90(im))
             self.slit_coord_abs_flip_func = lambda x,y: (2048-y, 2048-x)
         else:
-            self.slit_image_flip_func = lambda im: im #np.rot90(im)
+            self.slit_image_flip_func = lambda im: im
             self.slit_coord_abs_flip_func = lambda x,y: (x, y)
                     
         global SLIT_CEN, SLIT_WID, SLIT_LEN, SLIT_ANG, ZOOMW, CONTOURW, PIXELSCALE
@@ -125,37 +128,20 @@ class MainWindow(Ui_Dialog, QMainWindow):
             msg = 'Slit Center Parameter Error: %s' % (self.cfg.get(SC, 'slit-cen'),)
             self.editlist_loglist.appendPlainText(self.log.send(self.iam, ERROR, msg))
                     
-        #SLIT_WID = float(cfg.get(SC,'slit-wid'))
-        #SLIT_LEN = float(cfg.get(SC,'slit-len'))
+        SLIT_WID = float(cfg.get(SC,'slit-wid'))
+        SLIT_LEN = float(cfg.get(SC,'slit-len'))
         SLIT_ANG = float(cfg.get(SC,'slit-ang'))
         
         A_pos = cfg.get(SC, 'A_pos').split(",")
         B_pos = cfg.get(SC, 'B_pos').split(",")
         self.A_x, self.A_y = float(A_pos[0]), float(A_pos[1])
         self.B_x, self.B_y = float(B_pos[0]), float(B_pos[1])
-
-        slit_cen_pq = cfg.get(SC, 'center_pq').split(",")
-        self.slit_cen_p, self.slit_cen_q = float(slit_cen_pq[0]), float(slit_cen_pq[1])
-        
-        A_pos_pq = cfg.get(SC, 'A_pos_pq').split(",")
-        B_pos_pq = cfg.get(SC, 'B_pos_pq').split(",")
-        self.A_p, self.A_q = float(A_pos_pq[0]), float(A_pos_pq[1])
-        self.B_p, self.B_q = float(B_pos_pq[0]), float(B_pos_pq[1])
-        
-        
-        A_pos_pq = cfg.get(SC, 'A_pos_pq').split(",")
-        B_pos_pq = cfg.get(SC, 'B_pos_pq').split(",")
-        self.A_p, self.A_q = A_pos_pq[0], A_pos_pq[1]
-        self.B_p, self.B_q = B_pos_pq[0], B_pos_pq[1]
-        
         
         ZOOMW = int(cfg.get(SC, 'zoomw'))
         CONTOURW = int(cfg.get(SC, 'contourw'))
         PIXELSCALE = float(cfg.get(SC, 'pixelscale'))
         self.fwhm_mode = int(cfg.get(SC, 'fwhm-mode'))
         self.fwhm_mode_value = float(cfg.get(SC, 'fwhm-mode-value'))
-        
-        self.out_of_number_svc = int(cfg.get(SC, 'out-of-number-svc'))
         
         self.svc_path = cfg.get(DCS,'data-location')
         
@@ -189,8 +175,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.consumer_dcs = [None for _ in range(DC_CNT)]
         self.consumer_sub = [None for _ in range(SUB_CNT)]
         
-        self.consumer_virtual_tcs = None
-        
         self.param_InstSeq = None
         self.param_dcs = [None for _ in range(DC_CNT)]
         
@@ -207,7 +191,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.fitting_clicked = False  #False: fitting, True: contour
         
         self.cur_frame = A_BOX #A, B or nothing
-        self.prev_frame = self.cur_frame
         
         self.find_center = False
                 
@@ -241,17 +224,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self._init_mask()
         
         self.resize_enable = True
-        
-        self.mmin, self.mmax = 0, 1000
-
+                
         # progress bar     
         self.prog_timer = [None, None]
         self.cur_prog_step = [None, None]
-       
-        #20231005
-        self.progressBar_svc.setValue(0)
-        self.progressBar_obs.setValue(0)
-
+        
         # elapsed
         self.elapsed_obs_timer = None
         self.elapsed_obs = 0.0
@@ -297,7 +274,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # temp
         fname = ti.strftime("SDCS_%02Y%02m%02d_", ti.localtime())
         self.e_repeat_file_name.setText(fname)
-        self.e_saving_number.setText(str(self.out_of_number_svc))
+        self.e_saving_number.setText("5")
         
         self.e_offset.setText("1")
         
@@ -318,8 +295,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.connect_to_server_InstSeq_q()  #InstSeq
         self.connect_to_server_sub_q()  #TC2, TC3, VM
         self.connect_to_server_dcs_q()  #DCSS, DCSH, DCSK
-        
-        self.connect_to_server_virtual_tcs_q()
                         
         self.InstSeq_timer = QTimer(self)
         self.InstSeq_timer.setInterval(0.1)
@@ -387,15 +362,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.bt_single.clicked.connect(self.single)
         
         self.chk_auto_save.clicked.connect(self.auto_save_image)
-        self.e_saving_number.editingFinished.connect(self.change_outoufnumber_svc)
         self.bt_repeat_filesave.clicked.connect(self.manual_filesave)
         
         self.bt_center.clicked.connect(self.set_center)
         self.chk_off_slit.clicked.connect(self.set_off_slit)
         self.bt_set_guide_star.clicked.connect(self.set_guide_star)
         
-        self.bt_plus_p.clicked.connect(lambda: self.move_p(False))
-        self.bt_minus_p.clicked.connect(lambda: self.move_p(True))
+        self.bt_plus_p.clicked.connect(lambda: self.move_p(True))
+        self.bt_minus_p.clicked.connect(lambda: self.move_p(False))
         self.bt_plus_q.clicked.connect(lambda: self.move_q(True))
         self.bt_minus_q.clicked.connect(lambda: self.move_q(False))
         
@@ -404,10 +378,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.radio_raw.clicked.connect(self.select_raw)
         self.radio_sub.clicked.connect(self.select_sub)
         self.bt_mark_sky.clicked.connect(self.mark_sky)
-       
-        self.radio_zscale.clicked.connect(self.select_zscale)
-        self.radio_mscale.clicked.connect(self.select_mscale)
-
+        
         self.radio_none.clicked.connect(self.select_log_none)
         self.radio_show_logfile.clicked.connect(self.select_log_file)
         self.radio_show_loglist.clicked.connect(self.select_log_list)
@@ -469,52 +440,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         msg = "<- [InstSeq] %s" % cmd
         self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
         self.param_InstSeq = cmd
-        
-        
-    #--------------------------------------------------------
-    # Vitual TCS queue
-    def connect_to_server_virtual_tcs_q(self):
-        self.consumer_virtual_tcs = MsgMiddleware(self.iam, self.ics_ip_addr, self.ics_id, self.ics_pwd, "MovePosition.ex")      
-        self.consumer_virtual_tcs.connect_to_server()
-        self.consumer_virtual_tcs.define_consumer("MovePosition.q", self.callback_virtual_tcs)       
-        
-        th = threading.Thread(target=self.consumer_virtual_tcs.start_consumer)
-        th.daemon = True
-        th.start()
-    
-    
-    def callback_virtual_tcs(self, ch, method, properties, body):
-        cmd = body.decode()
-        msg = "<- [MovePosition] %s" % cmd
-        self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
-        print(cmd)
-        param = cmd.split()
-        
-        #_x, _y = self.calc_xy_to_pq(float(param[1]), float(param[2]), True)
-        
-        #change 20231006
-        #current p and q value!!!
-        if param[0] == MOVEPOS_P_Q:
-            #th = [0.2, 0.2]
-            #ON-OFF
-            #A-B
-            #temp!!!
-            '''
-            if self.A_p == float(param[1]) and self.A_q == float(param[2]):
-                self.cur_frame = A_BOX
-            elif self.A_p == float(param[1]) and self.A_q == float(param[2]) * 2:
-                self.cur_frame = A_BOX
-            elif self.B_p == float(param[1]) and self.B_q == float(param[2]) * 2:
-                self.cur_frame = B_BOX            
-            '''
-            self.cur_frame = A_BOX
-            if float(param[2]) > 0:
-                self.cur_frame = B_BOX
-                
-            #print(_x, _y)
-            #_x, _y = SLIT_CEN[0]+_x, SLIT_CEN[1]+_y
-            #print(_x, _y)
-        #if param[0] == p and param[1]
         
         
     #--------------------------------------------------------
@@ -602,7 +527,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         msg = "<- [SVC] %s" % cmd
         self.editlist_loglist.appendPlainText(self.log.send(self.iam, INFO, msg))
         self.param_dcs[SVC] = cmd  
-        #print(self.param_dcs[SVC])
+        print(self.param_dcs[SVC])
                 
         
     def callback_h(self, ch, method, properties, body):
@@ -666,8 +591,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         if first:
             self.dcss_setparam = True
-            msg = "%s DCSS %d %.3f %d %.3f" % (CMD_SETFSPARAM_ICS, self.simulation, _exptime, _FS_number, _fowlerTime)
-            #print(_exptime, _FS_number)
+            msg = "%s DCSS %d %.3f 1 %d 1 %.3f 1" % (CMD_SETFSPARAM_ICS, self.simulation, _exptime, _FS_number, _fowlerTime)
+            print(_exptime, _FS_number)
         else:
             msg = "%s DCSS %d 0" % (CMD_ACQUIRERAMP_ICS, self.simulation)
         self.publish_to_queue(msg)
@@ -723,7 +648,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         range = "%d ~ %d" % (self.zmin, self.zmax)
         
         self.label_zscale.setText(range)
-        #self.mmin, self.mmax = np.min(imgdata), np.max(imgdata)
+        self.mmin, self.mmax = np.min(imgdata), np.max(imgdata)
         self.e_mscale_min.setText("%.1f" % self.mmin)
         self.e_mscale_max.setText("%.1f" % self.mmax)
             
@@ -815,7 +740,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             if self.radio_zscale.isChecked():
                 _min, _max = self.zmin, self.zmax
             elif self.radio_mscale.isChecked():
-                self.mmin, self.mmax = float(self.e_mscale_min.text()), float(self.e_mscale_max.text())
                 _min, _max = self.mmin, self.mmax
                             
             self.display_coordinate(self.image_ax[IMG_SVC], imgdata, _min, _max, self.PA)
@@ -836,7 +760,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
     def display_coordinate(self, imageax, imgdata, vmin, vmax, pa_tel):
 
-        imageax.clear()  #20231005
         imageax.imshow(imgdata, vmin=vmin, vmax=vmax, cmap='gray', origin='lower')
                             
         imageax.axis('off')
@@ -848,7 +771,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         arrow_size = 100
         text_ratio = 2
         
-        PA = pa_tel + PQ_ROT
+        PA = pa_tel + SLIT_ANG
         s_color = "limegreen"
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
@@ -858,15 +781,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
         imageax.text(cx+u*text_ratio-10, cy+v*text_ratio-30, "E", color=s_color, size=10)
         
-        cx = SVC_FRAME_X-self.svc_cut_x*2-250 + 140
-        cy = SVC_FRAME_Y-self.svc_cut_y*2-200 + 20
-
-        PA = PQ_ROT + 180
+        cx = SVC_FRAME_X-self.svc_cut_x*2-250
+        PA = PQ_ROT
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
         imageax.text(cx+u*text_ratio-60, cy+v*text_ratio*0.8, "+p", color=s_color, size=10)
-        #print(cx, cy, u, v, cx+u*text_ratio-60, cy+v*text_ratio*0.8)
-        PA = PA + 90
+        PA = PA - 90
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
         imageax.text(cx+u*text_ratio*1.2, cy+v*text_ratio-30, "+q", color=s_color, size=10)
@@ -918,8 +838,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 params = tmcfmask.fitgaussian2d_mask_with_saturation(imgdata, mask>0, fit_width=True)
         # fit_gaussian_func = tmcfmask.fitgaussian2d_mask_with_saturation_fixed_width
         # params = fit_gaussian_func(data, mask>0, width=4.)
-        if params != None:  #20231007
-            height, sx, sy, sigma, background = params[0], params[1], params[2], params[3], params[4]
+        height, sx, sy, sigma, background = params[0], params[1], params[2], params[3], params[4]
 
         return height, sx, sy, sigma, background
         
@@ -938,7 +857,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 _min, _max = self.mmin, self.mmax
                 
             self.image_ax[IMG_EXPAND].axis('off')
-            self.image_ax[IMG_EXPAND].clear()  #20231005
             self.image_ax[IMG_EXPAND].imshow(cropdata, vmin=_min, vmax=_max, cmap='gray', origin='lower')
             
             strtmp = 'X:%6.1f  Y:%6.1f \nH:%.0f S:%.2f B:%.0f' % (x_pos, y_pos, self.height, self.sigma, self.background)
@@ -1023,7 +941,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
        #  params = [5000, 3000, 0, 3] would be good initial guess
             #gfit = gf.onedgaussfit(xarr, doubleprofile)
             gfit = self.onedgaussfit(xarr, doubleprofile)
-            #print(gfit)
+            print(gfit)
 
        # Put the fitted values to each separate variables
             amplitude = gfit[0]
@@ -1219,38 +1137,19 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
 
     # unit pixel -> arcsec
-    def calc_xy_to_pq(self, para1, para2, opposite=False):    # x-y => p-q               
-        PA = SLIT_ANG
+    def calc_xy_to_pq(self, para1, para2, opposite=False):    # x-y => p-q       
+        PA = PQ_ROT
+        
         if opposite:
-            #PA *= (-1)
             _p, _q = para1, para2
-            dx = - ( _q*np.cos(np.deg2rad(PA)) - _p*np.sin(np.deg2rad(PA)) ) / PIXELSCALE
-            dy = ( _q*np.sin(np.deg2rad(PA)) + _p*np.cos(np.deg2rad(PA)) ) / PIXELSCALE
-            return dx, dy
+            para3 = - ( _p*np.cos(np.deg2rad(PA)) - _q*np.sin(np.deg2rad(PA)) ) / PIXELSCALE
+            para4 =   ( _p*np.sin(np.deg2rad(PA)) + _q*np.cos(np.deg2rad(PA)) ) / PIXELSCALE
         else: 
             _x, _y = para1, para2
-            _q = - ( _x*np.cos(np.deg2rad(PA)) - _y*np.sin(np.deg2rad(PA)) ) * PIXELSCALE
-            _p = - ( _x*np.sin(np.deg2rad(PA)) + _y*np.cos(np.deg2rad(PA)) ) * PIXELSCALE
-            return _p, _q
-        '''
-        #XY->arcsec
-        if opposite == False:
-            x, y = para1, para2
-            PA = SLIT_ANG
-            para3 = ( x*np.cos(np.deg2rad(PA)) - y*np.sin(np.deg2rad(PA)) ) * PIXELSCALE
-            para4 = ( x*np.sin(np.deg2rad(PA)) + y*np.cos(np.deg2rad(PA)) ) * PIXELSCALE
-
-            return para4, para3
+            para3  = - ( _x*np.cos(np.deg2rad(PA)) - _y*np.sin(np.deg2rad(PA)) ) * PIXELSCALE
+            para4 =   ( _x*np.sin(np.deg2rad(PA)) + _y*np.cos(np.deg2rad(PA)) ) * PIXELSCALE
         
-        #arcsec->XY
-        else:
-            sw, sl = para1, para2
-            PA = -SLIT_ANG
-            para3 = -( sl*np.cos(np.deg2rad(PA)) - sw*np.sin(np.deg2rad(PA)) ) / PIXELSCALE
-            para4 = ( sl*np.sin(np.deg2rad(PA)) + sw*np.cos(np.deg2rad(PA)) ) / PIXELSCALE
-
-            return para3, para4
-        '''
+        return para3, para4
     
 
     '''
@@ -1313,7 +1212,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     
     def mouseMoveEvent(self, event: QMouseEvent) -> None:
-        #print("Move (frame):", event.x(), event.y())
+        print("Move (frame):", event.x(), event.y())
                 
         self.mouse_x, self.mouse_y = event.x(), event.y()  
         
@@ -1324,14 +1223,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if event.xdata == None or event.ydata == None:
             return
         
-        #print("Press (frame):", event.xdata, event.ydata)
+        print("Press (frame):", event.xdata, event.ydata)
         #print("self.prev_widget_rect[FRM_SVC]: ", self.prev_widget_rect[FRM_SVC])
         self.click_x = event.xdata + self.svc_cut_x
         self.click_y = event.ydata + self.svc_cut_y
-        #print("Press (svc):", self.click_x, self.click_y)
+        print("Press (svc):", self.click_x, self.click_y)
         
         click_p, click_q = self.calc_xy_to_pq(self.click_x-SLIT_CEN[0], self.click_y-SLIT_CEN[1])
-        #print("Press (p-q):", click_p, click_q)
+        print("Press (p-q):", click_p, click_q)
         
         if self.display_click(self.click_x, self.click_y):
             self.find_center = True
@@ -1357,11 +1256,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         else:
             self.svc_mode = SINGLE_MODE
             self.stop_clicked = True
-            
-            
-    def status_iamge_taking(self, start):
-        msg = "%s %d" % (OBSAPP_TAKING_IMG, start)
-        self.publish_to_queue(msg)
         
 
     def single(self):
@@ -1373,7 +1267,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             if self.svc_mode == CONT_MODE:
                 self.bt_single.setText("Stop")                
                 self.stop_clicked = False
-                self.status_iamge_taking(True)
             else:
                 self.bt_single.setText("Abort")
                 
@@ -1385,7 +1278,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         else:       
             if self.svc_mode == CONT_MODE:     
                 self.stop_clicked = True   
-                self.status_iamge_taking(False)
             else:
                 self.abort_acquisition()       
             
@@ -1403,12 +1295,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.e_saving_number.setEnabled(False)
             self.e_repeat_file_name.setEnabled(True)
             self.bt_repeat_filesave.setEnabled(True)
-            
-            
-    def change_outoufnumber_svc(self):
-        self.out_of_number_svc = int(self.e_saving_number.text())
-        msg = "%s %d" % (OBSAPP_OUTOF_NUMBER_SVC, self.out_of_number_svc)
-        self.publish_to_queue(msg)
         
         
     def manual_filesave(self):        
@@ -1423,8 +1309,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
             newfile += ".fits"
         copyfile(self.fitsfullpath, newfile)
         
-        #msg = "%s %s" % (OBSAPP_SAVE_SVC, self.file_name)
-        #self.publish_to_queue(msg)
+        msg = "%s %s" % (OBSAPP_SAVE_SVC, self.file_name)
+        self.publish_to_queue(msg)
         
         self.fitsfullpath = None
 
@@ -1437,19 +1323,16 @@ class MainWindow(Ui_Dialog, QMainWindow):
            return
         
         #pixel -> arcsec
-        #print("set_senter (dx, dy):", dx, dy)
         dp, dq = self.calc_xy_to_pq(dx, dy)   
-        #print("set_senter (dp, dq):", dp, dq)
         #dra, ddec = self.calc_pq_to_radec(dp, dq)
         self.move_to_telescope(dp, dq)
     
     
     def set_off_slit(self):
         if self.chk_off_slit.isChecked():
-            self.prev_frame = self.cur_frame
             self.cur_frame = OFF_BOX
         else:
-            self.cur_frame = self.prev_frame
+            self.cur_frame = A_BOX
             
         self.clean_ax(self.image_ax[IMG_SVC])
         self.bt_set_guide_star.setEnabled(self.chk_off_slit.isChecked())
@@ -1464,12 +1347,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         
     #p, q coordiation!!!!
-    def move_p(self, negative): #+:True, -:Minus 
+    def move_p(self, positive): #+:True, -:Minus 
         dp = float(self.e_offset.text())
-        #20231003
-        if negative:
+        if not positive:
             dp *= (-1)
-        #print("move P:", dp) 
+         
         self.move_to_telescope(dp, 0)
         
     
@@ -1479,7 +1361,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if not positive:
             dq *= (-1)
          
-        #print("move q:", dq)  
         self.move_to_telescope(0, dq)
         
     
@@ -1503,8 +1384,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.bt_single.setEnabled(False)
             self.QWidgetBtnColor(self.bt_single, "silver")
             
-            self.status_iamge_taking(True)
-            
         else:
             self.bt_slow_guide.setText("Slow Guide") 
             self.stop_clicked = True
@@ -1512,18 +1391,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.bt_single.setEnabled(True)
             self.QWidgetBtnColor(self.bt_single, "black")
             
-            self.status_iamge_taking(False)
-            
             
     def select_raw(self):
         self.image_display(self.svc_img_cut)
     
     
     def select_sub(self):
-        #20231007
-        if self.sky_exp_time <= 0:
-            return
-        
         cor = float(self.e_svc_exp_time.text()) / self.sky_exp_time
         imgSub_data = self.svc_img - self.sky_data*cor
         
@@ -1541,14 +1414,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.sky_data = self.svc_img
         self.sky_exp_time = float(self.svc_header["EXPTIME"])
         
-
-    def select_zscale(self):
-        self.reload_img(self.svc_img_cut)
-
-
-    def select_mscale(self):
-        self.mmin, self.mmax = float(self.e_mscale_min.text()), float(self.e_mscale_max.text())
-        self.reload_img(self.svc_img_cut)
     
     
     def select_log_none(self):
@@ -1592,7 +1457,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def reset_resize(self):
         self.min_rect = self.geometry()
         self.prev_rect = self.min_rect
-        #print(self.min_rect)
+        print(self.min_rect)
         
         self.init_widget_rect[GROUPBOX_IS] = self.groupBox_InstrumentStatus.geometry()      # GROUPBOX_IS       
         self.init_widget_rect[GROUPBOX_SO] = self.groupBox_ScienceObservation.geometry()    # GROUPBOX_SO
@@ -1701,32 +1566,26 @@ class MainWindow(Ui_Dialog, QMainWindow):
         param = self.param_InstSeq.split()
             
         # PA
-        if param[0] == INSTSEQ_TCS_INFO_PA:
+        if param[0] == INSTSEQ_SHOW_TCS_INFO:
             self.label_IPA.setText(param[1])        
-            self.PA = int(param[1])
             # current frame - A or B, A and B coordination
             
-        elif param[0] == INSTSEQ_FRM_MODE:
-            self.cur_frame = param[1]
-            
-        elif param[0] == CMD_SETFSPARAM_ICS:       
-            self.stop_clicked = True     
+        elif param[0] == CMD_SETFSPARAM_ICS:            
             if param[1] == "DCSS" or param[1] == "all":                    
-                #self.e_svc_exp_time.setText(param[3])
-                #self.e_svc_fowler_number.setText(param[5])
-                _fowlerTime = 1.63 - T_frame * 1
-                self.cal_waittime[SVC] = T_br + (T_frame + _fowlerTime + (2 * T_frame * 1))
+                self.e_svc_exp_time.setText(param[3])
+                self.e_svc_fowler_number.setText(param[5])
+                _fowlerTime = float(param[7])
+                self.cal_waittime[SVC] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[5])))
             
             if param[1] == "H_K" or param[1] == "all":
                 self.label_exp_time.setText(param[3])
-                self.label_sampling_number.setText(param[4])
-                _fowlerTime = float(param[5])
-                self.cal_waittime[H_K] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[4])))
+                self.label_sampling_number.setText(param[5])
+                _fowlerTime = float(param[7])
+                self.cal_waittime[H_K] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[5])))
                 
         elif param[0] == CMD_ACQUIRERAMP_ICS:            
             if param[1] == "DCSS" or param[1] == "all":
-                #remove 20231006
-                #self.enable_dcss(False)
+                self.enable_dcss(False)
                 self.label_svc_state.setText("Running")
                 
                 #SVC progressbar
@@ -1738,7 +1597,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.progressBar_obs.setValue(self.cur_prog_step[SVC])    
                 self.prog_timer[SVC].start()   
                                             
-            elif param[1] == "H_K" or param[1] == "all":
+            if param[1] == "H_K" or param[1] == "all":
                 self.label_obs_state.setText("Running")
                 
                 #H, K progressbar
@@ -1752,7 +1611,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
                 # elapsed               
                 self.elapsed_obs_timer = QTimer(self) 
-                self.elapsed_obs_timer.setInterval(1)
+                self.elapsed_obs_timer.setInterval(0.001)
                 self.elapsed_obs_timer.timeout.connect(self.show_elapsed)
 
                 self.elapsed_obs = self.cal_waittime[H_K]
@@ -1763,6 +1622,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.acquiring[H] = True
                 self.acquiring[K] = True
                 
+        
         elif param[0] == CMD_STOPACQUISITION:
             if param[1] == "SVC" or param[1] == "all":
                 self.cur_prog_step[SVC] = 100   
@@ -1797,7 +1657,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # svc             
         if self.param_dcs[SVC] != None:
             param = self.param_dcs[SVC].split()
-                            
+            
+            if param[0] == CMD_BUSY:
+                if not self.simulation and not self.acquiring[SVC]:
+                #if not self.acquiring[SVC]:
+                    self.bt_single.setEnabled(False)
+                    self.bt_slow_guide.setEnabled(False)
+                    self.QWidgetBtnColor(self.bt_single, "silver")
+                
             if param[0] == CMD_INITIALIZE1:
                 if not self.simulation and int(param[2]) == 0:
                     self.dcss_ready = False
@@ -1828,7 +1695,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 msg = "%s DCSS %d 0" % (CMD_ACQUIRERAMP_ICS, self.simulation)
                 self.publish_to_queue(msg)
             
-            elif param[0] == CMD_ACQUIRERAMP_ICS:                     
+            elif param[0] == CMD_ACQUIRERAMP_ICS:  
+                if not self.acquiring[SVC]:
+                    self.bt_single.setEnabled(True)
+                    self.bt_slow_guide.setEnabled(True)
+                    self.QWidgetBtnColor(self.bt_single, "black")
+                   
                 if len(param) == 1: 
                     self.param_dcs[SVC] = None
                     return
@@ -1872,11 +1744,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
                 else:
                     #calculate center
-                    #------------------------------
-                    #20231006
-                    dx = self.cen_x - self.guide_x
-                    dy = self.cen_y - self.guide_y
-                    #------------------------------
+                    dx = self.guide_x - self.cen_x
+                    dy = self.guide_y - self.cen_y
                     dp, dq = self.calc_xy_to_pq(dx, dy)
                     #dra, ddec = self.calc_pq_to_radec(dp, dq)
                     self.center_ra.append(dp)
@@ -1892,18 +1761,21 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             
                             # send to TCS (offset)
                             self.move_to_telescope(cen_ra_mean, cen_dec_mean, SLOWGUIDING_MODE)
-                                                    
+                            
+                            #msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
+                            #self.publish_to_queue(msg)
+                        
                             self.cur_guide_cnt = 0 
                             self.center_ra = []
                             self.center_dec = []
                     
-                    #if self.cur_save_cnt == 0:
-                    #    msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
-                    #    self.publish_to_queue(msg)
+                    if self.cur_save_cnt == 0:
+                        msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
+                        self.publish_to_queue(msg)
                     
                     self.cur_save_cnt += 1
                     
-                    if self.cur_save_cnt >= self.out_of_number_svc:
+                    if self.cur_save_cnt >= int(self.e_saving_number.text()):
                         if self.chk_auto_save.isChecked():
                             ori_file = param[2].split('/')
                             foldername = ti.strftime("%02Y%02m%02d/", ti.localtime())
@@ -2092,7 +1964,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
 if __name__ == "__main__":
     
     app = QApplication()
-    #sys.argv.append("True")
+    sys.argv.append("True")
     ObsApp = MainWindow(sys.argv[1])
     ObsApp.show()
         

@@ -125,8 +125,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
             msg = 'Slit Center Parameter Error: %s' % (self.cfg.get(SC, 'slit-cen'),)
             self.editlist_loglist.appendPlainText(self.log.send(self.iam, ERROR, msg))
                     
-        #SLIT_WID = float(cfg.get(SC,'slit-wid'))
-        #SLIT_LEN = float(cfg.get(SC,'slit-len'))
+        SLIT_WID = float(cfg.get(SC,'slit-wid'))
+        SLIT_LEN = float(cfg.get(SC,'slit-len'))
         SLIT_ANG = float(cfg.get(SC,'slit-ang'))
         
         A_pos = cfg.get(SC, 'A_pos').split(",")
@@ -141,12 +141,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         B_pos_pq = cfg.get(SC, 'B_pos_pq').split(",")
         self.A_p, self.A_q = float(A_pos_pq[0]), float(A_pos_pq[1])
         self.B_p, self.B_q = float(B_pos_pq[0]), float(B_pos_pq[1])
-        
-        
-        A_pos_pq = cfg.get(SC, 'A_pos_pq').split(",")
-        B_pos_pq = cfg.get(SC, 'B_pos_pq').split(",")
-        self.A_p, self.A_q = A_pos_pq[0], A_pos_pq[1]
-        self.B_p, self.B_q = B_pos_pq[0], B_pos_pq[1]
         
         
         ZOOMW = int(cfg.get(SC, 'zoomw'))
@@ -241,9 +235,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self._init_mask()
         
         self.resize_enable = True
-        
-        self.mmin, self.mmax = 0, 1000
-
+                
         # progress bar     
         self.prog_timer = [None, None]
         self.cur_prog_step = [None, None]
@@ -404,10 +396,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.radio_raw.clicked.connect(self.select_raw)
         self.radio_sub.clicked.connect(self.select_sub)
         self.bt_mark_sky.clicked.connect(self.mark_sky)
-       
-        self.radio_zscale.clicked.connect(self.select_zscale)
-        self.radio_mscale.clicked.connect(self.select_mscale)
-
+        
         self.radio_none.clicked.connect(self.select_log_none)
         self.radio_show_logfile.clicked.connect(self.select_log_file)
         self.radio_show_loglist.clicked.connect(self.select_log_list)
@@ -499,17 +488,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
             #ON-OFF
             #A-B
             #temp!!!
-            '''
             if self.A_p == float(param[1]) and self.A_q == float(param[2]):
                 self.cur_frame = A_BOX
-            elif self.A_p == float(param[1]) and self.A_q == float(param[2]) * 2:
+            elif self.A_p == float(param[1]) and self.A_q == float(param[2] * 2):
                 self.cur_frame = A_BOX
-            elif self.B_p == float(param[1]) and self.B_q == float(param[2]) * 2:
+            elif self.B_p == float(param[1]) and self.B_q == float(param[2] * 2):
                 self.cur_frame = B_BOX            
-            '''
-            self.cur_frame = A_BOX
-            if float(param[2]) > 0:
-                self.cur_frame = B_BOX
                 
             #print(_x, _y)
             #_x, _y = SLIT_CEN[0]+_x, SLIT_CEN[1]+_y
@@ -667,7 +651,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if first:
             self.dcss_setparam = True
             msg = "%s DCSS %d %.3f %d %.3f" % (CMD_SETFSPARAM_ICS, self.simulation, _exptime, _FS_number, _fowlerTime)
-            #print(_exptime, _FS_number)
+            print(_exptime, _FS_number)
         else:
             msg = "%s DCSS %d 0" % (CMD_ACQUIRERAMP_ICS, self.simulation)
         self.publish_to_queue(msg)
@@ -723,7 +707,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         range = "%d ~ %d" % (self.zmin, self.zmax)
         
         self.label_zscale.setText(range)
-        #self.mmin, self.mmax = np.min(imgdata), np.max(imgdata)
+        self.mmin, self.mmax = np.min(imgdata), np.max(imgdata)
         self.e_mscale_min.setText("%.1f" % self.mmin)
         self.e_mscale_max.setText("%.1f" % self.mmax)
             
@@ -815,7 +799,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             if self.radio_zscale.isChecked():
                 _min, _max = self.zmin, self.zmax
             elif self.radio_mscale.isChecked():
-                self.mmin, self.mmax = float(self.e_mscale_min.text()), float(self.e_mscale_max.text())
                 _min, _max = self.mmin, self.mmax
                             
             self.display_coordinate(self.image_ax[IMG_SVC], imgdata, _min, _max, self.PA)
@@ -918,8 +901,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 params = tmcfmask.fitgaussian2d_mask_with_saturation(imgdata, mask>0, fit_width=True)
         # fit_gaussian_func = tmcfmask.fitgaussian2d_mask_with_saturation_fixed_width
         # params = fit_gaussian_func(data, mask>0, width=4.)
-        if params != None:  #20231007
-            height, sx, sy, sigma, background = params[0], params[1], params[2], params[3], params[4]
+        height, sx, sy, sigma, background = params[0], params[1], params[2], params[3], params[4]
 
         return height, sx, sy, sigma, background
         
@@ -1328,10 +1310,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
         #print("self.prev_widget_rect[FRM_SVC]: ", self.prev_widget_rect[FRM_SVC])
         self.click_x = event.xdata + self.svc_cut_x
         self.click_y = event.ydata + self.svc_cut_y
-        #print("Press (svc):", self.click_x, self.click_y)
+        print("Press (svc):", self.click_x, self.click_y)
         
         click_p, click_q = self.calc_xy_to_pq(self.click_x-SLIT_CEN[0], self.click_y-SLIT_CEN[1])
-        #print("Press (p-q):", click_p, click_q)
+        print("Press (p-q):", click_p, click_q)
         
         if self.display_click(self.click_x, self.click_y):
             self.find_center = True
@@ -1437,9 +1419,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
            return
         
         #pixel -> arcsec
-        #print("set_senter (dx, dy):", dx, dy)
+        print("set_senter (dx, dy):", dx, dy)
         dp, dq = self.calc_xy_to_pq(dx, dy)   
-        #print("set_senter (dp, dq):", dp, dq)
+        print("set_senter (dp, dq):", dp, dq)
         #dra, ddec = self.calc_pq_to_radec(dp, dq)
         self.move_to_telescope(dp, dq)
     
@@ -1469,7 +1451,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         #20231003
         if negative:
             dp *= (-1)
-        #print("move P:", dp) 
+        print("move P:", dp) 
         self.move_to_telescope(dp, 0)
         
     
@@ -1479,7 +1461,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if not positive:
             dq *= (-1)
          
-        #print("move q:", dq)  
+        print("move q:", dq)  
         self.move_to_telescope(0, dq)
         
     
@@ -1520,10 +1502,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     
     def select_sub(self):
-        #20231007
-        if self.sky_exp_time <= 0:
-            return
-        
         cor = float(self.e_svc_exp_time.text()) / self.sky_exp_time
         imgSub_data = self.svc_img - self.sky_data*cor
         
@@ -1541,14 +1519,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.sky_data = self.svc_img
         self.sky_exp_time = float(self.svc_header["EXPTIME"])
         
-
-    def select_zscale(self):
-        self.reload_img(self.svc_img_cut)
-
-
-    def select_mscale(self):
-        self.mmin, self.mmax = float(self.e_mscale_min.text()), float(self.e_mscale_max.text())
-        self.reload_img(self.svc_img_cut)
     
     
     def select_log_none(self):
@@ -2092,7 +2062,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
 if __name__ == "__main__":
     
     app = QApplication()
-    #sys.argv.append("True")
+    sys.argv.append("True")
     ObsApp = MainWindow(sys.argv[1])
     ObsApp.show()
         
