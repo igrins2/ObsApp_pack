@@ -125,8 +125,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
             msg = 'Slit Center Parameter Error: %s' % (self.cfg.get(SC, 'slit-cen'),)
             self.editlist_loglist.appendPlainText(self.log.send(self.iam, ERROR, msg))
                     
-        #SLIT_WID = float(cfg.get(SC,'slit-wid'))
-        #SLIT_LEN = float(cfg.get(SC,'slit-len'))
+        SLIT_WID = float(cfg.get(SC,'slit-wid'))
+        SLIT_LEN = float(cfg.get(SC,'slit-len'))
         SLIT_ANG = float(cfg.get(SC,'slit-ang'))
         
         A_pos = cfg.get(SC, 'A_pos').split(",")
@@ -141,12 +141,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         B_pos_pq = cfg.get(SC, 'B_pos_pq').split(",")
         self.A_p, self.A_q = float(A_pos_pq[0]), float(A_pos_pq[1])
         self.B_p, self.B_q = float(B_pos_pq[0]), float(B_pos_pq[1])
-        
-        
-        A_pos_pq = cfg.get(SC, 'A_pos_pq').split(",")
-        B_pos_pq = cfg.get(SC, 'B_pos_pq').split(",")
-        self.A_p, self.A_q = A_pos_pq[0], A_pos_pq[1]
-        self.B_p, self.B_q = B_pos_pq[0], B_pos_pq[1]
         
         
         ZOOMW = int(cfg.get(SC, 'zoomw'))
