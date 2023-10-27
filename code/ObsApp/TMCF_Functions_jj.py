@@ -3,9 +3,18 @@ import scipy.ndimage as ni
 from scipy.optimize import leastsq
 
 def gaussian2d(fHeight,fCenterX,fCenterY,fWidth,fBackground):
-    """ Return a gaussian function with a given parameters"""
-    fWidth = float(fWidth)
-    return lambda y,x: fHeight*np.exp(-(((fCenterX - x)/fWidth)**2 + ((fCenterY - y)/fWidth)**2)/2) + fBackground
+    try:
+        """ Return a gaussian function with a given parameters"""
+        fWidth = float(fWidth)
+        return lambda y,x: fHeight*np.exp(-(((fCenterX - x)/fWidth)**2 + ((fCenterY - y)/fWidth)**2)/2) + fBackground
+    
+    except ZeroDivisionError:
+        pass
+    except ValueError:
+        pass
+    except Exception as e:
+        import traceback, sys
+        traceback.print_exc(file=sys.stdout)
 
 
 def moments2d(aData, mask=None):
@@ -34,18 +43,18 @@ of a 2D distribution by calculating its moments"""
         aX = aX[mask]
 
         fTotal = aData.sum()
-        if fTotal <= 0: #20231006
-            return
         fCenterX = (aX * aData).sum()/fTotal
         fCenterY = (aY * aData).sum()/fTotal
 
         fWidth = (((aY-fCenterY)**2+(aX-fCenterX)**2)**.5*aData).sum()/fTotal
-        if fWidth <= 0: #20231007
-            return
 
         fHeight =  fTotal/(np.pi*fWidth)**2 #- fBackground
         return fHeight,fCenterX,fCenterY,fWidth,fBackground
     
+    except ZeroDivisionError:
+        pass
+    except ValueError:
+        pass
     except Exception as e:
         import traceback, sys
         traceback.print_exc(file=sys.stdout)
