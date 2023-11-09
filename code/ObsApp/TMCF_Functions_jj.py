@@ -43,11 +43,14 @@ of a 2D distribution by calculating its moments"""
         aX = aX[mask]
 
         fTotal = aData.sum()
+        if fTotal <= 0:
+            return None
         fCenterX = (aX * aData).sum()/fTotal
         fCenterY = (aY * aData).sum()/fTotal
 
         fWidth = (((aY-fCenterY)**2+(aX-fCenterX)**2)**.5*aData).sum()/fTotal
-
+        if fWidth <= 0:
+            return None
         fHeight =  fTotal/(np.pi*fWidth)**2 #- fBackground
         return fHeight,fCenterX,fCenterY,fWidth,fBackground
     

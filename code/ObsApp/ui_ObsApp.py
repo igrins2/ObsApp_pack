@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ObsAppTsLGWZ.ui'
+## Form generated from reading UI file 'ObsAppXkUKhC.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.4.2
 ##
@@ -15,10 +15,10 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QDialog, QFrame,
-    QGridLayout, QGroupBox, QLabel, QLineEdit,
-    QPlainTextEdit, QProgressBar, QPushButton, QRadioButton,
-    QSizePolicy, QWidget)
+from PySide6.QtWidgets import (QAbstractScrollArea, QApplication, QCheckBox, QDialog,
+    QFrame, QGridLayout, QGroupBox, QLabel,
+    QLineEdit, QListWidget, QListWidgetItem, QProgressBar,
+    QPushButton, QRadioButton, QSizePolicy, QWidget)
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -806,10 +806,6 @@ class Ui_Dialog(object):
         self.radio_show_loglist = QRadioButton(Dialog)
         self.radio_show_loglist.setObjectName(u"radio_show_loglist")
         self.radio_show_loglist.setGeometry(QRect(740, 630, 121, 25))
-        self.editlist_loglist = QPlainTextEdit(Dialog)
-        self.editlist_loglist.setObjectName(u"editlist_loglist")
-        self.editlist_loglist.setGeometry(QRect(870, 15, 331, 635))
-        self.editlist_loglist.setReadOnly(True)
         self.groupBox_profile = QGroupBox(Dialog)
         self.groupBox_profile.setObjectName(u"groupBox_profile")
         self.groupBox_profile.setGeometry(QRect(238, 490, 315, 131))
@@ -844,6 +840,17 @@ class Ui_Dialog(object):
         self.label_star = QLabel(self.groupBox_profile)
         self.label_star.setObjectName(u"label_star")
         self.label_star.setGeometry(QRect(107, 110, 33, 19))
+        self.listWidget_log = QListWidget(Dialog)
+        self.listWidget_log.setObjectName(u"listWidget_log")
+        self.listWidget_log.setGeometry(QRect(870, 14, 331, 635))
+        sizePolicy2 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        sizePolicy2.setHorizontalStretch(0)
+        sizePolicy2.setVerticalStretch(0)
+        sizePolicy2.setHeightForWidth(self.listWidget_log.sizePolicy().hasHeightForWidth())
+        self.listWidget_log.setSizePolicy(sizePolicy2)
+        self.listWidget_log.setMaximumSize(QSize(16777211, 16777215))
+        self.listWidget_log.setHorizontalScrollBarPolicy(Qt.ScrollBarAsNeeded)
+        self.listWidget_log.setSizeAdjustPolicy(QAbstractScrollArea.AdjustIgnored)
         QWidget.setTabOrder(self.e_svc_fowler_number, self.e_svc_exp_time)
         QWidget.setTabOrder(self.e_svc_exp_time, self.chk_continue)
         QWidget.setTabOrder(self.chk_continue, self.bt_single)

@@ -1886,19 +1886,6 @@
     <string>Open &quot;log list&quot;</string>
    </property>
   </widget>
-  <widget class="QPlainTextEdit" name="editlist_loglist">
-   <property name="geometry">
-    <rect>
-     <x>870</x>
-     <y>15</y>
-     <width>331</width>
-     <height>635</height>
-    </rect>
-   </property>
-   <property name="readOnly">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox_profile">
    <property name="geometry">
     <rect>
@@ -2029,6 +2016,34 @@
      <string>star :</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QListWidget" name="listWidget_log">
+   <property name="geometry">
+    <rect>
+     <x>870</x>
+     <y>14</y>
+     <width>331</width>
+     <height>635</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="maximumSize">
+    <size>
+     <width>16777211</width>
+     <height>16777215</height>
+    </size>
+   </property>
+   <property name="horizontalScrollBarPolicy">
+    <enum>Qt::ScrollBarAsNeeded</enum>
+   </property>
+   <property name="sizeAdjustPolicy">
+    <enum>QAbstractScrollArea::AdjustIgnored</enum>
+   </property>
   </widget>
  </widget>
  <tabstops>
