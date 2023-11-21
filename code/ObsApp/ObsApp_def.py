@@ -3,7 +3,7 @@
 """
 Created on Feb 10, 2023
 
-Modified on Sep 29, 2023
+Modified on Nov 20, 2023
 
 @author: hilee
 """
@@ -21,7 +21,7 @@ HK = "HK"
 SC = "SC"
 DCS = "DCS"
 
-SUB_CNT = 3
+SUB_CNT = 4
 
 # LOG option
 DEBUG = "DEBUG"
@@ -91,12 +91,17 @@ T_br = 2
 TMC2 = 0
 TMC3 = 1
 VM = 2
+UPLOADER = 3
 
 DEFAULT_VALUE = "-999"
 
 TMC2_A = 0
 TMC2_B = 1
 TMC3_B = 2
+
+GOOD = 0
+WARNING = 1
+BAD = 2
 
 FWHM_GUESS = 0
 FWHM_FIT = 1
@@ -110,7 +115,7 @@ BOX_CLR = "green"
 HK_REQ_GETVALUE = "GetValue"  #temp_ctrl, tm, vm
 
 INSTSEQ_TCS_INFO_PA = "TCSInfoPA"
-INSTSEQ_FRM_MODE = "FrameMode"
+INSTSEQ_PQ = "OffsetPQ"
 
 OBSAPP_CAL_OFFSET = "CalOffset"
 OBSAPP_OUTOF_NUMBER_SVC = "Out_of_Number_SVC"
@@ -124,6 +129,8 @@ CMD_INITIALIZE2_ICS = "Initialize2_ics"
 CMD_SETFSPARAM_ICS = "SetFSParam_ics"
 CMD_ACQUIRERAMP_ICS = "ACQUIRERAMP_ics"
 CMD_STOPACQUISITION = "STOPACQUISITION"
+
+IG2_HEALTH = "IGRINS2Health"    #0-GOOD, 1-WARNING, 2-BAD
 
 #CMD_COMPLETED = "Completed"
 #EXIT = "Exit"
