@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ObsAppPLhBqn.ui'
+## Form generated from reading UI file 'ObsAppeoSHHv.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.4.2
 ##
@@ -307,7 +307,10 @@ class Ui_Dialog(object):
         self.label_data_label.setObjectName(u"label_data_label")
         sizePolicy.setHeightForWidth(self.label_data_label.sizePolicy().hasHeightForWidth())
         self.label_data_label.setSizePolicy(sizePolicy)
-        self.label_data_label.setFont(font2)
+        font4 = QFont()
+        font4.setPointSize(9)
+        font4.setBold(True)
+        self.label_data_label.setFont(font4)
         self.label_data_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_data_label, 1, 1, 1, 2)
@@ -406,9 +409,9 @@ class Ui_Dialog(object):
         self.progressBar_obs.setObjectName(u"progressBar_obs")
         sizePolicy.setHeightForWidth(self.progressBar_obs.sizePolicy().hasHeightForWidth())
         self.progressBar_obs.setSizePolicy(sizePolicy)
-        font4 = QFont()
-        font4.setPointSize(10)
-        self.progressBar_obs.setFont(font4)
+        font5 = QFont()
+        font5.setPointSize(10)
+        self.progressBar_obs.setFont(font5)
         self.progressBar_obs.setValue(24)
 
         self.gridLayout_2.addWidget(self.progressBar_obs, 7, 0, 1, 3)
@@ -425,7 +428,7 @@ class Ui_Dialog(object):
         self.chk_off_slit.setObjectName(u"chk_off_slit")
         sizePolicy.setHeightForWidth(self.chk_off_slit.sizePolicy().hasHeightForWidth())
         self.chk_off_slit.setSizePolicy(sizePolicy)
-        self.chk_off_slit.setFont(font4)
+        self.chk_off_slit.setFont(font5)
 
         self.gridLayout_5.addWidget(self.chk_off_slit, 9, 6, 1, 3)
 
@@ -459,7 +462,7 @@ class Ui_Dialog(object):
         self.bt_set_guide_star.setObjectName(u"bt_set_guide_star")
         sizePolicy.setHeightForWidth(self.bt_set_guide_star.sizePolicy().hasHeightForWidth())
         self.bt_set_guide_star.setSizePolicy(sizePolicy)
-        self.bt_set_guide_star.setFont(font4)
+        self.bt_set_guide_star.setFont(font5)
 
         self.gridLayout_5.addWidget(self.bt_set_guide_star, 9, 2, 1, 4)
 
@@ -467,7 +470,7 @@ class Ui_Dialog(object):
         self.bt_center.setObjectName(u"bt_center")
         sizePolicy.setHeightForWidth(self.bt_center.sizePolicy().hasHeightForWidth())
         self.bt_center.setSizePolicy(sizePolicy)
-        self.bt_center.setFont(font4)
+        self.bt_center.setFont(font5)
 
         self.gridLayout_5.addWidget(self.bt_center, 9, 0, 1, 2)
 
@@ -475,10 +478,10 @@ class Ui_Dialog(object):
         self.e_svc_exp_time.setObjectName(u"e_svc_exp_time")
         sizePolicy.setHeightForWidth(self.e_svc_exp_time.sizePolicy().hasHeightForWidth())
         self.e_svc_exp_time.setSizePolicy(sizePolicy)
-        font5 = QFont()
-        font5.setPointSize(8)
-        font5.setBold(True)
-        self.e_svc_exp_time.setFont(font5)
+        font6 = QFont()
+        font6.setPointSize(8)
+        font6.setBold(True)
+        self.e_svc_exp_time.setFont(font6)
         self.e_svc_exp_time.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_5.addWidget(self.e_svc_exp_time, 4, 3, 1, 6)
@@ -495,7 +498,7 @@ class Ui_Dialog(object):
         self.chk_auto_save.setObjectName(u"chk_auto_save")
         sizePolicy.setHeightForWidth(self.chk_auto_save.sizePolicy().hasHeightForWidth())
         self.chk_auto_save.setSizePolicy(sizePolicy)
-        self.chk_auto_save.setFont(font4)
+        self.chk_auto_save.setFont(font5)
 
         self.gridLayout_5.addWidget(self.chk_auto_save, 7, 0, 1, 3)
 
@@ -503,13 +506,13 @@ class Ui_Dialog(object):
         self.bt_repeat_filesave.setObjectName(u"bt_repeat_filesave")
         sizePolicy.setHeightForWidth(self.bt_repeat_filesave.sizePolicy().hasHeightForWidth())
         self.bt_repeat_filesave.setSizePolicy(sizePolicy)
-        self.bt_repeat_filesave.setFont(font4)
+        self.bt_repeat_filesave.setFont(font5)
 
         self.gridLayout_5.addWidget(self.bt_repeat_filesave, 8, 8, 1, 1)
 
         self.chk_view_drawing = QCheckBox(self.groupBox_SlitViewCamera)
         self.chk_view_drawing.setObjectName(u"chk_view_drawing")
-        self.chk_view_drawing.setFont(font4)
+        self.chk_view_drawing.setFont(font5)
 
         self.gridLayout_5.addWidget(self.chk_view_drawing, 14, 0, 1, 1)
 
@@ -526,7 +529,7 @@ class Ui_Dialog(object):
         self.bt_single.setObjectName(u"bt_single")
         sizePolicy.setHeightForWidth(self.bt_single.sizePolicy().hasHeightForWidth())
         self.bt_single.setSizePolicy(sizePolicy)
-        self.bt_single.setFont(font4)
+        self.bt_single.setFont(font5)
 
         self.gridLayout_5.addWidget(self.bt_single, 5, 3, 1, 6)
 
@@ -542,7 +545,7 @@ class Ui_Dialog(object):
         self.radio_raw.setObjectName(u"radio_raw")
         sizePolicy.setHeightForWidth(self.radio_raw.sizePolicy().hasHeightForWidth())
         self.radio_raw.setSizePolicy(sizePolicy)
-        self.radio_raw.setFont(font4)
+        self.radio_raw.setFont(font5)
         self.radio_raw.setLayoutDirection(Qt.LeftToRight)
 
         self.gridLayout_5.addWidget(self.radio_raw, 14, 1, 1, 1)
@@ -551,7 +554,7 @@ class Ui_Dialog(object):
         self.progressBar_svc.setObjectName(u"progressBar_svc")
         sizePolicy.setHeightForWidth(self.progressBar_svc.sizePolicy().hasHeightForWidth())
         self.progressBar_svc.setSizePolicy(sizePolicy)
-        self.progressBar_svc.setFont(font4)
+        self.progressBar_svc.setFont(font5)
         self.progressBar_svc.setValue(24)
 
         self.gridLayout_5.addWidget(self.progressBar_svc, 6, 0, 1, 9)
@@ -560,10 +563,10 @@ class Ui_Dialog(object):
         self.e_averaging_number.setObjectName(u"e_averaging_number")
         sizePolicy.setHeightForWidth(self.e_averaging_number.sizePolicy().hasHeightForWidth())
         self.e_averaging_number.setSizePolicy(sizePolicy)
-        font6 = QFont()
-        font6.setPointSize(16)
-        font6.setBold(True)
-        self.e_averaging_number.setFont(font6)
+        font7 = QFont()
+        font7.setPointSize(16)
+        font7.setBold(True)
+        self.e_averaging_number.setFont(font7)
         self.e_averaging_number.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_5.addWidget(self.e_averaging_number, 13, 8, 1, 1)
@@ -581,13 +584,13 @@ class Ui_Dialog(object):
         self.chk_continue.setObjectName(u"chk_continue")
         sizePolicy.setHeightForWidth(self.chk_continue.sizePolicy().hasHeightForWidth())
         self.chk_continue.setSizePolicy(sizePolicy)
-        self.chk_continue.setFont(font4)
+        self.chk_continue.setFont(font5)
 
         self.gridLayout_5.addWidget(self.chk_continue, 5, 0, 1, 3)
 
         self.label = QLabel(self.groupBox_SlitViewCamera)
         self.label.setObjectName(u"label")
-        self.label.setFont(font6)
+        self.label.setFont(font7)
         self.label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.label, 7, 4, 1, 3)
@@ -614,13 +617,13 @@ class Ui_Dialog(object):
         self.bt_slow_guide.setObjectName(u"bt_slow_guide")
         sizePolicy.setHeightForWidth(self.bt_slow_guide.sizePolicy().hasHeightForWidth())
         self.bt_slow_guide.setSizePolicy(sizePolicy)
-        self.bt_slow_guide.setFont(font4)
+        self.bt_slow_guide.setFont(font5)
 
         self.gridLayout_5.addWidget(self.bt_slow_guide, 13, 0, 1, 3)
 
         self.label_cur_Idx = QLabel(self.groupBox_SlitViewCamera)
         self.label_cur_Idx.setObjectName(u"label_cur_Idx")
-        self.label_cur_Idx.setFont(font6)
+        self.label_cur_Idx.setFont(font7)
         self.label_cur_Idx.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.label_cur_Idx, 13, 4, 1, 3)
@@ -638,7 +641,7 @@ class Ui_Dialog(object):
         self.e_svc_fowler_number.setObjectName(u"e_svc_fowler_number")
         sizePolicy.setHeightForWidth(self.e_svc_fowler_number.sizePolicy().hasHeightForWidth())
         self.e_svc_fowler_number.setSizePolicy(sizePolicy)
-        self.e_svc_fowler_number.setFont(font5)
+        self.e_svc_fowler_number.setFont(font6)
         self.e_svc_fowler_number.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_5.addWidget(self.e_svc_fowler_number, 3, 3, 1, 6)
@@ -647,7 +650,7 @@ class Ui_Dialog(object):
         self.e_repeat_file_name.setObjectName(u"e_repeat_file_name")
         sizePolicy.setHeightForWidth(self.e_repeat_file_name.sizePolicy().hasHeightForWidth())
         self.e_repeat_file_name.setSizePolicy(sizePolicy)
-        self.e_repeat_file_name.setFont(font5)
+        self.e_repeat_file_name.setFont(font6)
         self.e_repeat_file_name.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.gridLayout_5.addWidget(self.e_repeat_file_name, 8, 2, 1, 6)
@@ -684,7 +687,7 @@ class Ui_Dialog(object):
         self.e_saving_number.setObjectName(u"e_saving_number")
         sizePolicy.setHeightForWidth(self.e_saving_number.sizePolicy().hasHeightForWidth())
         self.e_saving_number.setSizePolicy(sizePolicy)
-        self.e_saving_number.setFont(font6)
+        self.e_saving_number.setFont(font7)
         self.e_saving_number.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_5.addWidget(self.e_saving_number, 7, 8, 1, 1)
@@ -702,7 +705,7 @@ class Ui_Dialog(object):
         self.radio_sub.setObjectName(u"radio_sub")
         sizePolicy.setHeightForWidth(self.radio_sub.sizePolicy().hasHeightForWidth())
         self.radio_sub.setSizePolicy(sizePolicy)
-        self.radio_sub.setFont(font4)
+        self.radio_sub.setFont(font5)
         self.radio_sub.setLayoutDirection(Qt.LeftToRight)
 
         self.gridLayout_5.addWidget(self.radio_sub, 14, 2, 1, 3)
@@ -711,7 +714,7 @@ class Ui_Dialog(object):
         self.bt_mark_sky.setObjectName(u"bt_mark_sky")
         sizePolicy.setHeightForWidth(self.bt_mark_sky.sizePolicy().hasHeightForWidth())
         self.bt_mark_sky.setSizePolicy(sizePolicy)
-        self.bt_mark_sky.setFont(font4)
+        self.bt_mark_sky.setFont(font5)
 
         self.gridLayout_5.addWidget(self.bt_mark_sky, 14, 5, 1, 4)
 
@@ -726,7 +729,7 @@ class Ui_Dialog(object):
         self.radio_zscale.setObjectName(u"radio_zscale")
         sizePolicy.setHeightForWidth(self.radio_zscale.sizePolicy().hasHeightForWidth())
         self.radio_zscale.setSizePolicy(sizePolicy)
-        self.radio_zscale.setFont(font4)
+        self.radio_zscale.setFont(font5)
         self.radio_zscale.setLayoutDirection(Qt.LeftToRight)
 
         self.gridLayout_3.addWidget(self.radio_zscale, 0, 0, 1, 1)
@@ -735,7 +738,7 @@ class Ui_Dialog(object):
         self.e_mscale_min.setObjectName(u"e_mscale_min")
         sizePolicy.setHeightForWidth(self.e_mscale_min.sizePolicy().hasHeightForWidth())
         self.e_mscale_min.setSizePolicy(sizePolicy)
-        self.e_mscale_min.setFont(font5)
+        self.e_mscale_min.setFont(font6)
         self.e_mscale_min.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_3.addWidget(self.e_mscale_min, 1, 1, 1, 1)
@@ -744,7 +747,7 @@ class Ui_Dialog(object):
         self.e_mscale_max.setObjectName(u"e_mscale_max")
         sizePolicy.setHeightForWidth(self.e_mscale_max.sizePolicy().hasHeightForWidth())
         self.e_mscale_max.setSizePolicy(sizePolicy)
-        self.e_mscale_max.setFont(font5)
+        self.e_mscale_max.setFont(font6)
         self.e_mscale_max.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_3.addWidget(self.e_mscale_max, 1, 2, 1, 1)
@@ -753,7 +756,7 @@ class Ui_Dialog(object):
         self.radio_mscale.setObjectName(u"radio_mscale")
         sizePolicy.setHeightForWidth(self.radio_mscale.sizePolicy().hasHeightForWidth())
         self.radio_mscale.setSizePolicy(sizePolicy)
-        self.radio_mscale.setFont(font4)
+        self.radio_mscale.setFont(font5)
         self.radio_mscale.setLayoutDirection(Qt.LeftToRight)
 
         self.gridLayout_3.addWidget(self.radio_mscale, 1, 0, 1, 1)
@@ -772,9 +775,9 @@ class Ui_Dialog(object):
         self.label_messagebar.setGeometry(QRect(10, 630, 551, 25))
         sizePolicy.setHeightForWidth(self.label_messagebar.sizePolicy().hasHeightForWidth())
         self.label_messagebar.setSizePolicy(sizePolicy)
-        font7 = QFont()
-        font7.setBold(True)
-        self.label_messagebar.setFont(font7)
+        font8 = QFont()
+        font8.setBold(True)
+        self.label_messagebar.setFont(font8)
         self.label_messagebar.setAlignment(Qt.AlignCenter)
         self.frame_expand = QFrame(Dialog)
         self.frame_expand.setObjectName(u"frame_expand")

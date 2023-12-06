@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on Nov 20, 2023
+Modified on Nov 29, 2023
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -231,10 +231,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.svc_header = None
         self.svc_img = None
         self.svc_img_cut = None
-        
-        self.sky_data = None
-        self.sky_exp_time = 0.
-        
+                
         self.fitsfullpath = None
         self.file_name = None
            
@@ -778,7 +775,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
             
             ny, nx = self.svc_img.shape
             self.svc_img_cut = self.svc_img[self.svc_cut_y:ny-self.svc_cut_y, self.svc_cut_x:nx-self.svc_cut_x] 
-            self.image_display(self.svc_img_cut)
+            if self.radio_raw.isChecked():
+                self.image_display(self.svc_img_cut)
+            elif self.radio_sub.isChecked():
+                self.image_display(self.subtract())
             
             self.update_sw_offset(self.svc_img, self.mask)
         
@@ -963,7 +963,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         
     def display_box(self, ax, x, y, boxcolor):
-        ax.plot(SLIT_CEN[0] - self.svc_cut_x, SLIT_CEN[1] - self.svc_cut_y, "P", color="limegreen", ms=7)
+        cen_x = SLIT_CEN[0] - self.svc_cut_x
+        cen_y = SLIT_CEN[1] - self.svc_cut_y
+        ax.plot(cen_x, cen_y, "P", color="limegreen", ms=7)
+        ax.plot([cen_x - 55, cen_x - 35], [cen_y + 35, cen_y + 55], color="limegreen") 
+        ax.plot([cen_x + 55, cen_x + 35], [cen_y - 35, cen_y - 55], color="limegreen")
         
         if not self.chk_view_drawing.isChecked():
             return
@@ -1601,30 +1605,39 @@ class MainWindow(Ui_Dialog, QMainWindow):
             
             
     def select_raw(self):
-        self.image_display(self.svc_img_cut)
-    
-    
-    def select_sub(self):
-        #20231007
-        if self.sky_exp_time <= 0:
-            return
+        self.image_display(self.svc_img_cut, False)
+
+
+    def subtract(self):
+        mark_file = "%sObsApp/mark_sky.fits" % WORKING_DIR
+        hdul = fits.open(mark_file)
+                    
+        data = hdul[0].data
+        header = hdul[0].header
+        img = np.array(data, dtype = "f")
+        hdul.close()
         
-        cor = float(self.e_svc_exp_time.text()) / self.sky_exp_time
-        imgSub_data = self.svc_img - self.sky_data*cor
+        try:
+            exp_time = float(header["EXPTIME"])
+        except:
+            exp_time = float(header["EXPTIMET"])
+        
+        cor = float(self.e_svc_exp_time.text()) / exp_time
+        imgSub_data = self.svc_img - img*cor
         
         ny, nx = imgSub_data.shape
         
-        imgSub_data_cut = imgSub_data[self.svc_cut_y:ny-self.svc_cut_y, self.svc_cut_x:nx-self.svc_cut_x]
+        return imgSub_data[self.svc_cut_y:ny-self.svc_cut_y, self.svc_cut_x:nx-self.svc_cut_x]
         
-        self.image_display(imgSub_data_cut, False)
+        
+    def select_sub(self):   
+        self.image_display(self.subtract(), False)
 
     
     def mark_sky(self):
-        # data copy?
-        
-        # read image and exposure time
-        self.sky_data = self.svc_img
-        self.sky_exp_time = float(self.svc_header["EXPTIME"])
+        # data copy
+        mark_file = "%sObsApp/mark_sky.fits" % WORKING_DIR
+        copyfile(self.fitsfullpath, mark_file)
         
 
     def select_zscale(self):
@@ -1835,6 +1848,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 msg = "%.3f sec" % self.elapsed_obs
                 self.label_time_left.setText(msg)    
                 
+                self.compare_with_SVC(float(param[3]))   
+                
             elif param[1] == "DCSS":
                 if self.acquiring[SVC]:
                     self.abort_acquisition()
@@ -1857,6 +1872,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 msg = "%.3f sec" % self.elapsed_obs
                 self.label_time_left.setText(msg)
                 
+                self.compare_with_SVC(float(param[3]))                
+                
         elif param[0] == CMD_ACQUIRERAMP_ICS:
             #print("CMD_ACQUIRERAMP_ICS from InstSeq")  
             if param[1] == "all":
@@ -1869,6 +1886,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
                 self.acquiring[H] = True
                 self.acquiring[K] = True
+                
+                self.label_data_label.setText(param[4].split(".")[0])
 
             elif param[1] == "DCSS":
                 self.label_svc_state.setText("Running")
@@ -1880,6 +1899,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
                 self.acquiring[H] = True
                 self.acquiring[K] = True
+                
+                self.label_data_label.setText(param[4].split(".")[0])
                 
         elif param[0] == CMD_STOPACQUISITION:
             if param[1] == "all":
@@ -1907,7 +1928,25 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.acquiring[K] = False
                 
         self.param_InstSeq = None
-                                        
+                               
+                               
+    #---------------------------------------------
+    # for showing warning msg, if svc exptime > HK exptime 20231130                           
+    def compare_with_SVC(self, HK_expTime):
+        SVC_expTime = float(self.e_svc_exp_time.text())
+        compare, color = None, None
+        if HK_expTime < SVC_expTime:
+            compare = "<"
+            color = "gold"
+        else:
+            compare = "/"
+            color = "green"
+            
+        msgbar = "SVC expTime: %.3f %s H and K expTime: %.3f" % (SVC_expTime, compare, HK_expTime)
+        self.QWidgetLabelColor(self.label_messagebar, color)
+        self.label_messagebar.setText(msgbar)
+        self.show_log_list(WARNING, msgbar)
+        #---------------------------------------------
                         
     def sub_data_processing(self):   
         # show value and color                    
@@ -1923,15 +1962,23 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.label_vacuum.setText(self.dpvalue)
         
         # from Uploader
+        sts, color = None, None
         if self.ig2_health == GOOD:
-            self.label_is_health.setText("Good")
-            self.QWidgetLabelColor(self.label_is_health, "green")
+            sts = "Good"
+            color = "green"
         elif self.ig2_health == WARNING:
-            self.label_is_health.setText("Warning")
-            self.QWidgetLabelColor(self.label_is_health, "gold")
+            sts = "Warning"
+            color = "gold"
         elif self.ig2_health == BAD:
-            self.label_is_health.setText("Bad")
-            self.QWidgetLabelColor(self.label_is_health, "red")
+            sts = "Bad"
+            color = "red"
+            
+        self.label_is_health.setText(sts)
+        self.QWidgetLabelColor(self.label_is_health, color)
+        
+        #msgbar = "IGRINS2 health is %s" % sts
+        #self.QWidgetLabelColor(self.label_messagebar, color)
+        #self.label_messagebar.setText(msgbar)
             
         
             
@@ -1961,6 +2008,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.bt_single.setEnabled(True)
                 self.bt_slow_guide.setEnabled(True)
                 self.QWidgetBtnColor(self.bt_single, "black")
+                
+                self.e_svc_exp_time.setText(param[2])
 
             elif param[0] == CMD_SETFSPARAM_ICS: 
                 if not self.acquiring[SVC]:
@@ -1968,6 +2017,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
                 if not self.dcss_setparam:  
                     return
+                
+                self.e_svc_exp_time.setText(param[2])
                     
                 self.dcss_setparam = False
                 msg = "%s DCSS %d 0" % (CMD_ACQUIRERAMP_ICS, self.simulation)
