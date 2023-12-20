@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on Nov 29, 2023
+Modified on Dec 13, 2023
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -1440,7 +1440,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.svc_mode = SINGLE_MODE
             self.stop_clicked = True
             
-            
+    # 0 - not taking / 1 - conti / 2 - slow guide    
     def status_iamge_taking(self, start):
         msg = "%s %d" % (OBSAPP_TAKING_IMG, start)
         self.publish_to_queue(msg)
@@ -1455,7 +1455,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             if self.svc_mode == CONT_MODE:
                 self.bt_single.setText("Stop")                
                 self.stop_clicked = False
-                self.status_iamge_taking(True)
+                self.status_iamge_taking(1)
             else:
                 self.bt_single.setText("Abort")
                 
@@ -1467,7 +1467,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         else:       
             if self.svc_mode == CONT_MODE:     
                 self.stop_clicked = True   
-                self.status_iamge_taking(False)
+                self.status_iamge_taking(0)
             else:
                 self.abort_acquisition()       
             
@@ -1588,7 +1588,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.bt_single.setEnabled(False)
             self.QWidgetBtnColor(self.bt_single, "silver")
             
-            self.status_iamge_taking(True)
+            self.status_iamge_taking(2)
             
         else:
             self.bt_slow_guide.setText("Slow Guide") 
@@ -1597,7 +1597,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.bt_single.setEnabled(True)
             self.QWidgetBtnColor(self.bt_single, "black")
             
-            self.status_iamge_taking(False)
+            self.status_iamge_taking(0)
             
         
     def view_drawing(self):
@@ -1815,8 +1815,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
             # current frame - A or B, A and B coordination
             
         elif param[0] == INSTSEQ_PQ:
-            offset_p = int(param[1])
-            offset_q = int(param[2])
+            offset_p = float(param[1])
+            offset_q = float(param[2])
             if (offset_p == 0 and offset_q > 0) or (offset_p == 0 and offset_q == 0):    
                 self.cur_frame = A_BOX
             elif offset_p == 0 and offset_q < 0:  
@@ -2270,7 +2270,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
 if __name__ == "__main__":
     
     app = QApplication()
-    sys.argv.append("True")
+    #sys.argv.append("True")
     ObsApp = MainWindow(sys.argv[1])
     ObsApp.show()
     #ObsApp.connect_to_server_dcs_q()

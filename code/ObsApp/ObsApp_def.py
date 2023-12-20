@@ -15,6 +15,7 @@ import os
 
 dir = os.getcwd().split("/")
 WORKING_DIR = "/" + dir[1] + "/" + dir[2] + "/"
+print("WORKING_DIR:", WORKING_DIR)
 
 MAIN = "MAIN"
 HK = "HK"
