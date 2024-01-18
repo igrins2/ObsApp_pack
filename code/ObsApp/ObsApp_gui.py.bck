@@ -276,22 +276,18 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         # Instrument Status
         self.label_is_health.setText("---")
-        self.label_ics_health.setText("---")
-        self.label_dcss_health.setText("---")
-        self.label_dcsh_health.setText("---")
-        self.label_dcsk_health.setText("---")
         self.label_GDSN_connection.setText("---")
         self.label_GMP_connection.setText("---")
         self.label_state.setText("Idle")
         self.label_action_state.setText("---")        
         
+        self.label_vacuum.setText("---")
         self.label_temp_detH.setText("---")
-        #self.label_vacuum.setText("---")
         self.label_temp_detK.setText("---")
         self.label_temp_detS.setText("---")
-        #self.label_heater_detH.setText("---")
-        #self.label_heater_detK.setText("---")
-        #self.label_heater_detS.setText("---")   
+        self.label_heater_detH.setText("---")
+        self.label_heater_detK.setText("---")
+        self.label_heater_detS.setText("---")   
         
         # Science Observation
         self.label_data_label.setText("---")
@@ -2196,14 +2192,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # show value and color                    
         self.QShowValue(self.label_temp_detS, self.label_list[TMC2_A])
         self.QShowValue(self.label_temp_detK, self.label_list[TMC2_B])
-        #self.label_heater_detS.setText(self.heatlabel[self.label_list[TMC2_A]])
-        #self.label_heater_detK.setText(self.heatlabel[self.label_list[TMC2_B]])
+        self.label_heater_detS.setText(self.heatlabel[self.label_list[TMC2_A]])
+        self.label_heater_detK.setText(self.heatlabel[self.label_list[TMC2_B]])
         
         self.QShowValue(self.label_temp_detH, self.label_list[TMC3_B])
-        #self.label_heater_detH.setText(self.heatlabel[self.label_list[TMC3_B]])
+        self.label_heater_detH.setText(self.heatlabel[self.label_list[TMC3_B]])
                         
         # from VM
-        #self.label_vacuum.setText(self.dpvalue)
+        self.label_vacuum.setText(self.dpvalue)
         
         # from Uploader
         sts, color, info = None, None, INFO
@@ -2221,14 +2217,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             
         self.label_is_health.setText(sts)
         self.QWidgetLabelColor(self.label_is_health, color)
-        self.label_ics_health.setText(sts)
-        self.QWidgetLabelColor(self.label_ics_health, color)
-        self.label_dcsh_health.setText(sts)
-        self.QWidgetLabelColor(self.label_dcsh_health, color)
-        self.label_dcsk_health.setText(sts)
-        self.QWidgetLabelColor(self.label_dcsk_health, color)
-        self.label_dcss_health.setText(sts)
-        self.QWidgetLabelColor(self.label_dcss_health, color)
         
         msgbar = "IGRINS2 health is %s" % sts
         self.show_log_list(info, msgbar)
