@@ -80,7 +80,7 @@ class SW_centroid_finder():
         m1 = np.percentile(dd[~(msk0[sl])], 10)
         m2 = np.percentile(dd[msk0[sl]], 50)
         m_thresh = .5*(m1 + m2)
-        print("TTT", m1, m2, m_thresh)
+        #print("TTT", m1, m2, m_thresh)
         m_msk = yy < m_thresh
         return m_thresh, xx[m_msk], yy[m_msk]
 

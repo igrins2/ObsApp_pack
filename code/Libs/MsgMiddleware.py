@@ -9,14 +9,14 @@ Modified on Dec 15, 2022
 """
 
 import pika
-import threading
-import time as ti
-
+#import threading
+#import time as ti
+        
 # RabbitMQ communication
 class MsgMiddleware():
     
     def __init__(self, iam, ip_addr, id, pwd, exchange):
-        
+                
         self.iam = iam       
         self.ip_addr = ip_addr
         self.id = id
@@ -31,8 +31,8 @@ class MsgMiddleware():
         
     def __del__(self):
         
-        for th in threading.enumerate():
-            pass
+        #for th in threading.enumerate():
+        #    pass
             #print(th.name + f"{th.name} exit.")
             
         #print(f"'{self.iam}' closed rabbitmq queue and connections")
@@ -90,9 +90,8 @@ class MsgMiddleware():
             print(f"'{self.iam}' cannot define consumer for the '{_routing_key}' provider.")      
             raise 
                 
-        
     def start_consumer(self):
-        try:
+        try:            
             if self.queue:
                 self.channel.start_consuming()
                 
