@@ -11,17 +11,17 @@
 3. Set nfs mount
 	- dcs: server / ics, TelOps: client
 		
-		**S-192.168.1.200**
+		**S-192.168.1.11**
 
 	- ObsApp setting directory - $HOME/ObsApp
 	```
 	# dnf install nfs-utils nfs4-acl-tools
-	# showmount -e 192.168.1.200
-	# mount -t nfs 192.168.1.200:/home/dcss/DCS/Data $HOME/ObsApp/dcss
+	# showmount -e 192.168.1.11
+	# mount -t nfs 192.168.1.11:/home/dcss/DCS/Data $HOME/ObsApp/dcss
 	
 	# mount | grep nfs
 	
-	# echo "192.168.1.200:/home/dcss/DCS/Data     $HOME/ObsApp/dcss  nfs     defaults 0 0">>/etc/fstab
+	# echo "192.168.1.11:/home/dcss/DCS/Data     $HOME/ObsApp/dcss  nfs     defaults 0 0">>/etc/fstab
 	# cat /etc/fstab
 	```
 4. Start software
@@ -131,7 +131,7 @@
 	Please check in $HOME/DCS/DCS.ini".
 	```
  	[ICS]
-	ip_addr = 192.168.1.203
+	ip_addr = 192.168.1.10
 	id = igos2n
 	pwd = kasi2023
 	...
@@ -191,7 +191,7 @@
 	...
  	[MAIN]
  	...
- 	ip_addr = 192.168.1.203
+ 	ip_addr = 192.168.1.10
 	id = igos2n
 	pwd = kasi2023
  	```
