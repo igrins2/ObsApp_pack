@@ -3,7 +3,7 @@
 """
 Created on Feb 10, 2023
 
-Modified on 
+Modified on Nov 20, 2023
 
 @author: hilee
 """
@@ -15,13 +15,14 @@ import os
 
 dir = os.getcwd().split("/")
 WORKING_DIR = "/" + dir[1] + "/" + dir[2] + "/"
+print("WORKING_DIR:", WORKING_DIR)
 
 MAIN = "MAIN"
 HK = "HK"
 SC = "SC"
 DCS = "DCS"
 
-SUB_CNT = 3
+SUB_CNT = 4
 
 # LOG option
 DEBUG = "DEBUG"
@@ -46,6 +47,8 @@ SEL_LOGLIST = 10
 LIST_LOG = 11
 
 GROUPBOX_PROFILE = 12
+GROUPBOX_WITHTCS = 20
+GROUPBOX_VIEW = 21
 FRM_PROFILE = 13
 LABEL_SLIT = 14
 LABEL_STAR = 15
@@ -58,9 +61,14 @@ SW_LABEL_SLITSTAR = 19
 SVC_FRAME_X = 2048
 SVC_FRAME_Y = 2048
 
+PQ_ROT = 45
+
 SINGLE_MODE = 0
 CONT_MODE = 1
 GUIDE_MODE = 2
+
+ACQ_MODE = 0
+SLOWGUIDING_MODE = 1
 
 A_BOX = "A"
 B_BOX = "B"
@@ -79,6 +87,7 @@ IMG_EXPAND = 1
 IMG_FITTING = 2
 IMG_PROFILE = 3
 
+T_exp = 1.63
 T_frame = 1.45479
 T_br = 2
 
@@ -86,12 +95,17 @@ T_br = 2
 TMC2 = 0
 TMC3 = 1
 VM = 2
+UPLOADER = 3
 
 DEFAULT_VALUE = "-999"
 
 TMC2_A = 0
 TMC2_B = 1
 TMC3_B = 2
+
+GOOD = 0
+WARNING = 1
+BAD = 2
 
 FWHM_GUESS = 0
 FWHM_FIT = 1
@@ -104,15 +118,23 @@ BOX_CLR = "green"
 
 HK_REQ_GETVALUE = "GetValue"  #temp_ctrl, tm, vm
 
-INSTSEQ_SHOW_TCS_INFO = "ShowTCSInfo"
-OBSAPP_CAL_OFFSET = "CalOffset"
-OBSAPP_BUSY = "ObsAppBusy"
+INSTSEQ_TCS_INFO_PA = "TCSInfoPA"
+INSTSEQ_PQ = "OffsetPQ"
 
+OBSAPP_CAL_OFFSET = "CalOffset"
+OBSAPP_OUTOF_NUMBER_SVC = "Out_of_Number_SVC"
+OBSAPP_TAKING_IMG = "StartTakingImage"
+
+MOVEPOS_P_Q = "Current_p_and_q_Position"
+
+CMD_INITIALIZE1 = "Initialize1"
 CMD_INIT2_DONE = "Initialize2_Done" # to DCS
 CMD_INITIALIZE2_ICS = "Initialize2_ics"
 CMD_SETFSPARAM_ICS = "SetFSParam_ics"
 CMD_ACQUIRERAMP_ICS = "ACQUIRERAMP_ics"
 CMD_STOPACQUISITION = "STOPACQUISITION"
 
+IG2_HEALTH = "IGRINS2Health"    #0-GOOD, 1-WARNING, 2-BAD
+
 #CMD_COMPLETED = "Completed"
-EXIT = "Exit"
+#EXIT = "Exit"

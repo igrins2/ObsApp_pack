@@ -3,43 +3,64 @@ import scipy.ndimage as ni
 from scipy.optimize import leastsq
 
 def gaussian2d(fHeight,fCenterX,fCenterY,fWidth,fBackground):
-    """ Return a gaussian function with a given parameters"""
-    fWidth = float(fWidth)
-    return lambda y,x: fHeight*np.exp(-(((fCenterX - x)/fWidth)**2 + ((fCenterY - y)/fWidth)**2)/2) + fBackground
+    try:
+        """ Return a gaussian function with a given parameters"""
+        fWidth = float(fWidth)
+        return lambda y,x: fHeight*np.exp(-(((fCenterX - x)/fWidth)**2 + ((fCenterY - y)/fWidth)**2)/2) + fBackground
+    
+    except ZeroDivisionError:
+        pass
+    except ValueError:
+        pass
+    except Exception as e:
+        import traceback, sys
+        traceback.print_exc(file=sys.stdout)
 
 
 def moments2d(aData, mask=None):
     """ Return (fHeight,fCenterX,fCenterY,fWidth,fBackground) the Gaussian parameters
 of a 2D distribution by calculating its moments"""
-    ny, nx = aData.shape
-    aY, aX = np.indices(aData.shape)
 
-    if mask is not None:
-        aData2 = np.ma.array(aData, mask=~mask)
-    else:
-        aData2 = aData
-    fBackground = np.ma.median(aData2)
-    aData2 = aData2 - fBackground
-    mask_std = aData2 > 3.*np.std(aData2)
+    try:
+        ny, nx = aData.shape
+        aY, aX = np.indices(aData.shape)
 
-    if mask is not None:
-        mask = mask & mask_std
-    else:
-        mask = mask_std
+        if mask is not None:
+            aData2 = np.ma.array(aData, mask=~mask)
+        else:
+            aData2 = aData
+        fBackground = np.ma.median(aData2)
+        aData2 = aData2 - fBackground
+        mask_std = aData2 > 3.*np.std(aData2)
 
-    aData = aData[mask]
-    aY = aY[mask]
-    aX = aX[mask]
+        if mask is not None:
+            mask = mask & mask_std
+        else:
+            mask = mask_std
 
+        aData = aData[mask]
+        aY = aY[mask]
+        aX = aX[mask]
 
-    fTotal = aData.sum()
-    fCenterX = (aX * aData).sum()/fTotal
-    fCenterY = (aY * aData).sum()/fTotal
+        fTotal = aData.sum()
+        if fTotal <= 0:
+            return None
+        fCenterX = (aX * aData).sum()/fTotal
+        fCenterY = (aY * aData).sum()/fTotal
 
-    fWidth = (((aY-fCenterY)**2+(aX-fCenterX)**2)**.5*aData).sum()/fTotal
-
-    fHeight =  fTotal/(np.pi*fWidth)**2 #- fBackground
-    return fHeight,fCenterX,fCenterY,fWidth,fBackground
+        fWidth = (((aY-fCenterY)**2+(aX-fCenterX)**2)**.5*aData).sum()/fTotal
+        if fWidth <= 0:
+            return None
+        fHeight =  fTotal/(np.pi*fWidth)**2 #- fBackground
+        return fHeight,fCenterX,fCenterY,fWidth,fBackground
+    
+    except ZeroDivisionError:
+        pass
+    except ValueError:
+        pass
+    except Exception as e:
+        import traceback, sys
+        traceback.print_exc(file=sys.stdout)
 
 
 def fitgaussian2d(aData, aParams=None, mask=None,
@@ -48,46 +69,56 @@ def fitgaussian2d(aData, aParams=None, mask=None,
 of a 2D distribution found by a fit.
     If fit_width is False, width & background is fixed during the fit.
     """
-    if aParams is None:
-        aParams = np.array(moments2d(aData, mask))
+    try:
+        if aParams is None:
+            aParams = np.array(moments2d(aData, mask))
 
-    ny, nx = aData.shape
-    aY, aX = np.indices(aData.shape)
+        ny, nx = aData.shape
+        aY, aX = np.indices(aData.shape)
 
-    if mask is not None:
-        aData = aData[mask]
-        aY, aX = aY[mask], aX[mask]
-    else:
-        aData = aData.flat
-        aY, aX = aY.flat, aX.flat
+        if mask is not None:
+            aData = aData[mask]
+            aY, aX = aY[mask], aX[mask]
+        else:
+            aData = aData.flat
+            aY, aX = aY.flat, aX.flat
 
 
-    if fit_width:
-        def errorfunction_ls(p):
-            _f = gaussian2d(*p)
-            return _f(aY, aX) - aData
+        if fit_width:
+            def errorfunction_ls(p):
+                _f = gaussian2d(*p)
+                return _f(aY, aX) - aData
 
-        r = leastsq(errorfunction_ls, aParams)[0]
-    else:
-        def errorfunction_ls(p):
-            params = list(p) + list(aParams[-2:])
+            r = leastsq(errorfunction_ls, aParams)[0]
+        else:
+            def errorfunction_ls(p):
+                params = list(p) + list(aParams[-2:])
 
-            # print(p)
-            # print(list(p))
-            # print(aParams)
-            # print(aParams[-2:])
-            # print(list(aParams[-2:]))
-            # print(params)
+                # print(p)
+                # print(list(p))
+                # print(aParams)
+                # print(aParams[-2:])
+                # print(list(aParams[-2:]))
+                # print(params)
 
-            _f = gaussian2d(*params)
-            return _f(aY, aX) - aData
+                _f = gaussian2d(*params)
+                return _f(aY, aX) - aData
 
-        r_ = leastsq(errorfunction_ls, aParams[:-2])[0]
-        r = list(r_) + list(aParams[-2:])
+            #print(errorfunction_ls, aParams)
+            #20231007
+            if aParams == None:
+                return
 
-    # print(r)
+            r_ = leastsq(errorfunction_ls, aParams[:-2])[0]
+            r = list(r_) + list(aParams[-2:])
 
-    return r
+        # print(r)
+
+        return r
+    
+    except Exception as e:
+        import traceback, sys
+        traceback.print_exc(file=sys.stdout)
 
 
 def fitgaussian2d_mask(imgdata, mask, fit_width=False, ZOOMW=32):    #fit_witdh=false
@@ -97,7 +128,7 @@ def fitgaussian2d_mask(imgdata, mask, fit_width=False, ZOOMW=32):    #fit_witdh=
     dm = ni.median_filter(imgdata, 3)
 
     r_initial = moments2d(dm, mask=mask)
-    print("r_initial", r_initial)
+    #print("r_initial", r_initial)
     r_final = fitgaussian2d(dm, aParams=r_initial, mask=mask,
                                 fit_width=fit_width)
 
