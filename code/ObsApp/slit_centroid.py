@@ -69,6 +69,7 @@ class MplFrame(QFrame):
         sw_slit0, sw_star0 = finder.plot(ax, pixel_scale=self.pixel_scale)
 
         sw_star_color = "green"
+        sw_star_color_pre = "gray"
         sw_star_color1 = "0.8"
         sw_slit_list = [[sw_slit0]]  # to only select before tel move.
         sw_star_colors = [sw_star_color]
@@ -78,7 +79,8 @@ class MplFrame(QFrame):
             if c == "offset":
                 sw_slit_list[-1].append(sw_slit)
                 sw_star_list.append(sw_star)
-                sw_star_colors.append(sw_star_color)
+                # modify 20240415
+                sw_star_colors.append(sw_star_color_pre)
             else:
                 sw_slit_list.append([])
                 sw_star_color = sw_star_color1

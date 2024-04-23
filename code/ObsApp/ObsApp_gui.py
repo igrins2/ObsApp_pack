@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on Feb 26, 2024
+Modified on Apr 21, 2024
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -12,6 +12,10 @@ refered from SCP of original IGRINS
 import sys, os
 from ui_ObsApp import *
 from ObsApp_def import *
+
+# add 20240417
+import ObsApp_loglist as loglist_ui
+#import ui_ObsApp_loglist as loglist_ui
 
 import threading
 
@@ -47,6 +51,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     def __init__(self, simul):  #simulation mode: True
         super().__init__()
+        
+        self.list_dlg = loglist_ui.LogListDlg()
                         
         self.init_widget_rect = []
         self.prev_widget_rect = []      
@@ -62,9 +68,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.setWindowTitle("ObsApp 2.0")     
         
         # canvas        
-        self.image_ax = [None for _ in range(3)]
-        self.image_canvas = [None for _ in range(3)]
-        for i in range(3):
+        self.image_ax = [None for _ in range(4)]
+        self.image_canvas = [None for _ in range(4)]
+        for i in range(4):
             _image_fig = Figure(figsize=(4, 4), dpi=100)
             self.image_ax[i] = _image_fig.add_subplot(111)            
             if i == 1:
@@ -82,13 +88,13 @@ class MainWindow(Ui_Dialog, QMainWindow):
         vbox_svc[1].addWidget(self.image_canvas[IMG_EXPAND])
         vbox_svc[2] = QVBoxLayout(self.frame_fitting)
         vbox_svc[2].addWidget(self.image_canvas[IMG_FITTING])
-        #vbox_svc[3] = QVBoxLayout(self.frame_profile)
-        #vbox_svc[3].addWidget(self.image_canvas[IMG_PROFILE])
+        vbox_svc[3] = QVBoxLayout(self.frame_svc_expand)
+        vbox_svc[3].addWidget(self.image_canvas[IMG_SVC_EXPAND])
         
         self.clean_ax(self.image_ax[IMG_SVC])
         self.clean_ax(self.image_ax[IMG_EXPAND])
         self.clean_ax(self.image_ax[IMG_FITTING], False)
-        #self.clean_ax(self.image_ax[IMG_PROFILE])
+        self.clean_ax(self.image_ax[IMG_SVC_EXPAND])
         
         self.image_ax[IMG_FITTING].tick_params(axis='x', labelsize=6, pad=-12)
         self.image_ax[IMG_FITTING].tick_params(axis='y', labelsize=6, pad=-14)
@@ -223,7 +229,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
            
         self._init_mask()
         
-        self.resize_enable = True
+        # remove 20240419
+        #self.resize_enable = True
         
         self.mmin, self.mmax = 0, 1000
 
@@ -310,9 +317,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.e_mscale_max.setText("5000")   
         
         #self.radio_none.setChecked(True)
-        
-        #self.editlist_loglist.clear()
-                
+                        
         # connect to rabbitmq
         self.connect_to_server_ObsApp_ex()
         
@@ -380,14 +385,19 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.auto_save_image()         
         self.set_off_slit()
         
-        #self.select_log_none()
-        self.select_log_list()
+        self.select_log_none()
         
+        self.reset_resize()
+                
         self.sw_slit_star_init()
 
         
         
-    def closeEvent(self, event: QCloseEvent) -> None:     
+    def closeEvent(self, event: QCloseEvent) -> None:    
+        
+        #self.list_dlg.hide()
+        self.list_dlg.close()
+         
         self.InstSeq_heartbeat_timer.stop()
         self.DBUploader_heartbeat_timer.stop()
            
@@ -412,11 +422,13 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     def init_events(self):
         
-        #self.editlist_loglist.setMaximumBlockCount(40)
-        self.init_widget_rect = [None for _ in range(22)]
+        self.init_widget_rect = [None for _ in range(25)]
+        
+        self.pushButton_help.clicked.connect(self.show_help)
                 
         self.image_canvas[IMG_SVC].mpl_connect('button_press_event', self.image_leftclick)
         self.image_canvas[IMG_FITTING].mpl_connect('button_press_event', self.fitting_leftclick)
+        self.image_canvas[IMG_SVC_EXPAND].mpl_connect('button_press_event', self.image_expand_leftclick)
         
         #add 20240106
         self.e_svc_exp_time.editingFinished.connect(self.judge_param)
@@ -456,6 +468,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.bt_single.setEnabled(False)
         self.bt_slow_guide.setEnabled(False)
         self.bt_set_guide_star.setEnabled(False)
+        
+        self.cmb_view_scale.currentTextChanged.connect(self.select_view_scale)
         
         
     def _init_mask(self):
@@ -913,6 +927,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         #imgdata = self.img_buffer
         
         self.clean_ax(self.image_ax[IMG_SVC])
+        self.clean_ax(self.image_ax[IMG_SVC_EXPAND])
         
         try:
             # main draw                            
@@ -924,17 +939,27 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 _min, _max = self.mmin, self.mmax
                             
             self.display_coordinate(self.image_ax[IMG_SVC], imgdata, _min, _max, self.PA)
+            
+            #cen_x = SLIT_CEN[0] - self.svc_cut_x
+            #cen_y = SLIT_CEN[1] - self.svc_cut_y
+            #ax.plot(cen_x, cen_y, "P", color="limegreen", ms=7)
+            #ax.plot([cen_x - 55, cen_x - 35], [cen_y + 35, cen_y + 55], color="limegreen") 
+            #ax.plot([cen_x + 55, cen_x + 35], [cen_y - 35, cen_y - 55], color="limegreen")
+        
             if self.chk_off_slit.isChecked():
                 self.display_box(self.image_ax[IMG_SVC], self.off_x, self.off_y, OFF_BOX_CLR)
             
             self.display_box(self.image_ax[IMG_SVC], self.A_x, self.A_y, A_BOX_CLR)
             self.display_box(self.image_ax[IMG_SVC], self.B_x, self.B_y, B_BOX_CLR)
-            
+                        
             if left_click:
                 self.display_box(self.image_ax[IMG_SVC], self.click_x, self.click_y, BOX_CLR) 
                 
             self.image_canvas[IMG_SVC].draw()
-                
+            
+            self.display_svc_expand(self.image_ax[IMG_SVC_EXPAND], imgdata, _min, _max, left_click)
+            self.image_canvas[IMG_SVC_EXPAND].draw()
+            
         except:
             pass
                 
@@ -988,14 +1013,46 @@ class MainWindow(Ui_Dialog, QMainWindow):
         imageax.arrow(cx, cy, u, v, color="cyan", width=1.5, head_width=12)
         imageax.text(cx+u*1.8, cy+v*1.8, "X", color="cyan", size=10)
         '''
+    
+    
+    def display_svc_expand(self, imageax, imgdata, vmin, vmax, left_click=False):
+        
+        view = int(self.cmb_view_scale.currentText())
+        ny, nx = imgdata.shape
+
+        slit_cen_x = int(SLIT_CEN[0]) - self.svc_cut_x
+        slit_cen_y = int(SLIT_CEN[1]) - self.svc_cut_y
+        
+        scale_x, scale_y = int(SVC_EXPAND_SCALE/view), int(SVC_EXPAND_SCALE/view)
+        y1 = np.max([0, slit_cen_y - scale_y]) 
+        y2 = np.min([ny, slit_cen_y + scale_y]) 
+        x1 = np.max([0, slit_cen_x - scale_x]) 
+        x2 = np.min([nx, slit_cen_x + scale_x]) 
+
+        expand_data = imgdata[y1:y2, x1:x2]        
+        
+        imageax.clear()  
+        imageax.imshow(expand_data, vmin=vmin, vmax=vmax, cmap='gray', origin='lower')
+                            
+        imageax.axis('off')
+        
+        imageax.set_xlim(0, scale_x*2)
+        imageax.set_ylim(0, scale_y*2)
+                
+        if self.chk_off_slit.isChecked():
+            self.display_box_expand(imageax, self.off_x, self.off_y, scale_x, scale_y, OFF_BOX_CLR)
+            
+        self.display_box_expand(imageax, self.A_x, self.A_y, scale_x, scale_y, A_BOX_CLR)
+        self.display_box_expand(imageax, self.B_x, self.B_y, scale_x, scale_y, B_BOX_CLR)
+                        
+        if left_click:
+            self.display_box_expand(imageax, self.click_x, self.click_y, BOX_CLR) 
         
         
-    def display_box(self, ax, x, y, boxcolor):
-        cen_x = SLIT_CEN[0] - self.svc_cut_x
-        cen_y = SLIT_CEN[1] - self.svc_cut_y
-        ax.plot(cen_x, cen_y, "P", color="limegreen", ms=7)
+    def display_box_expand(self, ax, x, y, cen_x, cen_y, boxcolor):
+        ax.plot(cen_x, cen_y, "P", color="limegreen", ms=10)
         ax.plot([cen_x - 55, cen_x - 35], [cen_y + 35, cen_y + 55], color="limegreen") 
-        ax.plot([cen_x + 55, cen_x + 35], [cen_y - 35, cen_y - 55], color="limegreen")
+        ax.plot([cen_x + 53, cen_x + 33], [cen_y - 33, cen_y - 53], color="limegreen")
         
         if not self.chk_view_drawing.isChecked():
             return
@@ -1008,14 +1065,35 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if (int(x) == 0 and int(y) == 0):
             return
 
-        x_pos, y_pos = (int(x)-self.svc_cut_x, int(y)-self.svc_cut_x)
+        x_pos, y_pos = (int(x)-(int(SLIT_CEN[0])-cen_x), int(y)-(int(SLIT_CEN[1])-cen_y))
 
         zbox = Rectangle( (x_pos-ZOOMW, y_pos-ZOOMW), 2*ZOOMW, 2*ZOOMW, facecolor='none', edgecolor=boxcolor)
         ax.add_patch(zbox)
 
         ax.plot([x_pos-ZOOMW+5,x_pos+ZOOMW], [y_pos, y_pos], color=boxcolor)
         ax.plot([x_pos, x_pos], [y_pos-ZOOMW,y_pos+ZOOMW-5], color=boxcolor)
-    
+        
+        
+    def display_box(self, ax, x, y, boxcolor):
+        
+        if not self.chk_view_drawing.isChecked():
+            return
+        
+        if not (np.isfinite(x) and np.isfinite(x)):
+            msg = "Invalid Value indisplay specialbox:", x, y
+            self.logger.error(msg)
+            return
+
+        if (int(x) == 0 and int(y) == 0):
+            return
+
+        x_pos, y_pos = (int(x)-self.svc_cut_x, int(y)-self.svc_cut_y)
+
+        zbox = Rectangle( (x_pos-ZOOMW, y_pos-ZOOMW), 2*ZOOMW, 2*ZOOMW, facecolor='none', edgecolor=boxcolor)
+        ax.add_patch(zbox)
+
+        ax.plot([x_pos-ZOOMW+5,x_pos+ZOOMW], [y_pos, y_pos], color=boxcolor)
+        ax.plot([x_pos, x_pos], [y_pos-ZOOMW,y_pos+ZOOMW-5], color=boxcolor)  
     
     
     # FITTING_2D_MASK from original IGRINS
@@ -1334,13 +1412,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         is_rect = widget.geometry()        
         init_rect = self.init_widget_rect[init_idx]
         
+        # Instrument Status, Science Observation
         if frame == 0:
             new_rect_top = np.rint((is_rect.top() * cur_height) / self.prev_rect.height())
             new_rect_left = init_rect.left()
             new_rect_width = init_rect.width()
             new_rect_height = np.rint((is_rect.height() * cur_height) / self.prev_rect.height())
             
-        # SVC, expand slit
+        # slit view
         elif frame == 1:
             new_rect_top = np.rint((is_rect.top() * cur_height) / self.prev_rect.height())
             new_rect_left = init_rect.left()
@@ -1365,34 +1444,56 @@ class MainWindow(Ui_Dialog, QMainWindow):
             new_rect_width = _is_rect_2.left() - _is_rect_1.right() - 6
             new_rect_height = np.rint((is_rect.height() * cur_height) / self.prev_rect.height())
             
-        # SVC A, B profile
+        # SVC expand
         elif frame == 1.3:
             new_rect_top = np.rint((is_rect.top() * cur_height) / self.prev_rect.height())
-            new_rect_left = init_rect.left()
-            _is_rect = self.groupBox_SlitViewCamera.geometry()
-            new_rect_width = np.rint((is_rect.width() * cur_width) / self.prev_rect.width()) 
-            #new_rect_width = _is_rect.left() - init_rect.left() #not be solved yet!!! 20240113
+            _is_rect_1 = self.frame_svc.geometry()
+            new_rect_left = _is_rect_1.left()
+            _is_rect_2 = self.groupBox_withView.geometry()
+            #new_rect_width = np.rint((is_rect.width() * cur_width) / self.prev_rect.width()) 
+            new_rect_width = _is_rect_2.left() - _is_rect_1.left() - 6 
             new_rect_height = np.rint((is_rect.height() * cur_height) / self.prev_rect.height())
             
-        elif frame == 2:
+        # groupbox for SVC expand
+        elif frame == 1.4:
             new_rect_top = np.rint((is_rect.top() * cur_height) / self.prev_rect.height())
-            _is_rect = self.listWidget_log.geometry()
-            new_rect_left = _is_rect.left() - init_rect.width() - 9
+            _is_rect_1 = self.groupBox_SlitViewCamera.geometry()
+            new_rect_left = _is_rect_1.left() - init_rect.width() - 6
+            
             new_rect_width = init_rect.width()
             new_rect_height = np.rint((is_rect.height() * cur_height) / self.prev_rect.height())
             
+        elif frame == 2:
+            new_rect_top = np.rint((is_rect.top() * cur_height) / self.prev_rect.height())            
+            new_rect_left = cur_width - init_rect.width() - 9
+            new_rect_width = init_rect.width()
+            new_rect_height = np.rint((is_rect.height() * cur_height) / self.prev_rect.height())
+        
         elif frame == 2.1:
+            new_rect_top = init_rect.top()
+            _is_rect = self.groupBox_profile.geometry()         
+            new_rect_left = init_rect.left()
+            new_rect_width = init_rect.width()
+            new_rect_height = np.rint((_is_rect.height() * cur_height) / self.prev_rect.height()) - 20
+            
+        elif frame == 2.2:
+            _is_rect = self.frame_profile.geometry() 
+            new_rect_top = _is_rect.height()
+            new_rect_left = init_rect.left()
+            new_rect_width = init_rect.width()
+            new_rect_height = init_rect.height()
+
+        elif frame == 2.3:
             new_rect_top = np.rint((is_rect.top() * cur_height) / self.prev_rect.height())
-            _is_rect = self.groupBox_SlitViewCamera.geometry()
             new_rect_left = np.rint((is_rect.left() * cur_width) / self.prev_rect.width())
             new_rect_width = init_rect.width()
             new_rect_height = init_rect.height()
             
-        elif frame == 3:
-            new_rect_top = np.rint((is_rect.top() * cur_height) / self.prev_rect.height())
-            new_rect_left = cur_width - init_rect.width() - 9
-            new_rect_width = init_rect.width()
-            new_rect_height = np.rint((is_rect.height() * cur_height) / self.prev_rect.height())
+        #elif frame == 3:
+        #    new_rect_top = np.rint((is_rect.top() * cur_height) / self.prev_rect.height())
+        #    new_rect_left = cur_width - init_rect.width() - 9
+        #    new_rect_width = init_rect.width()
+        #    new_rect_height = np.rint((is_rect.height() * cur_height) / self.prev_rect.height())
                     
         if new_rect_width >= init_rect.width() or new_rect_height >= init_rect.height():
             widget.setGeometry(new_rect_left, new_rect_top, new_rect_width, new_rect_height)
@@ -1401,32 +1502,21 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.prev_widget_rect[init_idx] = init_rect
         
-        
+    
+            
     def show_log_list(self, log_option, msg):
-        if self.radio_show_loglist.isChecked():
-            if self.listWidget_log.count() >= 70:
-                self.listWidget_log.takeItem(0)
-            self.listWidget_log.addItem(msg)
-            
-            if self.listWidget_log.count() != 0:
-                if log_option == WARNING:
-                    self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("gold"))
-                elif log_option == ERROR:
-                    self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("red"))
-                else:
-                    #print("OBSAPP_CAL_OFFSET:",msg)
-                    if msg.find(OBSAPP_CAL_OFFSET) >= 0:
-                        self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("green"))
-                    else:
-                        self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("black"))
-                    
-        self.log.send(self.iam, log_option, msg)
-            
+        # send to list message                
+        self.log.send(self.iam, log_option, msg)      
+        
+        # add 20240417 
+        self.list_dlg.show_log(log_option, msg)
         
         
     def move_to_telescope(self, dp, dq, mode=ACQ_MODE):
         msg = "%s %.3f %.3f %d" % (OBSAPP_CAL_OFFSET, dp, dq, mode)
         self.publish_to_queue(msg) 
+        
+        #self.sw_slit_star_push_tel_move()
 
 
     # unit pixel -> arcsec
@@ -1450,14 +1540,17 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     def resizeEvent(self, event: QResizeEvent) -> None:
         
-        if not self.resize_enable:
-            return
+        # remove 20240419
+        #if not self.resize_enable:
+        #    return
         
         cur_width = event.size().width()
         cur_height = event.size().height()
         
         if cur_width < self.min_rect.width() or cur_height < self.min_rect.height():
-            self.setGeometry(QRect(0, 0, self.min_rect.width(), self.min_rect.height()))
+            #self.setGeometry(QRect(0, 0, self.min_rect.width(), self.min_rect.height()))
+            self.setGeometry(self.min_rect.left(), self.min_rect.top(), self.min_rect.width(), self.min_rect.height())
+            #print(self.min_rect.left(), self.min_rect.top(), self.min_rect.width(), self.min_rect.height())
             return
 
         self.widget_resize(cur_width, cur_height, self.groupBox_InstrumentStatus, GROUPBOX_IS, 0)   
@@ -1467,29 +1560,31 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.widget_resize(cur_width, cur_height, self.frame_expand, FRM_EXPAND, 1.1)
         self.widget_resize(cur_width, cur_height, self.frame_fitting, FRM_FITTING, 1.2)
         
-        self.widget_resize(cur_width, cur_height, self.groupBox_profile, GROUPBOX_PROFILE, 1.3)
-        self.widget_resize(cur_width, cur_height, self.frame_profile, FRM_PROFILE, 1.3)
-        self.widget_resize(cur_width, cur_height, self.label_slit, LABEL_SLIT, 1)
-        self.widget_resize(cur_width, cur_height, self.label_star, LABEL_STAR, 1)
-        self.widget_resize(cur_width, cur_height, self.label_star_slit, LABEL_SLITSTAR, 1)
-        self.widget_resize(cur_width, cur_height, self.label_sw_slit, SW_LABEL_SLIT, 1)
-        self.widget_resize(cur_width, cur_height, self.label_sw_star, SW_LABEL_STAR, 1)
-        self.widget_resize(cur_width, cur_height, self.label_sw_star_slit, SW_LABEL_SLITSTAR, 1)
+        self.widget_resize(cur_width, cur_height, self.frame_svc_expand, FRM_SVC_EXPAND, 1.3)
+        
+        self.widget_resize(cur_width, cur_height, self.groupBox_withView, GROUPBOX_WITHVIEW, 1.4)
         
         self.widget_resize(cur_width, cur_height, self.groupBox_SlitViewCamera, GROUPBOX_SVC, 2)
         self.widget_resize(cur_width, cur_height, self.groupBox_withTCS, GROUPBOX_WITHTCS, 2)
         self.widget_resize(cur_width, cur_height, self.groupBox_zscale, GROUPBOX_SCALE, 2)
         self.widget_resize(cur_width, cur_height, self.groupBox_view, GROUPBOX_VIEW, 2)
+        self.widget_resize(cur_width, cur_height, self.groupBox_profile, GROUPBOX_PROFILE, 2)
         
-        
+        self.widget_resize(cur_width, cur_height, self.frame_profile, FRM_PROFILE, 2.1)
+        self.widget_resize(cur_width, cur_height, self.label_slit, LABEL_SLIT, 2.2)
+        self.widget_resize(cur_width, cur_height, self.label_star, LABEL_STAR, 2.2)
+        self.widget_resize(cur_width, cur_height, self.label_star_slit, LABEL_SLITSTAR, 2.2)
+        self.widget_resize(cur_width, cur_height, self.label_sw_slit, SW_LABEL_SLIT, 2.2)
+        self.widget_resize(cur_width, cur_height, self.label_sw_star, SW_LABEL_STAR, 2.2)
+        self.widget_resize(cur_width, cur_height, self.label_sw_star_slit, SW_LABEL_SLITSTAR, 2.2)
+                
+        self.widget_resize(cur_width, cur_height, self.pushButton_help, HELP_BTN, 0)
         self.widget_resize(cur_width, cur_height, self.label_messagebar, LABEL_MSG, 0)
         
-        self.widget_resize(cur_width, cur_height, self.radio_none, SEL_NONE, 2.1)
-        self.widget_resize(cur_width, cur_height, self.radio_show_logfile, SEL_LOGFILE, 2.1)
-        self.widget_resize(cur_width, cur_height, self.radio_show_loglist, SEL_LOGLIST, 2.1)
+        self.widget_resize(cur_width, cur_height, self.radio_none, SEL_NONE, 2.3)
+        self.widget_resize(cur_width, cur_height, self.radio_show_logfile, SEL_LOGFILE, 2.3)
+        self.widget_resize(cur_width, cur_height, self.radio_show_loglist, SEL_LOGLIST, 2.3)
         
-        self.widget_resize(cur_width, cur_height, self.listWidget_log, LIST_LOG, 3)
-
         self.prev_rect = self.geometry()
         
         return super().resizeEvent(event)    
@@ -1519,6 +1614,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
         elif self.radio_sub.isChecked():
             self.reload_img(self.subtract(), True)
                 
+    
+    def image_expand_leftclick(self, event):
+        pass
+    
                 
     def fitting_leftclick(self, event):
         if self.fitting_clicked:
@@ -1527,6 +1626,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.fitting_clicked = True
             
         self.show_GaussianFitting()
+        
+        
+    def show_help(self):
+        # show log file
+        logpath = WORKING_DIR + 'ObsApp/ObsApp-Help.pdf'
+        subprocess.Popen(['xdg-open', logpath])
         
         
     def judge_param(self):
@@ -1705,6 +1810,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     def slow_guide(self):
                 
+        # add 20240415
+        self.sw_slit_star_init()
+            
         self.svc_mode = GUIDE_MODE
         
         if self.bt_slow_guide.text() == "Slow Guide":
@@ -1731,6 +1839,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.stop_clicked = True
             
             self.status_image_taking(0)
+            
             
         
     def view_drawing(self):
@@ -1797,44 +1906,50 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.reload_img(self.subtract())
     
     
-    def select_log_none(self):
-        self.resize_enable = False
-        
+    def select_log_none(self):        
         self.radio_none.setChecked(True)
         self.radio_show_logfile.setChecked(False)
         self.radio_show_loglist.setChecked(False)
         
-        self.setGeometry(QRect(0, 0, 875, 660))
-        self.reset_resize()
+        self.list_dlg.hide()
+        
+        #self.setGeometry(QRect(0, 0, 875, 660))
             
     
-    def select_log_file(self):
-        self.resize_enable = False
-        
+    def select_log_file(self):        
         self.radio_none.setChecked(False)
         self.radio_show_logfile.setChecked(True)
         self.radio_show_loglist.setChecked(False)
         
-        self.setGeometry(QRect(0, 0, 875, 660))
-        self.reset_resize()
+        #self.setGeometry(QRect(0, 0, 875, 660))
+        
+        self.list_dlg.hide()
     
         # show log file
         logpath = WORKING_DIR + self.iam + '/Log/' + ti.strftime("%Y%m%d", ti.localtime())+".log"
         subprocess.Popen(['xdg-open', logpath])
         
         
-    def select_log_list(self):
-        self.resize_enable = False
-        
+    def select_log_list(self):        
         self.radio_none.setChecked(False)
         self.radio_show_logfile.setChecked(False)
         self.radio_show_loglist.setChecked(True)
-        
-        #self.editlist_loglist.clear()
-        
+
         # show listview
-        self.setGeometry(QRect(0, 0, 1186, 660))     
-        self.reset_resize()
+        #win_rect = self.childrenRect()
+        #print(win_rect.right(), win_rect.top())
+        #self.list_dlg.dlg_init(win_rect.width(), win_rect.height())
+
+        self.list_dlg.show()
+        
+        #self.setGeometry(QRect(0, 0, 1186, 660))     
+        
+        
+    def select_view_scale(self):
+        if self.radio_raw.isChecked():
+            self.reload_img(self.svc_img_cut)
+        elif self.radio_sub.isChecked():
+            self.reload_img(self.subtract())     
         
         
     def reset_resize(self):
@@ -1846,34 +1961,36 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.init_widget_rect[GROUPBOX_SO] = self.groupBox_ScienceObservation.geometry()    # GROUPBOX_SO
         
         self.init_widget_rect[GROUPBOX_PROFILE] = self.groupBox_profile.geometry()          # GROUPBOX_PROFILE
-        self.init_widget_rect[FRM_PROFILE] = self.frame_profile.geometry()                  # FRM_PROFILE
         
+        
+        self.init_widget_rect[FRM_PROFILE] = self.frame_profile.geometry()                  # FRM_PROFILE
         self.init_widget_rect[LABEL_SLIT] = self.label_slit.geometry()                   # LABEL_SLIT
         self.init_widget_rect[LABEL_STAR] = self.label_star.geometry()                   # LABEL_STAR
         self.init_widget_rect[LABEL_SLITSTAR] = self.label_star_slit.geometry()               # LABEL_SLITSTAR
         self.init_widget_rect[SW_LABEL_SLIT] = self.label_sw_slit.geometry()                # SW_LABEL_SLIT
         self.init_widget_rect[SW_LABEL_STAR] = self.label_sw_star.geometry()                # SW_LABEL_STAR
         self.init_widget_rect[SW_LABEL_SLITSTAR] = self.label_sw_star_slit.geometry()            # SW_LABEL_SLITSTAR
-        
             
         self.init_widget_rect[FRM_EXPAND] = self.frame_expand.geometry()                    # FRM_EXPAND
         self.init_widget_rect[FRM_FITTING] = self.frame_fitting.geometry()                  # FRM_FITTING
         self.init_widget_rect[FRM_SVC] = self.frame_svc.geometry()                          # FRM_SVC
-            
+        self.init_widget_rect[FRM_SVC_EXPAND] = self.frame_svc_expand.geometry()  
+        
+        self.init_widget_rect[GROUPBOX_WITHVIEW] = self.groupBox_withView.geometry()          
         self.init_widget_rect[GROUPBOX_SVC] = self.groupBox_SlitViewCamera.geometry()       # GROUPBOX_SVC
         self.init_widget_rect[GROUPBOX_WITHTCS] = self.groupBox_withTCS.geometry()       # GROUPBOX_WITHTCS
         self.init_widget_rect[GROUPBOX_SCALE] = self.groupBox_zscale.geometry()             # GROUPBOX_SCALE
         self.init_widget_rect[GROUPBOX_VIEW] = self.groupBox_view.geometry()             # GROUPBOX_VIEW
         self.init_widget_rect[LABEL_MSG] = self.label_messagebar.geometry()                 # LABEL_MSG
+        self.init_widget_rect[HELP_BTN] = self.pushButton_help.geometry()                 
         
         self.init_widget_rect[SEL_NONE] = self.radio_none.geometry()                        # SEL_NONE
         self.init_widget_rect[SEL_LOGFILE] = self.radio_show_logfile.geometry()             # SEL_LOGFILE
-        self.init_widget_rect[SEL_LOGLIST] = self.radio_show_loglist.geometry()             # SEL_LOGLIST
-        self.init_widget_rect[LIST_LOG] = self.listWidget_log.geometry()                  # LIST_LOG
-        
+        self.init_widget_rect[SEL_LOGLIST] = self.radio_show_loglist.geometry()             # SEL_LOGLIST        
         self.prev_widget_rect = self.init_widget_rect
         
-        self.resize_enable = True
+        # remove 20240419
+        #self.resize_enable = True
         
      
     
@@ -2126,6 +2243,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.acquiring[H] = False
             self.acquiring[K] = False
             
+            # add 20240422
+            self.status_image_taking(0)
+            
             '''
             if param[1] == "all":
                 #self.cur_prog_step[SVC] = 100
@@ -2360,6 +2480,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             self.cur_guide_cnt = 0 
                             self.center_ra = []
                             self.center_dec = []
+                            
+                            # add 20240415
+                            self.sw_slit_star_init()
                     
                     #if self.cur_save_cnt == 0:
                     #    msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
@@ -2421,6 +2544,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.enable_dcss(True)
                 
                 self.acquiring[SVC] = False
+                
+                # add 20240422
+                self.status_image_taking(0)
                         
         except ZeroDivisionError:
             print("ZeroDivisionError")
@@ -2546,7 +2672,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                                             sw_slit,
                                             sw_star))
         self.sw_slit_star_gc()
-
+        
 
 if __name__ == "__main__":
     

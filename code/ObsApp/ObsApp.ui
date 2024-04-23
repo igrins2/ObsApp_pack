@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1186</width>
-    <height>662</height>
+    <width>892</width>
+    <height>733</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -32,9 +32,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>10</y>
+     <y>6</y>
      <width>221</width>
-     <height>388</height>
+     <height>431</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -51,8 +51,8 @@
    <property name="title">
     <string/>
    </property>
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" colspan="5">
+   <layout class="QGridLayout" name="gridLayout_7">
+    <item row="0" column="0" colspan="4">
      <widget class="QLabel" name="label_g1">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -83,6 +83,28 @@
       </property>
       <property name="text">
        <string>♥</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="2">
+     <widget class="QLabel" name="label_g1_1">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>IGRINS-2</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
@@ -122,7 +144,7 @@
       </property>
      </widget>
     </item>
-    <item row="2" column="3" colspan="2">
+    <item row="2" column="3">
      <widget class="QLabel" name="label_state_ics">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -177,7 +199,7 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="3" colspan="2">
+    <item row="3" column="3">
      <widget class="QLabel" name="label_state_dcsh">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -232,7 +254,7 @@
       </property>
      </widget>
     </item>
-    <item row="4" column="3" colspan="2">
+    <item row="4" column="3">
      <widget class="QLabel" name="label_state_dcsk">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -287,7 +309,7 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="3" colspan="2">
+    <item row="5" column="3">
      <widget class="QLabel" name="label_state_dcss">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -346,7 +368,7 @@
       </property>
      </widget>
     </item>
-    <item row="6" column="3" colspan="2">
+    <item row="6" column="3">
      <widget class="QLabel" name="label_state_InstSeq">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -405,7 +427,7 @@
       </property>
      </widget>
     </item>
-    <item row="7" column="3" colspan="2">
+    <item row="7" column="3">
      <widget class="QLabel" name="label_state_dbuploader">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -464,7 +486,7 @@
       </property>
      </widget>
     </item>
-    <item row="8" column="3" colspan="2">
+    <item row="8" column="3">
      <widget class="QLabel" name="label_state_gmp">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -508,7 +530,7 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="4">
+    <item row="9" column="3">
      <widget class="QLabel" name="label_state">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -552,7 +574,7 @@
       </property>
      </widget>
     </item>
-    <item row="10" column="4">
+    <item row="10" column="3">
      <widget class="QLabel" name="label_action_state">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -574,73 +596,7 @@
       </property>
      </widget>
     </item>
-    <item row="11" column="4">
-     <widget class="QLabel" name="label_temp_detH">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>65.0</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="12" column="4">
-     <widget class="QLabel" name="label_temp_detK">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>65.0</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="13" column="4">
-     <widget class="QLabel" name="label_temp_detS">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>65.0</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="1" colspan="3">
+    <item row="11" column="1" colspan="2">
      <widget class="QLabel" name="label_g1_7">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -662,7 +618,29 @@
       </property>
      </widget>
     </item>
-    <item row="12" column="1" colspan="3">
+    <item row="11" column="3">
+     <widget class="QLabel" name="label_temp_detH">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>65.0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="12" column="1" colspan="2">
      <widget class="QLabel" name="label_g1_8">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -684,7 +662,29 @@
       </property>
      </widget>
     </item>
-    <item row="13" column="1" colspan="3">
+    <item row="12" column="3">
+     <widget class="QLabel" name="label_temp_detK">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>65.0</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="13" column="1" colspan="2">
      <widget class="QLabel" name="label_g1_9">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -706,8 +706,8 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="2" colspan="3">
-     <widget class="QLabel" name="label_g1_1">
+    <item row="13" column="3">
+     <widget class="QLabel" name="label_temp_detS">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -716,15 +716,15 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>12</pointsize>
+        <pointsize>10</pointsize>
         <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>IGRINS-2</string>
+       <string>65.0</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignCenter</set>
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
@@ -734,9 +734,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>400</y>
+     <y>445</y>
      <width>221</width>
-     <height>221</height>
+     <height>251</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -1063,10 +1063,10 @@
   <widget class="QGroupBox" name="groupBox_SlitViewCamera">
    <property name="geometry">
     <rect>
-     <x>560</x>
+     <x>580</x>
      <y>10</y>
      <width>301</width>
-     <height>271</height>
+     <height>255</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -1109,25 +1109,6 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="3" colspan="3">
-     <widget class="QPushButton" name="bt_single">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Exposure</string>
       </property>
      </widget>
     </item>
@@ -1263,132 +1244,6 @@
       </property>
      </widget>
     </item>
-    <item row="3" column="0" colspan="3">
-     <widget class="QLabel" name="label_g3_3">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Fowler Sampling:</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="0" colspan="3">
-     <widget class="QLabel" name="label_g3_4">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Exposure Time (sec):</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="0" colspan="3">
-     <widget class="QLabel" name="label_g3_2">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Observing State:</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="3" colspan="3">
-     <widget class="QLineEdit" name="e_svc_fowler_number">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>8</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="3" colspan="3">
-     <widget class="QLineEdit" name="e_svc_exp_time">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>8</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="2" column="3" colspan="3">
-     <widget class="QLabel" name="label_svc_state">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>---</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
     <item row="0" column="0" colspan="6">
      <widget class="QLabel" name="label_g3">
       <property name="sizePolicy">
@@ -1455,15 +1310,160 @@
       </property>
      </widget>
     </item>
+    <item row="3" column="4" colspan="2">
+     <widget class="QLineEdit" name="e_svc_fowler_number">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="4" colspan="2">
+     <widget class="QLineEdit" name="e_svc_exp_time">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>8</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="4" colspan="2">
+     <widget class="QPushButton" name="bt_single">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Exposure</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="4">
+     <widget class="QLabel" name="label_g3_4">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Exposure Time (sec):</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="4">
+     <widget class="QLabel" name="label_g3_3">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Fowler Sampling:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="4" colspan="2">
+     <widget class="QLabel" name="label_svc_state">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>---</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="4">
+     <widget class="QLabel" name="label_g3_2">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>false</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Observing State:</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
    </layout>
   </widget>
   <widget class="QGroupBox" name="groupBox_zscale">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>546</y>
+     <x>580</x>
+     <y>487</y>
      <width>301</width>
-     <height>75</height>
+     <height>70</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -1588,9 +1588,9 @@
   <widget class="QLabel" name="label_messagebar">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>630</y>
-     <width>451</width>
+     <x>50</x>
+     <y>700</y>
+     <width>521</width>
      <height>25</height>
     </rect>
    </property>
@@ -1615,10 +1615,10 @@
   <widget class="QFrame" name="frame_expand">
    <property name="geometry">
     <rect>
-     <x>231</x>
+     <x>230</x>
      <y>4</y>
-     <width>171</width>
-     <height>171</height>
+     <width>181</width>
+     <height>181</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -1649,10 +1649,10 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>390</x>
+     <x>400</x>
      <y>4</y>
-     <width>171</width>
-     <height>171</height>
+     <width>181</width>
+     <height>181</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -1680,10 +1680,10 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>231</x>
-     <y>161</y>
-     <width>331</width>
-     <height>331</height>
+     <x>230</x>
+     <y>170</y>
+     <width>351</width>
+     <height>351</height>
     </rect>
    </property>
    <property name="sizePolicy">
@@ -1714,8 +1714,8 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>630</y>
+     <x>580</x>
+     <y>700</y>
      <width>61</width>
      <height>25</height>
     </rect>
@@ -1732,8 +1732,8 @@
   <widget class="QRadioButton" name="radio_show_logfile">
    <property name="geometry">
     <rect>
-     <x>630</x>
-     <y>630</y>
+     <x>650</x>
+     <y>700</y>
      <width>116</width>
      <height>25</height>
     </rect>
@@ -1750,8 +1750,8 @@
   <widget class="QRadioButton" name="radio_show_loglist">
    <property name="geometry">
     <rect>
-     <x>750</x>
-     <y>630</y>
+     <x>770</x>
+     <y>700</y>
      <width>116</width>
      <height>25</height>
     </rect>
@@ -1768,9 +1768,9 @@
   <widget class="QGroupBox" name="groupBox_profile">
    <property name="geometry">
     <rect>
-     <x>238</x>
-     <y>490</y>
-     <width>315</width>
+     <x>580</x>
+     <y>564</y>
+     <width>301</width>
      <height>131</height>
     </rect>
    </property>
@@ -1788,7 +1788,7 @@
      <rect>
       <x>2</x>
       <y>9</y>
-      <width>311</width>
+      <width>301</width>
       <height>111</height>
      </rect>
     </property>
@@ -1814,7 +1814,7 @@
    <widget class="QLabel" name="label_star_slit">
     <property name="geometry">
      <rect>
-      <x>210</x>
+      <x>196</x>
       <y>110</y>
       <width>42</width>
       <height>19</height>
@@ -1827,7 +1827,7 @@
    <widget class="QLabel" name="label_sw_star">
     <property name="geometry">
      <rect>
-      <x>143</x>
+      <x>134</x>
       <y>110</y>
       <width>61</width>
       <height>20</height>
@@ -1840,7 +1840,7 @@
    <widget class="QLabel" name="label_sw_slit">
     <property name="geometry">
      <rect>
-      <x>40</x>
+      <x>36</x>
       <y>110</y>
       <width>61</width>
       <height>20</height>
@@ -1853,7 +1853,7 @@
    <widget class="QLabel" name="label_sw_star_slit">
     <property name="geometry">
      <rect>
-      <x>252</x>
+      <x>238</x>
       <y>110</y>
       <width>61</width>
       <height>20</height>
@@ -1872,7 +1872,7 @@
    <widget class="QLabel" name="label_slit">
     <property name="geometry">
      <rect>
-      <x>10</x>
+      <x>6</x>
       <y>110</y>
       <width>28</width>
       <height>19</height>
@@ -1885,7 +1885,7 @@
    <widget class="QLabel" name="label_star">
     <property name="geometry">
      <rect>
-      <x>107</x>
+      <x>98</x>
       <y>110</y>
       <width>33</width>
       <height>19</height>
@@ -1896,41 +1896,13 @@
     </property>
    </widget>
   </widget>
-  <widget class="QListWidget" name="listWidget_log">
-   <property name="geometry">
-    <rect>
-     <x>874</x>
-     <y>10</y>
-     <width>301</width>
-     <height>641</height>
-    </rect>
-   </property>
-   <property name="sizePolicy">
-    <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
-     <horstretch>0</horstretch>
-     <verstretch>0</verstretch>
-    </sizepolicy>
-   </property>
-   <property name="maximumSize">
-    <size>
-     <width>16777211</width>
-     <height>16777215</height>
-    </size>
-   </property>
-   <property name="horizontalScrollBarPolicy">
-    <enum>Qt::ScrollBarAsNeeded</enum>
-   </property>
-   <property name="sizeAdjustPolicy">
-    <enum>QAbstractScrollArea::AdjustIgnored</enum>
-   </property>
-  </widget>
   <widget class="QGroupBox" name="groupBox_withTCS">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>282</y>
+     <x>580</x>
+     <y>272</y>
      <width>301</width>
-     <height>211</height>
+     <height>150</height>
     </rect>
    </property>
    <property name="title">
@@ -1939,47 +1911,9 @@
    <property name="flat">
     <bool>false</bool>
    </property>
-   <layout class="QGridLayout" name="gridLayout_5">
-    <item row="5" column="4">
-     <widget class="QLabel" name="label_cur_Idx">
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>1 /</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="5" column="5">
-     <widget class="QLineEdit" name="e_averaging_number">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>5</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="4" column="1">
-     <widget class="QPushButton" name="bt_minus_p">
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="1">
+     <widget class="QPushButton" name="bt_plus_p">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -1993,12 +1927,12 @@
        </font>
       </property>
       <property name="text">
-       <string>-p</string>
+       <string>+p</string>
       </property>
      </widget>
     </item>
-    <item row="0" column="0" colspan="2">
-     <widget class="QPushButton" name="bt_center">
+    <item row="1" column="0">
+     <widget class="QPushButton" name="bt_minus_q">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -2012,11 +1946,11 @@
        </font>
       </property>
       <property name="text">
-       <string>Center</string>
+       <string>-q</string>
       </property>
      </widget>
     </item>
-    <item row="3" column="2">
+    <item row="1" column="2">
      <widget class="QPushButton" name="bt_plus_q">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2035,26 +1969,7 @@
       </property>
      </widget>
     </item>
-    <item row="5" column="0" colspan="4">
-     <widget class="QPushButton" name="bt_slow_guide">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Slow Guide</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="3" colspan="2">
+    <item row="1" column="3" colspan="2">
      <widget class="QLabel" name="label_g3_6">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2076,37 +1991,7 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="4" colspan="2">
-     <widget class="QRadioButton" name="radio_cross">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Cross</string>
-      </property>
-      <property name="autoExclusive">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="0" column="2" colspan="2">
-     <widget class="QRadioButton" name="radio_centroid">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Centroid</string>
-      </property>
-      <property name="autoExclusive">
-       <bool>true</bool>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="5">
+    <item row="1" column="5">
      <widget class="QLineEdit" name="e_offset">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2125,64 +2010,8 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="3" colspan="3">
-     <widget class="QCheckBox" name="chk_off_slit">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-       </font>
-      </property>
-      <property name="text">
-       <string>Off-slit Guide</string>
-      </property>
-     </widget>
-    </item>
-    <item row="1" column="0" colspan="3">
-     <widget class="QPushButton" name="bt_set_guide_star">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Set Guide star</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0">
-     <widget class="QPushButton" name="bt_minus_q">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>-q</string>
-      </property>
-     </widget>
-    </item>
     <item row="2" column="1">
-     <widget class="QPushButton" name="bt_plus_p">
+     <widget class="QPushButton" name="bt_minus_p">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -2196,7 +2025,64 @@
        </font>
       </property>
       <property name="text">
-       <string>+p</string>
+       <string>-p</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="4">
+     <widget class="QPushButton" name="bt_slow_guide">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Slow Guide</string>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="4">
+     <widget class="QLabel" name="label_cur_Idx">
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>1 /</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="5">
+     <widget class="QLineEdit" name="e_averaging_number">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>5</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>
@@ -2205,8 +2091,8 @@
   <widget class="QGroupBox" name="groupBox_view">
    <property name="geometry">
     <rect>
-     <x>560</x>
-     <y>494</y>
+     <x>580</x>
+     <y>429</y>
      <width>301</width>
      <height>51</height>
     </rect>
@@ -2215,19 +2101,50 @@
     <string/>
    </property>
    <layout class="QGridLayout" name="gridLayout_6">
-    <item row="0" column="0">
-     <widget class="QCheckBox" name="chk_view_drawing">
+    <item row="0" column="2">
+     <widget class="QPushButton" name="bt_mark_sky">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>9</pointsize>
+        <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>View</string>
+       <string>Mark Sky</string>
       </property>
      </widget>
     </item>
     <item row="0" column="1">
+     <widget class="QRadioButton" name="radio_sub">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
+      </property>
+      <property name="layoutDirection">
+       <enum>Qt::LeftToRight</enum>
+      </property>
+      <property name="text">
+       <string>Sub(Sky)</string>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="0">
      <widget class="QRadioButton" name="radio_raw">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -2252,32 +2169,146 @@
       </property>
      </widget>
     </item>
-    <item row="0" column="2">
-     <widget class="QRadioButton" name="radio_sub">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
+   </layout>
+  </widget>
+  <widget class="QFrame" name="frame_svc_expand">
+   <property name="enabled">
+    <bool>true</bool>
+   </property>
+   <property name="geometry">
+    <rect>
+     <x>230</x>
+     <y>505</y>
+     <width>201</width>
+     <height>201</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+     <horstretch>0</horstretch>
+     <verstretch>0</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="cursor">
+    <cursorShape>ArrowCursor</cursorShape>
+   </property>
+   <property name="mouseTracking">
+    <bool>false</bool>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::NoFrame</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+  </widget>
+  <widget class="QGroupBox" name="groupBox_withView">
+   <property name="geometry">
+    <rect>
+     <x>400</x>
+     <y>515</y>
+     <width>171</width>
+     <height>181</height>
+    </rect>
+   </property>
+   <property name="title">
+    <string/>
+   </property>
+   <property name="flat">
+    <bool>false</bool>
+   </property>
+   <layout class="QGridLayout" name="gridLayout_5">
+    <item row="0" column="0">
+     <widget class="QLabel" name="label_2">
       <property name="font">
        <font>
         <pointsize>9</pointsize>
        </font>
       </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
+      <property name="text">
+       <string>zoom</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="0" column="1">
+     <widget class="QComboBox" name="cmb_view_scale">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <item>
+       <property name="text">
+        <string>1</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>2</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>3</string>
+       </property>
+      </item>
+      <item>
+       <property name="text">
+        <string>4</string>
+       </property>
+      </item>
+     </widget>
+    </item>
+    <item row="0" column="2">
+     <widget class="QCheckBox" name="chk_view_drawing">
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+       </font>
       </property>
       <property name="text">
-       <string>Sub(Sky)</string>
+       <string>Box On</string>
+      </property>
+     </widget>
+    </item>
+    <item row="1" column="0" colspan="2">
+     <widget class="QRadioButton" name="radio_centroid">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Centroid</string>
       </property>
       <property name="autoExclusive">
        <bool>true</bool>
       </property>
      </widget>
     </item>
-    <item row="0" column="3">
-     <widget class="QPushButton" name="bt_mark_sky">
+    <item row="1" column="2">
+     <widget class="QRadioButton" name="radio_cross">
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Cross</string>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item row="3" column="0" colspan="3">
+     <widget class="QCheckBox" name="chk_off_slit">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -2286,16 +2317,66 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>10</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>Off-slit Guide</string>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="0" colspan="3">
+     <widget class="QPushButton" name="bt_set_guide_star">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
         <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>Mark Sky</string>
+       <string>Set Guide star</string>
+      </property>
+     </widget>
+    </item>
+    <item row="2" column="0" colspan="3">
+     <widget class="QPushButton" name="bt_center">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>10</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>Center</string>
       </property>
      </widget>
     </item>
    </layout>
+  </widget>
+  <widget class="QPushButton" name="pushButton_help">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>700</y>
+     <width>41</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Help</string>
+   </property>
   </widget>
  </widget>
  <tabstops>
