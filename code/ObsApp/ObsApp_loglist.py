@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Created on Apr 15, 2024
+Created on Apr 24, 2024
 
 Modified on
 
@@ -28,13 +28,10 @@ class LogListDlg(Ui_Dialog, QMainWindow):
             
         
     def dlg_init(self, x_pos, y_pos):
-        #self.listWidget_log.clear()  
-        #print(x_pos, y_pos)
         self.setGeometry(x_pos, y_pos, 322, 661)
         
     
     def show_log(self, log_option, msg):
-        #print("test")
         if self.listWidget_log.count() >= 70:
             self.listWidget_log.takeItem(0)
         self.listWidget_log.addItem(msg)
@@ -45,7 +42,6 @@ class LogListDlg(Ui_Dialog, QMainWindow):
             elif log_option == ERROR:
                 self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("red"))
             else:
-                #print("OBSAPP_CAL_OFFSET:",msg)
                 if msg.find(OBSAPP_CAL_OFFSET) >= 0:
                     self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("green"))
                 else:

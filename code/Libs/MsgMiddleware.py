@@ -3,15 +3,13 @@
 """
 Created on Nov 22, 2022
 
-Modified on Dec 15, 2022
+Modified on Apr 24, 2024
 
 @author: hilee, Francisco
 """
 
 import pika
-#import threading
-#import time as ti
-        
+
 # RabbitMQ communication
 class MsgMiddleware():
     
@@ -30,13 +28,7 @@ class MsgMiddleware():
                 
         
     def __del__(self):
-        
-        #for th in threading.enumerate():
-        #    pass
-            #print(th.name + f"{th.name} exit.")
-            
-        #print(f"'{self.iam}' closed rabbitmq queue and connections")
-      
+              
         try:
             if self.connection.is_open:
                 self.connection.close()

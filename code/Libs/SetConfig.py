@@ -17,7 +17,6 @@ def LoadConfig(path=None, interpolation=True):
 
     if interpolation:
         cfg = cp.ConfigParser()
-        #cfg = cp.SafeConfigParser()
     else:
         cfg = cp.RawConfigParser()
 
@@ -34,8 +33,6 @@ def get_ini_files(env_name, default_file):
     import os
 
     ini_path = os.environ.get(env_name, None)
-
-    # print('ini_path:', ini_path)
 
     if ini_path is None:
         ini_path = default_file

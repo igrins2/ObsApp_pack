@@ -3,7 +3,7 @@
 """
 Created on Feb 10, 2023
 
-Modified on Feb 15, 2024
+Modified on Apr 24, 2024
 
 @author: hilee
 """
@@ -47,7 +47,6 @@ HELP_BTN = 23
 SEL_NONE = 8
 SEL_LOGFILE = 9
 SEL_LOGLIST = 10
-#LIST_LOG = 11
 
 GROUPBOX_PROFILE = 12
 GROUPBOX_WITHTCS = 20

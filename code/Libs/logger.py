@@ -3,7 +3,7 @@
 """
 Created on Oct 26, 2022
 
-Modified on Dec 14, 2022
+Modified on Apr 24, 2024
 
 @author: hilee
 """
@@ -30,7 +30,6 @@ class LOG():
        
         fname = ti.strftime("%Y%m%d", ti.localtime())+".log"
         f_p_name = self.path + fname
-        #print(f_p_name)
         if os.path.isfile(f_p_name):
             file=open(f_p_name,'a+')
         else:
@@ -38,10 +37,7 @@ class LOG():
                 
         msg = "[%s:%s] %s" % (iam, level, message)    
         data = ti.strftime("%Y-%m-%d %H:%M:%S", ti.localtime()) + ": " + msg + "\n"
-        #if level != "DEBUG":    
         file.write(data)
         file.close()
 
         return data[:-1]
-        #if level != "INFO":
-        #    print(data)

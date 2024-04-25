@@ -3,11 +3,13 @@
 """
 Created on Oct 21, 2022
 
-Modified on Apr 21, 2024
+Modified on Apr 24, 2024
 
 refered from SCP of original IGRINS
 @author: hilee
 """
+
+# 20240424 remove unnecessary codes
 
 import sys, os
 from ui_ObsApp import *
@@ -15,7 +17,6 @@ from ObsApp_def import *
 
 # add 20240417
 import ObsApp_loglist as loglist_ui
-#import ui_ObsApp_loglist as loglist_ui
 
 import threading
 
@@ -35,7 +36,6 @@ from distutils.util import strtobool
 
 import subprocess
 import numpy as np
-#from scipy.ndimage.interpolation import rotate
 from scipy.optimize import curve_fit
 import astropy.io.fits as fits 
 
@@ -113,7 +113,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.ObsApp_ex = cfg.get(MAIN,  'ObsApp_exchange')     #ObsApp -> InstSeq, DCSS
         self.ObsApp_q = cfg.get(MAIN, 'ObsApp_routing_key')
                 
-        #self.temp_limit = float(cfg.get(HK, 'temp-limit'))    #for abs(normal) range
         self.Period = int(cfg.get(HK,'hk-monitor-intv'))
         
         slit_img_flip = bool(int(cfg.get(SC, 'slit-image-flip')))
@@ -125,16 +124,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             #self.slit_coord_abs_flip_func = lambda x,y: (x, y)
                     
         global SLIT_CEN, SLIT_WID, SLIT_LEN, SLIT_ANG, ZOOMW, CONTOURW, PIXELSCALE
-        #remove 20240118
-        '''
-        try:
-            tmp = cfg.get(SC, 'slit-cen').split(",")
-            SLIT_CEN = self.slit_coord_abs_flip_func(float(tmp[0]), float(tmp[1]))
-        except:
-            SLIT_CEN = (0,0)
-            msg = 'Slit Center Parameter Error: %s' % (self.cfg.get(SC, 'slit-cen'),)
-            self.show_log_list(ERROR, msg)
-        '''
+        
         tmp = cfg.get(SC, 'slit-cen').split(",")
         SLIT_CEN = float(tmp[0]), float(tmp[1])            
         SLIT_WID = float(cfg.get(SC,'slit-wid'))
@@ -147,8 +137,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         A_pos_pq = cfg.get(SC, 'A_pos_pq').split(",")
         B_pos_pq = cfg.get(SC, 'B_pos_pq').split(",")
-        #self.A_p, self.A_q = float(A_pos_pq[0]), float(A_pos_pq[1])
-        #self.B_p, self.B_q = float(B_pos_pq[0]), float(B_pos_pq[1])
         
         # modify 20240214
         A_x, A_y = self.calc_xy_to_pq(float(A_pos_pq[0]), float(A_pos_pq[1]), True)
@@ -172,11 +160,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.consumer_InstSeq = None
         self.consumer_dcs = [None for _ in range(DC_CNT)]
         self.consumer_uploader = None
-        
-        #self.Qth_dcs = [None for _ in range(DC_CNT)]
-        
-        #self.consumer_virtual_tcs = None
-        
+                
         self.param_InstSeq = None
         self.param_dcs = [None for _ in range(DC_CNT)]
         
@@ -229,14 +213,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
            
         self._init_mask()
         
-        # remove 20240419
-        #self.resize_enable = True
-        
         self.mmin, self.mmax = 0, 1000
 
-        # progress bar     
-        #self.prog_timer = [None, None]
-        #self.cur_prog_step = [None, None]
         self.prog_timer_svc = QTimer(self)
         self.prog_timer_hk = QTimer(self)
         
@@ -274,12 +252,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.label_action_state.setText("---")        
         
         self.label_temp_detH.setText("---")
-        #self.label_vacuum.setText("---")
         self.label_temp_detK.setText("---")
         self.label_temp_detS.setText("---")
-        #self.label_heater_detH.setText("---")
-        #self.label_heater_detK.setText("---")
-        #self.label_heater_detS.setText("---")   
         
         # Science Observation
         self.label_data_label.setText("---")
@@ -316,8 +290,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.e_mscale_min.setText("1000")
         self.e_mscale_max.setText("5000")   
         
-        #self.radio_none.setChecked(True)
-                        
         # connect to rabbitmq
         self.connect_to_server_ObsApp_ex()
         
@@ -325,22 +297,17 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.connect_to_server_sub_q()  #TC2, TC3, VM, uploader
         self.connect_to_server_dcs_q()  #DCSS, DCSH, DCSK
         
-        #self.connect_to_server_virtual_tcs_q()
-        
         #add 20240220 heart beat from InstSeq, DBUploader
         self.heartbeat_check_interval = 60
-        self.heartbeat_time = [ti.time(), ti.time()]
-        
-        #for idx in range(2):
-        #    self.monit_heartbeat(idx)
-            
+        self.heartbeat_time = [-200, -200]  # modify 20240422
+                    
         self.InstSeq_heartbeat_timer = QTimer(self)
-        self.InstSeq_heartbeat_timer.setInterval(self.heartbeat_check_interval)
+        self.InstSeq_heartbeat_timer.setInterval(20)
         self.InstSeq_heartbeat_timer.timeout.connect(lambda: self.monit_heartbeat(INSTSEQ_HB))
         self.InstSeq_heartbeat_timer.start()
         
         self.DBUploader_heartbeat_timer = QTimer(self)
-        self.DBUploader_heartbeat_timer.setInterval(self.heartbeat_check_interval)
+        self.DBUploader_heartbeat_timer.setInterval(20)
         self.DBUploader_heartbeat_timer.timeout.connect(lambda: self.monit_heartbeat(UPLOAD_HB))
         self.DBUploader_heartbeat_timer.start()        
         
@@ -395,7 +362,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
     def closeEvent(self, event: QCloseEvent) -> None:    
         
-        #self.list_dlg.hide()
         self.list_dlg.close()
          
         self.InstSeq_heartbeat_timer.stop()
@@ -528,71 +494,15 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.show_health_status(health, state, self.label_state_InstSeq)
         elif idx == UPLOAD_HB:
             self.show_health_status(health, state, self.label_state_dbuploader)
-        
-        #threading.Timer(self.heartbeat_check_interval, lambda: self.monit_heartbeat(idx)).start()
-
-        
-    #--------------------------------------------------------
-    # tmc2, tmc3, vm queue
-    '''
-    def connect_to_server_sub_q(self):
-        sub_list = ["tmc2", "tmc3", "vm", "uploader"]
-        
-        sub_ObsApp_ex = [sub_list[i]+'.ex' for i in range(SUB_CNT)]
-        self.consumer_sub = [None for _ in range(SUB_CNT)]
-        for idx in range(SUB_CNT):
-            self.consumer_sub[idx] = MsgMiddleware(self.iam, self.ics_ip_addr, self.ics_id, self.ics_pwd, sub_ObsApp_ex[idx])              
-            self.consumer_sub[idx].connect_to_server()
-                     
-        self.consumer_sub[TMC2].define_consumer(sub_list[TMC2]+'.q', self.callback_tmc2)
-        self.consumer_sub[TMC3].define_consumer(sub_list[TMC3]+'.q', self.callback_tmc3)
-        self.consumer_sub[VM].define_consumer(sub_list[VM]+'.q', self.callback_vm)
-        self.consumer_sub[UPLOADER].define_consumer(sub_list[UPLOADER]+'.q', self.callback_uploader)
-        
-        for idx in range(SUB_CNT):
-            th = threading.Thread(target=self.consumer_sub[idx].start_consumer)
-            th.daemon = True
-            th.start()
             
-
-    def callback_tmc2(self, ch, method, properties, body):
-        cmd = body.decode()
-        msg = "<- [TC2] %s" % cmd
-        self.show_log_list(INFO, msg)
-        param = cmd.split()
-                
-        if param[0] == HK_REQ_GETVALUE:
-            self.dtvalue[self.label_list[TMC2_A]] = self.judge_value(param[1])
-            self.dtvalue[self.label_list[TMC2_B]] = self.judge_value(param[2])
-            self.heatlabel[self.label_list[TMC2_A]] = self.judge_value(param[3])
-            self.heatlabel[self.label_list[TMC2_B]] = self.judge_value(param[4])
-            
-    
-    def callback_tmc3(self, ch, method, properties, body):
-        cmd = body.decode()
-        msg = "<- [TC3] %s" % cmd
-        self.show_log_list(INFO, msg)
-        param = cmd.split()
-                
-        if param[0] == HK_REQ_GETVALUE:
-            self.dtvalue[self.label_list[TMC3_B]] = self.judge_value(param[2])
-            self.heatlabel[self.label_list[TMC3_B]] = self.judge_value(param[3])
-            
-    
-    def callback_vm(self, ch, method, properties, body):
-        cmd = body.decode()
-        msg = "<- [VM] %s" % cmd
-        if len(cmd) < 80:
-            self.show_log_list(INFO, msg)
-        param = cmd.split()
-                    
-        if param[0] == HK_REQ_GETVALUE:
-            if len(param[1]) > 10 or param[1] == DEFAULT_VALUE:
-                self.dpvalue = DEFAULT_VALUE
-            else:
-                self.dpvalue = param[1]
-    '''            
-                
+            # add 20240422
+            if health == BAD:
+                self.show_health_status(health, self.judge_status_msg(), self.label_state_ics)
+                self.show_health_status(health, self.judge_status_msg(), self.label_state_dcss)
+                self.show_health_status(health, self.judge_status_msg(), self.label_state_dcsh)
+                self.show_health_status(health, self.judge_status_msg(), self.label_state_dcsk)
+        
+        
     def connect_to_server_sub_q(self):        
         uploader_ex = "uploader.ex"
         self.consumer_uploader = None
@@ -616,7 +526,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.heartbeat_time[UPLOAD_HB] = ti.time()
          
         elif param[0] == IG2_HEALTH:
-            #self.ig2_health = int(param[1])
             self.health[HEALTH_IG2] = int(param[1])
             self.health[HEALTH_ICS] = int(param[2])
             self.health[HEALTH_DCSS] = int(param[4])
@@ -706,9 +615,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     
     def svc_progressbar_monit(self):
-        #if self.svc_progressbar_start:
-        #    self.svc_progressbar_start = False
-        
         self.prog_timer_svc.stop()  #add 20240105
 
         self.prog_timer_svc = QTimer(self)
@@ -718,13 +624,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.cur_prog_step_svc = 0
         self.progressBar_svc.setValue(self.cur_prog_step_svc)    
         self.prog_timer_svc.start()  
-        #print("SVC progressbar: start")
                         
             
     def hk_progressbar_monit(self):
-        #if self.hk_progressbar_start:
-        #    self.hk_progressbar_start = False
-            
         self.prog_timer_hk.stop()   #add 20240105
         
         self.prog_timer_hk = QTimer(self)
@@ -734,7 +636,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.cur_prog_step_hk = 0
         self.progressBar_obs.setValue(self.cur_prog_step_hk)    
         self.prog_timer_hk.start()
-        #print("H_K progressbar: start") 
         
         self.elapsed_obs_timer = QTimer(self) 
         self.elapsed_obs_timer.setInterval(1)
@@ -757,22 +658,16 @@ class MainWindow(Ui_Dialog, QMainWindow):
         _FS_number = int(self.e_svc_fowler_number.text())
         _fowlerTime = _exptime - T_frame * _FS_number
         self.cal_waittime[SVC] = T_br + (T_frame + _fowlerTime + (2 * T_frame * _FS_number)) + T_br
-        #self.cal_waittime[SVC] = (T_frame * 2 + T_br) * 2
                     
         self.label_svc_state.setText("Running")
 
         # progress bar 
-        #self.svc_progressbar_start = True  
         self.svc_progressbar_monit()      
         
         if first:
-            #self.cur_time = ti.time()
-            
             self.dcss_setparam = True
             msg = "%s DCSS %d %.3f %d %.3f" % (CMD_SETFSPARAM_ICS, self.simulation, _exptime, _FS_number, _fowlerTime)
-            #print(_exptime, _FS_number)
         else:
-            #print(ti.time() - self.cur_time)
             msg = "%s DCSS %d 0" % (CMD_ACQUIRERAMP_ICS, self.simulation)
 
             #add 20240113
@@ -835,22 +730,15 @@ class MainWindow(Ui_Dialog, QMainWindow):
         range = "%d ~ %d" % (self.zmin, self.zmax)
         
         self.label_zscale.setText(range)
-        #self.mmin, self.mmax = np.min(imgdata), np.max(imgdata)
         self.e_mscale_min.setText("%.1f" % self.mmin)
         self.e_mscale_max.setText("%.1f" % self.mmax)
             
-        #if self.chk_autosave.isChecked():
-        #    self.save_fits(dc_idx)
-        
-        #if self.svc_mode == GUIDE_MODE:    
         if self.cur_frame == A_BOX:
             self.guide_x, self.guide_y = self.A_x, self.A_y
         elif self.cur_frame == B_BOX:
             self.guide_x, self.guide_y = self.B_x, self.B_y   
         elif self.cur_frame == OFF_BOX:
             self.guide_x, self.guide_y = self.off_x, self.off_y
-        #else:
-        #    self.guide_x, self.guide_y= self.A_x, self.A_y
                 
         if new and self.display_click(self.guide_x, self.guide_y):
             self.find_center = True
@@ -894,7 +782,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         # display pixel value and define click point in the crop image coordinate
         try:
             self.height, cen_x_in, cen_y_in, self.sigma, self.background = self.FindingCentroid(self.cropdata, self.cropmask)
-            #self.height_iMM = self.height
             
             msg = "Gaussian param P:%.0f B:%.0f X:%.1f Y:%.1f \nFWHM:%.2f" % (self.height, self.background, cen_x_in, cen_y_in, self.sigma*2.35482)
             self.show_log_list(INFO, msg)
@@ -918,14 +805,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     
     #sky, mask        
-    def reload_img(self, imgdata, left_click=False):
-        
-        #if not self.img_draw: 
-        #    return
-        
-        #self.img_draw = False
-        #imgdata = self.img_buffer
-        
+    def reload_img(self, imgdata, left_click=False):        
         self.clean_ax(self.image_ax[IMG_SVC])
         self.clean_ax(self.image_ax[IMG_SVC_EXPAND])
         
@@ -939,13 +819,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 _min, _max = self.mmin, self.mmax
                             
             self.display_coordinate(self.image_ax[IMG_SVC], imgdata, _min, _max, self.PA)
-            
-            #cen_x = SLIT_CEN[0] - self.svc_cut_x
-            #cen_y = SLIT_CEN[1] - self.svc_cut_y
-            #ax.plot(cen_x, cen_y, "P", color="limegreen", ms=7)
-            #ax.plot([cen_x - 55, cen_x - 35], [cen_y + 35, cen_y + 55], color="limegreen") 
-            #ax.plot([cen_x + 55, cen_x + 35], [cen_y - 35, cen_y - 55], color="limegreen")
-        
+                    
             if self.chk_off_slit.isChecked():
                 self.display_box(self.image_ax[IMG_SVC], self.off_x, self.off_y, OFF_BOX_CLR)
             
@@ -1002,17 +876,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         u, v = (arrow_size*np.sin(np.deg2rad(PA)), arrow_size*np.cos(np.deg2rad(PA)))
         imageax.arrow(cx, cy, u, v, color=s_color, width=2, head_width=20)
         imageax.text(cx+u*text_ratio*1.2, cy+v*text_ratio-30, "+q", color=s_color, size=10)
-
-        '''
-        PA = 0
-        u, v = (50*np.sin(np.deg2rad(PA)), 50*np.cos(np.deg2rad(PA)))
-        imageax.arrow(cx, cy, u, v, color="cyan", width=1.5, head_width=12)
-        imageax.text(cx+u*1.8, cy+v*1.8, "Y", color="cyan", size=10)
-        PA = PA + 90
-        u, v = (50*np.sin(np.deg2rad(PA)), 50*np.cos(np.deg2rad(PA)))
-        imageax.arrow(cx, cy, u, v, color="cyan", width=1.5, head_width=12)
-        imageax.text(cx+u*1.8, cy+v*1.8, "X", color="cyan", size=10)
-        '''
     
     
     def display_svc_expand(self, imageax, imgdata, vmin, vmax, left_click=False):
@@ -1110,8 +973,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 params = tmcfmask.fitgaussian2d_mask_with_saturation(imgdata, mask>0, fit_width=False)
             else:
                 params = tmcfmask.fitgaussian2d_mask_with_saturation(imgdata, mask>0, fit_width=True)
-        # fit_gaussian_func = tmcfmask.fitgaussian2d_mask_with_saturation_fixed_width
-        # params = fit_gaussian_func(data, mask>0, width=4.)
+
         if params != None:  #20231007
             height, sx, sy, sigma, background = params[0], params[1], params[2], params[3], params[4]
 
@@ -1324,9 +1186,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
             # contour level correction
             cmin, cmax = zs.zscale(contourdata)
-            #cmin = self.zmin
-            #cmax = np.max(contourdata)
-            # clevel = np.arange(cmin,cmax*1.2,int((cmax-cmin)/15))[2:]
             clevel = np.linspace(cmin,cmax*1.2, 15)[2:]
 
             scontour = self.image_ax[IMG_FITTING].contour(contourdata, levels=clevel)
@@ -1488,13 +1347,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             new_rect_left = np.rint((is_rect.left() * cur_width) / self.prev_rect.width())
             new_rect_width = init_rect.width()
             new_rect_height = init_rect.height()
-            
-        #elif frame == 3:
-        #    new_rect_top = np.rint((is_rect.top() * cur_height) / self.prev_rect.height())
-        #    new_rect_left = cur_width - init_rect.width() - 9
-        #    new_rect_width = init_rect.width()
-        #    new_rect_height = np.rint((is_rect.height() * cur_height) / self.prev_rect.height())
-                    
+                                
         if new_rect_width >= init_rect.width() or new_rect_height >= init_rect.height():
             widget.setGeometry(new_rect_left, new_rect_top, new_rect_width, new_rect_height)
         else:
@@ -1516,8 +1369,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         msg = "%s %.3f %.3f %d" % (OBSAPP_CAL_OFFSET, dp, dq, mode)
         self.publish_to_queue(msg) 
         
-        #self.sw_slit_star_push_tel_move()
-
 
     # unit pixel -> arcsec
     def calc_xy_to_pq(self, para1, para2, opposite=False):    # x-y => p-q               
@@ -1538,19 +1389,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
     #--------------------------------------------------------
     # button, event
     
-    def resizeEvent(self, event: QResizeEvent) -> None:
-        
-        # remove 20240419
-        #if not self.resize_enable:
-        #    return
-        
+    def resizeEvent(self, event: QResizeEvent) -> None:        
         cur_width = event.size().width()
         cur_height = event.size().height()
         
         if cur_width < self.min_rect.width() or cur_height < self.min_rect.height():
-            #self.setGeometry(QRect(0, 0, self.min_rect.width(), self.min_rect.height()))
             self.setGeometry(self.min_rect.left(), self.min_rect.top(), self.min_rect.width(), self.min_rect.height())
-            #print(self.min_rect.left(), self.min_rect.top(), self.min_rect.width(), self.min_rect.height())
             return
 
         self.widget_resize(cur_width, cur_height, self.groupBox_InstrumentStatus, GROUPBOX_IS, 0)   
@@ -1594,14 +1438,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if event.xdata == None or event.ydata == None:
             return
                 
-        #print("Press (frame):", event.xdata, event.ydata)
-        #print("self.prev_widget_rect[FRM_SVC]: ", self.prev_widget_rect[FRM_SVC])
         self.click_x = event.xdata + self.svc_cut_x
         self.click_y = event.ydata + self.svc_cut_y
-        #print("Press (svc):", self.click_x, self.click_y)
         
         click_p, click_q = self.calc_xy_to_pq(self.click_x-SLIT_CEN[0], self.click_y-SLIT_CEN[1])
-        #print("Press (p-q):", click_p, click_q)
         
         if self.display_click(self.click_x, self.click_y):
             self.find_center = True
@@ -1723,19 +1563,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
             newfile += ".fits"
         copyfile(self.fitsfullpath, newfile)
         
-        #msg = "%s %s" % (OBSAPP_SAVE_SVC, self.file_name)
-        #self.publish_to_queue(msg)
-        
         self.fitsfullpath = None
 
     
-    def set_center(self):
-        
-        #modify 20240105 go to center from center of the target to slit center
-        #dx = self.click_x - SLIT_CEN[0]
-        #dy = self.click_y - SLIT_CEN[1]
-        #print(dx, dy)
-        
+    def set_center(self):        
         if self.radio_centroid.isChecked():
             dx = self.cen_x - SLIT_CEN[0]
             dy = self.cen_y - SLIT_CEN[1]
@@ -1748,11 +1579,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if dx == 0 and dy == 0:
            return
         
-        #pixel -> arcsec
-        #print("set_senter (dx, dy):", dx, dy)
         dp, dq = self.calc_xy_to_pq(dx, dy)   
-        #print("set_senter (dp, dq):", dp, dq)
-        #dra, ddec = self.calc_pq_to_radec(dp, dq)
         self.move_to_telescope(dp, dq)
     
     
@@ -1793,7 +1620,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         #20231003
         if negative:
             dp *= (-1)
-        #print("move P:", dp) 
         self.move_to_telescope(dp, 0)
         
     
@@ -1803,7 +1629,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if not positive:
             dq *= (-1)
          
-        #print("move q:", dq)  
         self.move_to_telescope(0, dq)
         
     
@@ -1921,8 +1746,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.radio_show_logfile.setChecked(True)
         self.radio_show_loglist.setChecked(False)
         
-        #self.setGeometry(QRect(0, 0, 875, 660))
-        
         self.list_dlg.hide()
     
         # show log file
@@ -1935,14 +1758,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.radio_show_logfile.setChecked(False)
         self.radio_show_loglist.setChecked(True)
 
-        # show listview
-        #win_rect = self.childrenRect()
-        #print(win_rect.right(), win_rect.top())
-        #self.list_dlg.dlg_init(win_rect.width(), win_rect.height())
-
         self.list_dlg.show()
-        
-        #self.setGeometry(QRect(0, 0, 1186, 660))     
         
         
     def select_view_scale(self):
@@ -1955,7 +1771,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def reset_resize(self):
         self.min_rect = self.geometry()
         self.prev_rect = self.min_rect
-        #print(self.min_rect)
         
         self.init_widget_rect[GROUPBOX_IS] = self.groupBox_InstrumentStatus.geometry()      # GROUPBOX_IS       
         self.init_widget_rect[GROUPBOX_SO] = self.groupBox_ScienceObservation.geometry()    # GROUPBOX_SO
@@ -1988,11 +1803,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.init_widget_rect[SEL_LOGFILE] = self.radio_show_logfile.geometry()             # SEL_LOGFILE
         self.init_widget_rect[SEL_LOGLIST] = self.radio_show_loglist.geometry()             # SEL_LOGLIST        
         self.prev_widget_rect = self.init_widget_rect
-        
-        # remove 20240419
-        #self.resize_enable = True
-        
-     
+             
     
     def show_progressbar_svc(self):
         if self.cur_prog_step_svc >= 100:            
@@ -2000,7 +1811,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.progressBar_svc.setValue(100)
             return
         
-        #print(dc_idx, "show_progressbar")
         self.cur_prog_step_svc += 1
         self.progressBar_svc.setValue(self.cur_prog_step_svc)
             
@@ -2011,7 +1821,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.progressBar_obs.setValue(100)
             return
         
-        #print(dc_idx, "show_progressbar")
         self.cur_prog_step_hk += 1
         self.progressBar_obs.setValue(self.cur_prog_step_hk)
 
@@ -2022,12 +1831,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         if cur_elapsed <= 0 or self.cur_prog_step_hk >= 100:
             self.elapsed_obs_timer.stop()
             self.label_time_left.setText("0.000 sec")
-            #self.prog_timer[H_K].stop()
-            #self.progressBar_obs.setValue(100)
             return
-        
-        #print("show_elapsed")
-        #self.elapsed_obs -= 0.001
         
         msg = "%.3f sec" % cur_elapsed
         self.label_time_left.setText(msg)
@@ -2067,24 +1871,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.e_offset.setEnabled(enable)
         
         self.e_averaging_number.setEnabled(enable)
-        
-    '''    
-    def heartbeat_status(self):
-        color = ""
-        if self.ig2_health == GOOD:
-            color = "green"
-        elif self.ig2_health == WARNING:
-            color = "gold"
-        elif self.ig2_health == BAD:
-            color = "red"
-            
-        if self.heartbeat_on:
-            self.QWidgetLabelColor(self.label_heartbeat, color)
-            self.heartbeat_on = False
-        else:
-            self.QWidgetLabelColor(self.label_heartbeat, "white")
-            self.heartbeat_on = True
-    '''       
+
             
     def heartbeat_status(self, idx, label):
         color = ""
@@ -2132,10 +1919,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 # add 20240214
                 self.B_x, self.B_y = float(SLIT_CEN[0]) + _x, float(SLIT_CEN[1]) + _y
             
-            #elif offset_p != 0 and offset_q != 0: 
-                #self.cur_frame = OFF_BOX
-            #print(self.cur_frame)
-                        
             #add 20240106
             self.cur_guide_cnt = 0 
             self.label_cur_Idx.setText("0 /")
@@ -2148,20 +1931,17 @@ class MainWindow(Ui_Dialog, QMainWindow):
             if param[1] == "all":
                 if self.acquiring[SVC]:
                     self.abort_acquisition()
-                    #self.bt_single.click()
                 
                 _fowlerTime = 1.63 - T_frame * 1
                 _waittime = T_br + (T_frame + _fowlerTime + (2 * T_frame * 1)) + T_br
                 #_waittime = (T_frame * 2 + T_br) * 2
                 if self.cal_waittime[SVC] == 0:
                     self.cal_waittime[SVC] = _waittime
-                    #print("cal_waittime SVC", self.cal_waittime[SVC])
                 
                 self.label_exp_time.setText(param[3])
                 self.label_sampling_number.setText(param[4])
                 _fowlerTime = float(param[5])
                 self.cal_waittime[H_K] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[4]))) + T_br
-                #print("cal_waittime H_K", self.cal_waittime[H_K])
                 
                 self.elapsed_obs = self.cal_waittime[H_K]
                 msg = "%.3f sec" % self.elapsed_obs
@@ -2172,21 +1952,17 @@ class MainWindow(Ui_Dialog, QMainWindow):
             elif param[1] == "DCSS":
                 if self.acquiring[SVC]:
                     self.abort_acquisition()
-                    #self.bt_single.click()
                 
                 _fowlerTime = 1.63 - T_frame * 1
                 _waittime = T_br + (T_frame + _fowlerTime + (2 * T_frame * 1)) + T_br
-                #_waittime = (T_frame * 2 + T_br) * 2
                 if self.cal_waittime[SVC] == 0:
                     self.cal_waittime[SVC] = _waittime
-                    #print("cal_waittime SVC", self.cal_waittime[SVC])
             
             elif param[1] == "H_K":
                 self.label_exp_time.setText(param[3])
                 self.label_sampling_number.setText(param[4])
                 _fowlerTime = float(param[5])
                 self.cal_waittime[H_K] = T_br + (T_frame + _fowlerTime + (2 * T_frame * int(param[4]))) + T_br
-                #print("cal_waittime H_K", self.cal_waittime[H_K])
                 
                 self.elapsed_obs = self.cal_waittime[H_K]
                 msg = "%.3f sec" % self.elapsed_obs
@@ -2195,7 +1971,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.compare_with_SVC(float(param[3]))                
                 
         elif param[0] == CMD_ACQUIRERAMP_ICS:
-            #print("CMD_ACQUIRERAMP_ICS from InstSeq")  
             if param[1] == "all":
                 self.label_svc_state.setText("Running")
                 self.svc_progressbar_monit()
@@ -2211,15 +1986,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
                 #add 20240113
                 self.hk_t = ti.time()
-                #self.svc_t = ti.time()
 
             elif param[1] == "DCSS":
                 self.label_svc_state.setText("Running")
                 self.svc_progressbar_monit()
                 
-                #add 20240113
-                #self.svc_t = ti.time()
-                                            
             elif param[1] == "H_K":
                 self.label_obs_state.setText("Running")
                 self.hk_progressbar_monit()
@@ -2245,33 +2016,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             
             # add 20240422
             self.status_image_taking(0)
-            
-            '''
-            if param[1] == "all":
-                #self.cur_prog_step[SVC] = 100
-                
-                #self.cur_prog_step[H_K] = 100
-                self.prog_timer_svc.stop()
-                
-                self.prog_timer_hk.stop()
-                self.elapsed_obs_timer.stop()
-                
-                self.acquiring[H] = False
-                self.acquiring[K] = False
-                
-            elif param[1] == "SVC":
-                #self.cur_prog_step[SVC] = 100  
-                self.prog_timer_svc.stop() 
-                                
-            elif param[1] == "H_K":
-                #self.cur_prog_step[H_K] = 100
-                self.prog_timer_hk.stop()
-                self.elapsed_obs_timer.stop()
-                
-                self.acquiring[H] = False
-                self.acquiring[K] = False
-            '''
-                
+                            
         self.param_InstSeq = None
                                
                                
@@ -2329,19 +2074,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             
         label.setText(state)
         self.QWidgetLabelColor(label, color)
-               
-    '''                
-    def sub_data_processing(self):   
-        # show value and color                    
-        self.QShowValue(self.label_temp_detS, self.label_list[TMC2_A])
-        self.QShowValue(self.label_temp_detK, self.label_list[TMC2_B])
-        #self.label_heater_detS.setText(self.heatlabel[self.label_list[TMC2_A]])
-        #self.label_heater_detK.setText(self.heatlabel[self.label_list[TMC2_B]])
-        
-        self.QShowValue(self.label_temp_detH, self.label_list[TMC3_B])
-        #self.label_heater_detH.setText(self.heatlabel[self.label_list[TMC3_B]])
-    '''
-        
+                
             
     # DCS -> InstSeq (ObsApp hooking)
     def dcs_data_processing_SVC(self):   
@@ -2398,20 +2131,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 if not bool(int(param[3])):
                     return
                 
-                #remove 20240104
-                '''
-                me = True
-                if not self.acquiring[SVC]:
-                    me = False
-                self.acquiring[SVC] = False
-                '''
-                
                 self.NFS_load_time = ti.time()
                         
-                #self.prog_timer[SVC].stop()
                 self.cur_prog_step_svc = 100
-                #self.progressBar_svc.setValue(self.cur_prog_step[SVC])
-                #("SVC progressbar: stop from SVC")
                 
                 self.label_svc_state.setText("Done")
                 self.label_svc_filename.setText(param[2].split('/')[1]) 
@@ -2442,7 +2164,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     dy = self.cen_y - self.guide_y
                     #------------------------------
                     dp, dq = self.calc_xy_to_pq(dx, dy)
-                    #dra, ddec = self.calc_pq_to_radec(dp, dq)
                     
                     #add 20240113
                     print("time:", self.hk_t, self.svc_t)
@@ -2460,14 +2181,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
                         msg = "cur guide:%d, (%.3f, %.3f)" % (self.cur_guide_cnt, dp, dq)
                         self.show_log_list(ERROR, msg)
-                        #self.show_log_list(ERROR, self.center_dec)
 
                         self.label_cur_Idx.setText(str(self.cur_guide_cnt) + " /")
                         if self.cur_guide_cnt >= int(self.e_averaging_number.text()):
                             
-                            #change 20240106
-                            #cen_ra_mean = np.mean(self.center_ra)
-                            #cen_dec_mean = np.mean(self.center_dec)
                             cen_ra_mean = np.median(self.center_ra)
                             cen_dec_mean = np.median(self.center_dec)
                             
@@ -2483,10 +2200,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             
                             # add 20240415
                             self.sw_slit_star_init()
-                    
-                    #if self.cur_save_cnt == 0:
-                    #    msg = "%s %s" % (OBSAPP_SAVE_SVC, param[2])
-                    #    self.publish_to_queue(msg)
                     
                     self.cur_save_cnt += 1
                     
@@ -2569,9 +2282,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.acquiring[idx] = False
             if not self.acquiring[H] and not self.acquiring[K]:
                 self.cur_prog_step_hk = 100
-                #self.progressBar_obs.setValue(self.cur_prog_step[H_K])
-                #print("H progressbar: stop")
-
                 self.label_obs_state.setText("Done")
                 
                 #add 20240107
@@ -2600,16 +2310,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
         pixel_scale = PIXELSCALE
         self._sw_offset_finder = MplFrame(frame, 1.5, 1.,
                                           pixel_scale=pixel_scale)
-        #self._sw_offset_finder.pack(side="top")
         
         
     def update_sw_offset(self, imgdata, mask):
         
-        #cur_pos = self.cur_frame
-        #nodding_mode = self._nodding_mode
-
-        #if cur_pos not in "AB" or (cur_pos == "B" and nodding_mode != 0):
-        #if self.cur_frame == None or self.svc_mode != GUIDE_MODE or self.chk_off_slit.isChecked():
         if self.cur_frame == None or self.chk_off_slit.isChecked():
             self._sw_offset_finder.reset_image()
             return
@@ -2626,8 +2330,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             traceback.print_exc()
             return
 
-        # 1004.5, 1047.6
-        # PA = float(self.rotator.get()) + ROT_OFFSET
         PA = SLIT_ANG
 
         sw_slit_star_stack = self.sw_slit_star_get_stack()
@@ -2649,9 +2351,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         
     def sw_slit_star_get_height(self):
-        to_keep = int(min(max(5,
-                              int(self.e_averaging_number.text())),
-        10))
+        to_keep = int(min(max(5, int(self.e_averaging_number.text())), 10))
         return to_keep
     
     
@@ -2666,7 +2366,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     
     def sw_slit_star_push_offset(self, sw_slit, sw_star):
-        # i = len(self._sw_slit_star_stack)
         self._sw_slit_star_stack.insert(0, ("offset",
                                             # i,
                                             sw_slit,
