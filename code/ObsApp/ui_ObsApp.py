@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-<<<<<<< Updated upstream
-## Form generated from reading UI file 'ObsAppnMaUCC.ui'
-=======
 ## Form generated from reading UI file 'ObsAppeMjoQS.ui'
->>>>>>> Stashed changes
 ##
 ## Created by: Qt User Interface Compiler version 6.4.2
 ##
@@ -39,11 +35,7 @@ class Ui_Dialog(object):
         #Dialog.setModal(False)
         self.groupBox_InstrumentStatus = QGroupBox(Dialog)
         self.groupBox_InstrumentStatus.setObjectName(u"groupBox_InstrumentStatus")
-<<<<<<< Updated upstream
-        self.groupBox_InstrumentStatus.setGeometry(QRect(10, 10, 221, 378))
-=======
         self.groupBox_InstrumentStatus.setGeometry(QRect(10, 6, 221, 431))
->>>>>>> Stashed changes
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
@@ -64,24 +56,16 @@ class Ui_Dialog(object):
         self.label_g1.setFont(font1)
         self.label_g1.setAlignment(Qt.AlignCenter)
 
-<<<<<<< Updated upstream
-        self.gridLayout.addWidget(self.label_g1, 0, 0, 1, 3)
-=======
         self.gridLayout_7.addWidget(self.label_g1, 0, 0, 1, 4)
->>>>>>> Stashed changes
 
         self.label_heartbeat = QLabel(self.groupBox_InstrumentStatus)
         self.label_heartbeat.setObjectName(u"label_heartbeat")
         font2 = QFont()
-        font2.setPointSize(12)
+        font2.setPointSize(20)
         self.label_heartbeat.setFont(font2)
         self.label_heartbeat.setAlignment(Qt.AlignCenter)
 
-<<<<<<< Updated upstream
-        self.gridLayout.addWidget(self.label_heartbeat, 1, 0, 1, 1)
-=======
         self.gridLayout_7.addWidget(self.label_heartbeat, 1, 0, 1, 2)
->>>>>>> Stashed changes
 
         self.label_g1_1 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_1.setObjectName(u"label_g1_1")
@@ -91,39 +75,6 @@ class Ui_Dialog(object):
         font3.setPointSize(12)
         font3.setBold(True)
         self.label_g1_1.setFont(font3)
-<<<<<<< Updated upstream
-        self.label_g1_1.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_g1_1, 1, 1, 1, 1)
-
-        self.label_is_health = QLabel(self.groupBox_InstrumentStatus)
-        self.label_is_health.setObjectName(u"label_is_health")
-        sizePolicy.setHeightForWidth(self.label_is_health.sizePolicy().hasHeightForWidth())
-        self.label_is_health.setSizePolicy(sizePolicy)
-        font4 = QFont()
-        font4.setPointSize(10)
-        font4.setBold(True)
-        self.label_is_health.setFont(font4)
-        self.label_is_health.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_is_health, 1, 2, 1, 1)
-
-        self.label_g1_13 = QLabel(self.groupBox_InstrumentStatus)
-        self.label_g1_13.setObjectName(u"label_g1_13")
-        font5 = QFont()
-        font5.setPointSize(10)
-        self.label_g1_13.setFont(font5)
-        self.label_g1_13.setLayoutDirection(Qt.LeftToRight)
-        self.label_g1_13.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_g1_13, 2, 1, 1, 1)
-
-        self.label_ics_health = QLabel(self.groupBox_InstrumentStatus)
-        self.label_ics_health.setObjectName(u"label_ics_health")
-        self.label_ics_health.setFont(font4)
-
-        self.gridLayout.addWidget(self.label_ics_health, 2, 2, 1, 1)
-=======
         self.label_g1_1.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_7.addWidget(self.label_g1_1, 1, 2, 1, 1)
@@ -165,23 +116,11 @@ class Ui_Dialog(object):
         self.label_heartbeat_dcsh.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_7.addWidget(self.label_heartbeat_dcsh, 3, 0, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g1_14 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_14.setObjectName(u"label_g1_14")
         self.label_g1_14.setFont(font5)
         self.label_g1_14.setLayoutDirection(Qt.LeftToRight)
-<<<<<<< Updated upstream
-        self.label_g1_14.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_g1_14, 3, 0, 1, 2)
-
-        self.label_dcsh_health = QLabel(self.groupBox_InstrumentStatus)
-        self.label_dcsh_health.setObjectName(u"label_dcsh_health")
-        self.label_dcsh_health.setFont(font4)
-
-        self.gridLayout.addWidget(self.label_dcsh_health, 3, 2, 1, 1)
-=======
         self.label_g1_14.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_7.addWidget(self.label_g1_14, 3, 1, 1, 2)
@@ -201,23 +140,11 @@ class Ui_Dialog(object):
         self.label_heartbeat_dcsk.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_7.addWidget(self.label_heartbeat_dcsk, 4, 0, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g1_15 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_15.setObjectName(u"label_g1_15")
         self.label_g1_15.setFont(font5)
         self.label_g1_15.setLayoutDirection(Qt.LeftToRight)
-<<<<<<< Updated upstream
-        self.label_g1_15.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_g1_15, 4, 0, 1, 2)
-
-        self.label_dcsk_health = QLabel(self.groupBox_InstrumentStatus)
-        self.label_dcsk_health.setObjectName(u"label_dcsk_health")
-        self.label_dcsk_health.setFont(font4)
-
-        self.gridLayout.addWidget(self.label_dcsk_health, 4, 2, 1, 1)
-=======
         self.label_g1_15.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_7.addWidget(self.label_g1_15, 4, 1, 1, 2)
@@ -237,44 +164,13 @@ class Ui_Dialog(object):
         self.label_heartbeat_dcss.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_7.addWidget(self.label_heartbeat_dcss, 5, 0, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g1_24 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_24.setObjectName(u"label_g1_24")
         self.label_g1_24.setFont(font5)
         self.label_g1_24.setLayoutDirection(Qt.LeftToRight)
-        self.label_g1_24.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+        self.label_g1_24.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
-<<<<<<< Updated upstream
-        self.gridLayout.addWidget(self.label_g1_24, 5, 0, 1, 2)
-
-        self.label_dcss_health = QLabel(self.groupBox_InstrumentStatus)
-        self.label_dcss_health.setObjectName(u"label_dcss_health")
-        self.label_dcss_health.setFont(font4)
-
-        self.gridLayout.addWidget(self.label_dcss_health, 5, 2, 1, 1)
-
-        self.label_g1_2 = QLabel(self.groupBox_InstrumentStatus)
-        self.label_g1_2.setObjectName(u"label_g1_2")
-        sizePolicy.setHeightForWidth(self.label_g1_2.sizePolicy().hasHeightForWidth())
-        self.label_g1_2.setSizePolicy(sizePolicy)
-        font6 = QFont()
-        font6.setPointSize(10)
-        font6.setBold(False)
-        self.label_g1_2.setFont(font6)
-        self.label_g1_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_g1_2, 6, 1, 1, 1)
-
-        self.label_GDSN_connection = QLabel(self.groupBox_InstrumentStatus)
-        self.label_GDSN_connection.setObjectName(u"label_GDSN_connection")
-        sizePolicy.setHeightForWidth(self.label_GDSN_connection.sizePolicy().hasHeightForWidth())
-        self.label_GDSN_connection.setSizePolicy(sizePolicy)
-        self.label_GDSN_connection.setFont(font4)
-        self.label_GDSN_connection.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_GDSN_connection, 6, 2, 1, 1)
-=======
         self.gridLayout_7.addWidget(self.label_g1_24, 5, 1, 1, 2)
 
         self.label_state_dcss = QLabel(self.groupBox_InstrumentStatus)
@@ -345,27 +241,11 @@ class Ui_Dialog(object):
         self.label_heartbeat_gmp.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_7.addWidget(self.label_heartbeat_gmp, 8, 0, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g1_3 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_3.setObjectName(u"label_g1_3")
         sizePolicy.setHeightForWidth(self.label_g1_3.sizePolicy().hasHeightForWidth())
         self.label_g1_3.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_g1_3.setFont(font6)
-        self.label_g1_3.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_g1_3, 7, 1, 1, 1)
-
-        self.label_GMP_connection = QLabel(self.groupBox_InstrumentStatus)
-        self.label_GMP_connection.setObjectName(u"label_GMP_connection")
-        sizePolicy.setHeightForWidth(self.label_GMP_connection.sizePolicy().hasHeightForWidth())
-        self.label_GMP_connection.setSizePolicy(sizePolicy)
-        self.label_GMP_connection.setFont(font4)
-        self.label_GMP_connection.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_GMP_connection, 7, 2, 1, 1)
-=======
         self.label_g1_3.setFont(font7)
         self.label_g1_3.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
@@ -379,7 +259,6 @@ class Ui_Dialog(object):
         self.label_state_gmp.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_7.addWidget(self.label_state_gmp, 8, 3, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g1_4 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_4.setObjectName(u"label_g1_4")
@@ -388,22 +267,12 @@ class Ui_Dialog(object):
         self.label_g1_4.setFont(font7)
         self.label_g1_4.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-<<<<<<< Updated upstream
-        self.gridLayout.addWidget(self.label_g1_4, 8, 1, 1, 1)
-=======
         self.gridLayout_7.addWidget(self.label_g1_4, 9, 2, 1, 1)
->>>>>>> Stashed changes
 
         self.label_state = QLabel(self.groupBox_InstrumentStatus)
         self.label_state.setObjectName(u"label_state")
         sizePolicy.setHeightForWidth(self.label_state.sizePolicy().hasHeightForWidth())
         self.label_state.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_state.setFont(font4)
-        self.label_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_state, 8, 2, 1, 1)
-=======
         font8 = QFont()
         font8.setPointSize(10)
         font8.setBold(True)
@@ -411,7 +280,6 @@ class Ui_Dialog(object):
         self.label_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_7.addWidget(self.label_state, 9, 3, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g1_5 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_5.setObjectName(u"label_g1_5")
@@ -420,27 +288,16 @@ class Ui_Dialog(object):
         self.label_g1_5.setFont(font7)
         self.label_g1_5.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-<<<<<<< Updated upstream
-        self.gridLayout.addWidget(self.label_g1_5, 9, 1, 1, 1)
-=======
         self.gridLayout_7.addWidget(self.label_g1_5, 10, 0, 1, 3)
->>>>>>> Stashed changes
 
         self.label_action_state = QLabel(self.groupBox_InstrumentStatus)
         self.label_action_state.setObjectName(u"label_action_state")
         sizePolicy.setHeightForWidth(self.label_action_state.sizePolicy().hasHeightForWidth())
         self.label_action_state.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_action_state.setFont(font4)
-        self.label_action_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_action_state, 9, 2, 1, 1)
-=======
         self.label_action_state.setFont(font8)
         self.label_action_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_7.addWidget(self.label_action_state, 10, 3, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g1_7 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_7.setObjectName(u"label_g1_7")
@@ -449,27 +306,16 @@ class Ui_Dialog(object):
         self.label_g1_7.setFont(font7)
         self.label_g1_7.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-<<<<<<< Updated upstream
-        self.gridLayout.addWidget(self.label_g1_7, 10, 1, 1, 1)
-=======
         self.gridLayout_7.addWidget(self.label_g1_7, 11, 1, 1, 2)
->>>>>>> Stashed changes
 
         self.label_temp_detH = QLabel(self.groupBox_InstrumentStatus)
         self.label_temp_detH.setObjectName(u"label_temp_detH")
         sizePolicy.setHeightForWidth(self.label_temp_detH.sizePolicy().hasHeightForWidth())
         self.label_temp_detH.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_temp_detH.setFont(font4)
-        self.label_temp_detH.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_temp_detH, 10, 2, 1, 1)
-=======
         self.label_temp_detH.setFont(font8)
         self.label_temp_detH.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_7.addWidget(self.label_temp_detH, 11, 3, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g1_8 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_8.setObjectName(u"label_g1_8")
@@ -478,27 +324,16 @@ class Ui_Dialog(object):
         self.label_g1_8.setFont(font7)
         self.label_g1_8.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-<<<<<<< Updated upstream
-        self.gridLayout.addWidget(self.label_g1_8, 11, 1, 1, 1)
-=======
         self.gridLayout_7.addWidget(self.label_g1_8, 12, 1, 1, 2)
->>>>>>> Stashed changes
 
         self.label_temp_detK = QLabel(self.groupBox_InstrumentStatus)
         self.label_temp_detK.setObjectName(u"label_temp_detK")
         sizePolicy.setHeightForWidth(self.label_temp_detK.sizePolicy().hasHeightForWidth())
         self.label_temp_detK.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_temp_detK.setFont(font4)
-        self.label_temp_detK.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_temp_detK, 11, 2, 1, 1)
-=======
         self.label_temp_detK.setFont(font8)
         self.label_temp_detK.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_7.addWidget(self.label_temp_detK, 12, 3, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g1_9 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_9.setObjectName(u"label_g1_9")
@@ -507,26 +342,12 @@ class Ui_Dialog(object):
         self.label_g1_9.setFont(font7)
         self.label_g1_9.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-<<<<<<< Updated upstream
-        self.gridLayout.addWidget(self.label_g1_9, 12, 1, 1, 1)
-=======
         self.gridLayout_7.addWidget(self.label_g1_9, 13, 1, 1, 2)
->>>>>>> Stashed changes
 
         self.label_temp_detS = QLabel(self.groupBox_InstrumentStatus)
         self.label_temp_detS.setObjectName(u"label_temp_detS")
         sizePolicy.setHeightForWidth(self.label_temp_detS.sizePolicy().hasHeightForWidth())
         self.label_temp_detS.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_temp_detS.setFont(font4)
-        self.label_temp_detS.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout.addWidget(self.label_temp_detS, 12, 2, 1, 1)
-
-        self.groupBox_ScienceObservation = QGroupBox(Dialog)
-        self.groupBox_ScienceObservation.setObjectName(u"groupBox_ScienceObservation")
-        self.groupBox_ScienceObservation.setGeometry(QRect(10, 390, 221, 231))
-=======
         self.label_temp_detS.setFont(font8)
         self.label_temp_detS.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
@@ -535,7 +356,6 @@ class Ui_Dialog(object):
         self.groupBox_ScienceObservation = QGroupBox(Dialog)
         self.groupBox_ScienceObservation.setObjectName(u"groupBox_ScienceObservation")
         self.groupBox_ScienceObservation.setGeometry(QRect(10, 445, 221, 251))
->>>>>>> Stashed changes
         sizePolicy1.setHeightForWidth(self.groupBox_ScienceObservation.sizePolicy().hasHeightForWidth())
         self.groupBox_ScienceObservation.setSizePolicy(sizePolicy1)
         self.groupBox_ScienceObservation.setFont(font)
@@ -545,11 +365,7 @@ class Ui_Dialog(object):
         self.label_sampling_number.setObjectName(u"label_sampling_number")
         sizePolicy.setHeightForWidth(self.label_sampling_number.sizePolicy().hasHeightForWidth())
         self.label_sampling_number.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_sampling_number.setFont(font4)
-=======
         self.label_sampling_number.setFont(font8)
->>>>>>> Stashed changes
         self.label_sampling_number.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_sampling_number, 3, 2, 1, 1)
@@ -558,11 +374,7 @@ class Ui_Dialog(object):
         self.label_exp_time.setObjectName(u"label_exp_time")
         sizePolicy.setHeightForWidth(self.label_exp_time.sizePolicy().hasHeightForWidth())
         self.label_exp_time.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_exp_time.setFont(font4)
-=======
         self.label_exp_time.setFont(font8)
->>>>>>> Stashed changes
         self.label_exp_time.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_exp_time, 4, 2, 1, 1)
@@ -598,10 +410,10 @@ class Ui_Dialog(object):
         self.label_data_label.setObjectName(u"label_data_label")
         sizePolicy.setHeightForWidth(self.label_data_label.sizePolicy().hasHeightForWidth())
         self.label_data_label.setSizePolicy(sizePolicy)
-        font7 = QFont()
-        font7.setPointSize(9)
-        font7.setBold(True)
-        self.label_data_label.setFont(font7)
+        font9 = QFont()
+        font9.setPointSize(8)
+        font9.setBold(True)
+        self.label_data_label.setFont(font9)
         self.label_data_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_data_label, 1, 1, 1, 2)
@@ -610,11 +422,7 @@ class Ui_Dialog(object):
         self.label_IPA.setObjectName(u"label_IPA")
         sizePolicy.setHeightForWidth(self.label_IPA.sizePolicy().hasHeightForWidth())
         self.label_IPA.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_IPA.setFont(font4)
-=======
         self.label_IPA.setFont(font8)
->>>>>>> Stashed changes
         self.label_IPA.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_IPA, 6, 2, 1, 1)
@@ -623,11 +431,7 @@ class Ui_Dialog(object):
         self.label_time_left.setObjectName(u"label_time_left")
         sizePolicy.setHeightForWidth(self.label_time_left.sizePolicy().hasHeightForWidth())
         self.label_time_left.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_time_left.setFont(font4)
-=======
         self.label_time_left.setFont(font8)
->>>>>>> Stashed changes
         self.label_time_left.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_time_left, 5, 2, 1, 1)
@@ -636,11 +440,7 @@ class Ui_Dialog(object):
         self.label_obs_state.setObjectName(u"label_obs_state")
         sizePolicy.setHeightForWidth(self.label_obs_state.sizePolicy().hasHeightForWidth())
         self.label_obs_state.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_obs_state.setFont(font4)
-=======
         self.label_obs_state.setFont(font8)
->>>>>>> Stashed changes
         self.label_obs_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_obs_state, 2, 1, 1, 2)
@@ -702,11 +502,7 @@ class Ui_Dialog(object):
         self.label_svc_filename.setObjectName(u"label_svc_filename")
         sizePolicy.setHeightForWidth(self.label_svc_filename.sizePolicy().hasHeightForWidth())
         self.label_svc_filename.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_svc_filename.setFont(font7)
-=======
         self.label_svc_filename.setFont(font6)
->>>>>>> Stashed changes
         self.label_svc_filename.setLayoutDirection(Qt.LeftToRight)
         self.label_svc_filename.setFrameShape(QFrame.StyledPanel)
         self.label_svc_filename.setAlignment(Qt.AlignCenter)
@@ -717,11 +513,7 @@ class Ui_Dialog(object):
         self.bt_single.setObjectName(u"bt_single")
         sizePolicy.setHeightForWidth(self.bt_single.sizePolicy().hasHeightForWidth())
         self.bt_single.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.bt_single.setFont(font4)
-=======
         self.bt_single.setFont(font8)
->>>>>>> Stashed changes
 
         self.gridLayout_4.addWidget(self.bt_single, 5, 3, 1, 3)
 
@@ -755,10 +547,10 @@ class Ui_Dialog(object):
         self.e_saving_number.setObjectName(u"e_saving_number")
         sizePolicy.setHeightForWidth(self.e_saving_number.sizePolicy().hasHeightForWidth())
         self.e_saving_number.setSizePolicy(sizePolicy)
-        font8 = QFont()
-        font8.setPointSize(16)
-        font8.setBold(True)
-        self.e_saving_number.setFont(font8)
+        font10 = QFont()
+        font10.setPointSize(16)
+        font10.setBold(True)
+        self.e_saving_number.setFont(font10)
         self.e_saving_number.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_4.addWidget(self.e_saving_number, 7, 5, 1, 1)
@@ -773,7 +565,7 @@ class Ui_Dialog(object):
 
         self.label = QLabel(self.groupBox_SlitViewCamera)
         self.label.setObjectName(u"label")
-        self.label.setFont(font8)
+        self.label.setFont(font10)
         self.label.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.gridLayout_4.addWidget(self.label, 7, 4, 1, 1)
@@ -817,9 +609,6 @@ class Ui_Dialog(object):
         self.e_svc_fowler_number.setObjectName(u"e_svc_fowler_number")
         sizePolicy.setHeightForWidth(self.e_svc_fowler_number.sizePolicy().hasHeightForWidth())
         self.e_svc_fowler_number.setSizePolicy(sizePolicy)
-        font9 = QFont()
-        font9.setPointSize(8)
-        font9.setBold(True)
         self.e_svc_fowler_number.setFont(font9)
         self.e_svc_fowler_number.setAlignment(Qt.AlignCenter)
 
@@ -838,11 +627,7 @@ class Ui_Dialog(object):
         self.label_svc_state.setObjectName(u"label_svc_state")
         sizePolicy.setHeightForWidth(self.label_svc_state.sizePolicy().hasHeightForWidth())
         self.label_svc_state.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_svc_state.setFont(font4)
-=======
         self.label_svc_state.setFont(font8)
->>>>>>> Stashed changes
         self.label_svc_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_4.addWidget(self.label_svc_state, 2, 3, 1, 3)
@@ -879,9 +664,9 @@ class Ui_Dialog(object):
         self.groupBox_zscale.setGeometry(QRect(580, 487, 301, 70))
         sizePolicy1.setHeightForWidth(self.groupBox_zscale.sizePolicy().hasHeightForWidth())
         self.groupBox_zscale.setSizePolicy(sizePolicy1)
-        font10 = QFont()
-        font10.setPointSize(11)
-        self.groupBox_zscale.setFont(font10)
+        font11 = QFont()
+        font11.setPointSize(11)
+        self.groupBox_zscale.setFont(font11)
         self.gridLayout_3 = QGridLayout(self.groupBox_zscale)
         self.gridLayout_3.setObjectName(u"gridLayout_3")
         self.radio_zscale = QRadioButton(self.groupBox_zscale)
@@ -924,11 +709,7 @@ class Ui_Dialog(object):
         self.label_zscale.setObjectName(u"label_zscale")
         sizePolicy.setHeightForWidth(self.label_zscale.sizePolicy().hasHeightForWidth())
         self.label_zscale.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.label_zscale.setFont(font4)
-=======
         self.label_zscale.setFont(font8)
->>>>>>> Stashed changes
         self.label_zscale.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_3.addWidget(self.label_zscale, 0, 1, 1, 2)
@@ -938,9 +719,9 @@ class Ui_Dialog(object):
         self.label_messagebar.setGeometry(QRect(50, 700, 521, 25))
         sizePolicy.setHeightForWidth(self.label_messagebar.sizePolicy().hasHeightForWidth())
         self.label_messagebar.setSizePolicy(sizePolicy)
-        font11 = QFont()
-        font11.setBold(True)
-        self.label_messagebar.setFont(font11)
+        font12 = QFont()
+        font12.setBold(True)
+        self.label_messagebar.setFont(font12)
         self.label_messagebar.setAlignment(Qt.AlignCenter)
         self.frame_expand = QFrame(Dialog)
         self.frame_expand.setObjectName(u"frame_expand")
@@ -979,17 +760,6 @@ class Ui_Dialog(object):
         self.radio_none = QRadioButton(Dialog)
         self.radio_none.setObjectName(u"radio_none")
         self.radio_none.setEnabled(True)
-<<<<<<< Updated upstream
-        self.radio_none.setGeometry(QRect(560, 630, 61, 25))
-        self.radio_none.setFont(font5)
-        self.radio_show_logfile = QRadioButton(Dialog)
-        self.radio_show_logfile.setObjectName(u"radio_show_logfile")
-        self.radio_show_logfile.setGeometry(QRect(620, 630, 111, 25))
-        self.radio_show_logfile.setFont(font5)
-        self.radio_show_loglist = QRadioButton(Dialog)
-        self.radio_show_loglist.setObjectName(u"radio_show_loglist")
-        self.radio_show_loglist.setGeometry(QRect(730, 630, 111, 25))
-=======
         self.radio_none.setGeometry(QRect(580, 700, 61, 25))
         self.radio_none.setFont(font5)
         self.radio_show_logfile = QRadioButton(Dialog)
@@ -999,7 +769,6 @@ class Ui_Dialog(object):
         self.radio_show_loglist = QRadioButton(Dialog)
         self.radio_show_loglist.setObjectName(u"radio_show_loglist")
         self.radio_show_loglist.setGeometry(QRect(770, 700, 116, 25))
->>>>>>> Stashed changes
         self.radio_show_loglist.setFont(font5)
         self.groupBox_profile = QGroupBox(Dialog)
         self.groupBox_profile.setObjectName(u"groupBox_profile")
@@ -1039,31 +808,6 @@ class Ui_Dialog(object):
         self.groupBox_withTCS.setObjectName(u"groupBox_withTCS")
         self.groupBox_withTCS.setGeometry(QRect(580, 272, 301, 150))
         self.groupBox_withTCS.setFlat(False)
-<<<<<<< Updated upstream
-        self.gridLayout_5 = QGridLayout(self.groupBox_withTCS)
-        self.gridLayout_5.setObjectName(u"gridLayout_5")
-        self.label_cur_Idx = QLabel(self.groupBox_withTCS)
-        self.label_cur_Idx.setObjectName(u"label_cur_Idx")
-        self.label_cur_Idx.setFont(font8)
-        self.label_cur_Idx.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout_5.addWidget(self.label_cur_Idx, 5, 4, 1, 1)
-
-        self.e_averaging_number = QLineEdit(self.groupBox_withTCS)
-        self.e_averaging_number.setObjectName(u"e_averaging_number")
-        sizePolicy.setHeightForWidth(self.e_averaging_number.sizePolicy().hasHeightForWidth())
-        self.e_averaging_number.setSizePolicy(sizePolicy)
-        self.e_averaging_number.setFont(font8)
-        self.e_averaging_number.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_5.addWidget(self.e_averaging_number, 5, 5, 1, 1)
-
-        self.bt_minus_p = QPushButton(self.groupBox_withTCS)
-        self.bt_minus_p.setObjectName(u"bt_minus_p")
-        sizePolicy.setHeightForWidth(self.bt_minus_p.sizePolicy().hasHeightForWidth())
-        self.bt_minus_p.setSizePolicy(sizePolicy)
-        self.bt_minus_p.setFont(font4)
-=======
         self.gridLayout = QGridLayout(self.groupBox_withTCS)
         self.gridLayout.setObjectName(u"gridLayout")
         self.bt_plus_p = QPushButton(self.groupBox_withTCS)
@@ -1071,23 +815,14 @@ class Ui_Dialog(object):
         sizePolicy.setHeightForWidth(self.bt_plus_p.sizePolicy().hasHeightForWidth())
         self.bt_plus_p.setSizePolicy(sizePolicy)
         self.bt_plus_p.setFont(font8)
->>>>>>> Stashed changes
 
         self.gridLayout.addWidget(self.bt_plus_p, 0, 1, 1, 1)
 
-<<<<<<< Updated upstream
-        self.bt_center = QPushButton(self.groupBox_withTCS)
-        self.bt_center.setObjectName(u"bt_center")
-        sizePolicy.setHeightForWidth(self.bt_center.sizePolicy().hasHeightForWidth())
-        self.bt_center.setSizePolicy(sizePolicy)
-        self.bt_center.setFont(font4)
-=======
         self.bt_minus_q = QPushButton(self.groupBox_withTCS)
         self.bt_minus_q.setObjectName(u"bt_minus_q")
         sizePolicy.setHeightForWidth(self.bt_minus_q.sizePolicy().hasHeightForWidth())
         self.bt_minus_q.setSizePolicy(sizePolicy)
         self.bt_minus_q.setFont(font8)
->>>>>>> Stashed changes
 
         self.gridLayout.addWidget(self.bt_minus_q, 1, 0, 1, 1)
 
@@ -1095,23 +830,9 @@ class Ui_Dialog(object):
         self.bt_plus_q.setObjectName(u"bt_plus_q")
         sizePolicy.setHeightForWidth(self.bt_plus_q.sizePolicy().hasHeightForWidth())
         self.bt_plus_q.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.bt_plus_q.setFont(font4)
-
-        self.gridLayout_5.addWidget(self.bt_plus_q, 3, 2, 1, 1)
-
-        self.bt_slow_guide = QPushButton(self.groupBox_withTCS)
-        self.bt_slow_guide.setObjectName(u"bt_slow_guide")
-        sizePolicy.setHeightForWidth(self.bt_slow_guide.sizePolicy().hasHeightForWidth())
-        self.bt_slow_guide.setSizePolicy(sizePolicy)
-        self.bt_slow_guide.setFont(font4)
-
-        self.gridLayout_5.addWidget(self.bt_slow_guide, 5, 0, 1, 4)
-=======
         self.bt_plus_q.setFont(font8)
 
         self.gridLayout.addWidget(self.bt_plus_q, 1, 2, 1, 1)
->>>>>>> Stashed changes
 
         self.label_g3_6 = QLabel(self.groupBox_withTCS)
         self.label_g3_6.setObjectName(u"label_g3_6")
@@ -1120,100 +841,46 @@ class Ui_Dialog(object):
         self.label_g3_6.setFont(font7)
         self.label_g3_6.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-<<<<<<< Updated upstream
-        self.gridLayout_5.addWidget(self.label_g3_6, 3, 3, 1, 2)
-
-        self.radio_cross = QRadioButton(self.groupBox_withTCS)
-        self.radio_cross.setObjectName(u"radio_cross")
-        self.radio_cross.setFont(font5)
-        self.radio_cross.setAutoExclusive(True)
-
-        self.gridLayout_5.addWidget(self.radio_cross, 0, 4, 1, 2)
-
-        self.radio_centroid = QRadioButton(self.groupBox_withTCS)
-        self.radio_centroid.setObjectName(u"radio_centroid")
-        self.radio_centroid.setFont(font5)
-        self.radio_centroid.setAutoExclusive(True)
-
-        self.gridLayout_5.addWidget(self.radio_centroid, 0, 2, 1, 2)
-=======
         self.gridLayout.addWidget(self.label_g3_6, 1, 3, 1, 2)
->>>>>>> Stashed changes
 
         self.e_offset = QLineEdit(self.groupBox_withTCS)
         self.e_offset.setObjectName(u"e_offset")
         sizePolicy.setHeightForWidth(self.e_offset.sizePolicy().hasHeightForWidth())
         self.e_offset.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        self.e_offset.setFont(font4)
-=======
         self.e_offset.setFont(font8)
->>>>>>> Stashed changes
         self.e_offset.setAlignment(Qt.AlignCenter)
 
         self.gridLayout.addWidget(self.e_offset, 1, 5, 1, 1)
 
-<<<<<<< Updated upstream
-        self.chk_off_slit = QCheckBox(self.groupBox_withTCS)
-        self.chk_off_slit.setObjectName(u"chk_off_slit")
-        sizePolicy.setHeightForWidth(self.chk_off_slit.sizePolicy().hasHeightForWidth())
-        self.chk_off_slit.setSizePolicy(sizePolicy)
-        self.chk_off_slit.setFont(font5)
-=======
         self.bt_minus_p = QPushButton(self.groupBox_withTCS)
         self.bt_minus_p.setObjectName(u"bt_minus_p")
         sizePolicy.setHeightForWidth(self.bt_minus_p.sizePolicy().hasHeightForWidth())
         self.bt_minus_p.setSizePolicy(sizePolicy)
         self.bt_minus_p.setFont(font8)
->>>>>>> Stashed changes
 
         self.gridLayout.addWidget(self.bt_minus_p, 2, 1, 1, 1)
 
-<<<<<<< Updated upstream
-        self.bt_set_guide_star = QPushButton(self.groupBox_withTCS)
-        self.bt_set_guide_star.setObjectName(u"bt_set_guide_star")
-        sizePolicy.setHeightForWidth(self.bt_set_guide_star.sizePolicy().hasHeightForWidth())
-        self.bt_set_guide_star.setSizePolicy(sizePolicy)
-        self.bt_set_guide_star.setFont(font4)
-=======
         self.bt_slow_guide = QPushButton(self.groupBox_withTCS)
         self.bt_slow_guide.setObjectName(u"bt_slow_guide")
         sizePolicy.setHeightForWidth(self.bt_slow_guide.sizePolicy().hasHeightForWidth())
         self.bt_slow_guide.setSizePolicy(sizePolicy)
         self.bt_slow_guide.setFont(font8)
->>>>>>> Stashed changes
 
         self.gridLayout.addWidget(self.bt_slow_guide, 3, 0, 1, 4)
 
-<<<<<<< Updated upstream
-        self.bt_minus_q = QPushButton(self.groupBox_withTCS)
-        self.bt_minus_q.setObjectName(u"bt_minus_q")
-        sizePolicy.setHeightForWidth(self.bt_minus_q.sizePolicy().hasHeightForWidth())
-        self.bt_minus_q.setSizePolicy(sizePolicy)
-        self.bt_minus_q.setFont(font4)
-=======
         self.label_cur_Idx = QLabel(self.groupBox_withTCS)
         self.label_cur_Idx.setObjectName(u"label_cur_Idx")
         self.label_cur_Idx.setFont(font10)
         self.label_cur_Idx.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
->>>>>>> Stashed changes
 
         self.gridLayout.addWidget(self.label_cur_Idx, 3, 4, 1, 1)
 
-<<<<<<< Updated upstream
-        self.bt_plus_p = QPushButton(self.groupBox_withTCS)
-        self.bt_plus_p.setObjectName(u"bt_plus_p")
-        sizePolicy.setHeightForWidth(self.bt_plus_p.sizePolicy().hasHeightForWidth())
-        self.bt_plus_p.setSizePolicy(sizePolicy)
-        self.bt_plus_p.setFont(font4)
-=======
         self.e_averaging_number = QLineEdit(self.groupBox_withTCS)
         self.e_averaging_number.setObjectName(u"e_averaging_number")
         sizePolicy.setHeightForWidth(self.e_averaging_number.sizePolicy().hasHeightForWidth())
         self.e_averaging_number.setSizePolicy(sizePolicy)
         self.e_averaging_number.setFont(font10)
         self.e_averaging_number.setAlignment(Qt.AlignCenter)
->>>>>>> Stashed changes
 
         self.gridLayout.addWidget(self.e_averaging_number, 3, 5, 1, 1)
 
@@ -1222,11 +889,6 @@ class Ui_Dialog(object):
         self.groupBox_view.setGeometry(QRect(580, 429, 301, 51))
         self.gridLayout_6 = QGridLayout(self.groupBox_view)
         self.gridLayout_6.setObjectName(u"gridLayout_6")
-<<<<<<< Updated upstream
-        self.chk_view_drawing = QCheckBox(self.groupBox_view)
-        self.chk_view_drawing.setObjectName(u"chk_view_drawing")
-        self.chk_view_drawing.setFont(font5)
-=======
         self.bt_mark_sky = QPushButton(self.groupBox_view)
         self.bt_mark_sky.setObjectName(u"bt_mark_sky")
         sizePolicy.setHeightForWidth(self.bt_mark_sky.sizePolicy().hasHeightForWidth())
@@ -1234,7 +896,6 @@ class Ui_Dialog(object):
         self.bt_mark_sky.setFont(font6)
 
         self.gridLayout_6.addWidget(self.bt_mark_sky, 0, 2, 1, 1)
->>>>>>> Stashed changes
 
         self.radio_sub = QRadioButton(self.groupBox_view)
         self.radio_sub.setObjectName(u"radio_sub")
@@ -1252,17 +913,10 @@ class Ui_Dialog(object):
         self.radio_raw.setObjectName(u"radio_raw")
         sizePolicy.setHeightForWidth(self.radio_raw.sizePolicy().hasHeightForWidth())
         self.radio_raw.setSizePolicy(sizePolicy)
-<<<<<<< Updated upstream
-        font12 = QFont()
-        font12.setFamilies([u"Courier 10 Pitch"])
-        font12.setPointSize(10)
-        self.radio_raw.setFont(font12)
-=======
         font14 = QFont()
         font14.setFamilies([u"Cantarell"])
         font14.setPointSize(10)
         self.radio_raw.setFont(font14)
->>>>>>> Stashed changes
         self.radio_raw.setLayoutDirection(Qt.LeftToRight)
         self.radio_raw.setAutoExclusive(True)
 
@@ -1290,17 +944,7 @@ class Ui_Dialog(object):
         self.label_2.setFont(font13)
         self.label_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-<<<<<<< Updated upstream
-        self.radio_sub = QRadioButton(self.groupBox_view)
-        self.radio_sub.setObjectName(u"radio_sub")
-        sizePolicy.setHeightForWidth(self.radio_sub.sizePolicy().hasHeightForWidth())
-        self.radio_sub.setSizePolicy(sizePolicy)
-        self.radio_sub.setFont(font5)
-        self.radio_sub.setLayoutDirection(Qt.LeftToRight)
-        self.radio_sub.setAutoExclusive(True)
-=======
         self.gridLayout_5.addWidget(self.label_2, 0, 0, 1, 1)
->>>>>>> Stashed changes
 
         self.cmb_view_scale = QComboBox(self.groupBox_withView)
         self.cmb_view_scale.addItem("")
@@ -1310,13 +954,6 @@ class Ui_Dialog(object):
         self.cmb_view_scale.setObjectName(u"cmb_view_scale")
         self.cmb_view_scale.setFont(font5)
 
-<<<<<<< Updated upstream
-        self.bt_mark_sky = QPushButton(self.groupBox_view)
-        self.bt_mark_sky.setObjectName(u"bt_mark_sky")
-        sizePolicy.setHeightForWidth(self.bt_mark_sky.sizePolicy().hasHeightForWidth())
-        self.bt_mark_sky.setSizePolicy(sizePolicy)
-        self.bt_mark_sky.setFont(font7)
-=======
         self.gridLayout_5.addWidget(self.cmb_view_scale, 0, 1, 1, 1)
 
         self.chk_view_drawing = QCheckBox(self.groupBox_withView)
@@ -1331,7 +968,6 @@ class Ui_Dialog(object):
         self.radio_centroid.setAutoExclusive(True)
 
         self.gridLayout_5.addWidget(self.radio_centroid, 1, 0, 1, 2)
->>>>>>> Stashed changes
 
         self.radio_cross = QRadioButton(self.groupBox_withView)
         self.radio_cross.setObjectName(u"radio_cross")
@@ -1388,42 +1024,37 @@ class Ui_Dialog(object):
         self.groupBox_InstrumentStatus.setTitle("")
         self.label_g1.setText(QCoreApplication.translate("Dialog", u"Instrument Status", None))
         self.label_heartbeat.setText(QCoreApplication.translate("Dialog", u"\u2665", None))
-<<<<<<< Updated upstream
-        self.label_g1_1.setText(QCoreApplication.translate("Dialog", u"IGRINS-2:", None))
-        self.label_is_health.setText(QCoreApplication.translate("Dialog", u"GOOD", None))
-=======
         self.label_g1_1.setText(QCoreApplication.translate("Dialog", u"IGRINS-2", None))
         self.label_heartbeat_ics.setText(QCoreApplication.translate("Dialog", u"\u2665", None))
->>>>>>> Stashed changes
         self.label_g1_13.setText(QCoreApplication.translate("Dialog", u"ICS:", None))
-        self.label_ics_health.setText(QCoreApplication.translate("Dialog", u"GOOD", None))
+        self.label_state_ics.setText(QCoreApplication.translate("Dialog", u"disconnected", None))
+        self.label_heartbeat_dcsh.setText(QCoreApplication.translate("Dialog", u"\u2665", None))
         self.label_g1_14.setText(QCoreApplication.translate("Dialog", u"DCSH:", None))
-        self.label_dcsh_health.setText(QCoreApplication.translate("Dialog", u"GOOD", None))
+        self.label_state_dcsh.setText(QCoreApplication.translate("Dialog", u"disconnected", None))
+        self.label_heartbeat_dcsk.setText(QCoreApplication.translate("Dialog", u"\u2665", None))
         self.label_g1_15.setText(QCoreApplication.translate("Dialog", u"DCSK:", None))
-        self.label_dcsk_health.setText(QCoreApplication.translate("Dialog", u"GOOD", None))
+        self.label_state_dcsk.setText(QCoreApplication.translate("Dialog", u"disconnected", None))
+        self.label_heartbeat_dcss.setText(QCoreApplication.translate("Dialog", u"\u2665", None))
         self.label_g1_24.setText(QCoreApplication.translate("Dialog", u"DCSS:", None))
-        self.label_dcss_health.setText(QCoreApplication.translate("Dialog", u"GOOD", None))
-        self.label_g1_2.setText(QCoreApplication.translate("Dialog", u"GDSN Status:", None))
-        self.label_GDSN_connection.setText(QCoreApplication.translate("Dialog", u"Disconnected", None))
+        self.label_state_dcss.setText(QCoreApplication.translate("Dialog", u"disconnected", None))
+        self.label_heartbeat_InstSeq.setText(QCoreApplication.translate("Dialog", u"\u2665", None))
+        self.label_InstSeq_connect.setText(QCoreApplication.translate("Dialog", u"Inst. Seq:", None))
+        self.label_state_InstSeq.setText(QCoreApplication.translate("Dialog", u"disconnected", None))
+        self.label_heartbeat_dbuploader.setText(QCoreApplication.translate("Dialog", u"\u2665", None))
+        self.label_db_uploader.setText(QCoreApplication.translate("Dialog", u"DB uploader:", None))
+        self.label_state_dbuploader.setText(QCoreApplication.translate("Dialog", u"disconnected", None))
+        self.label_heartbeat_gmp.setText(QCoreApplication.translate("Dialog", u"\u2665", None))
         self.label_g1_3.setText(QCoreApplication.translate("Dialog", u"GMP Status:", None))
-        self.label_GMP_connection.setText(QCoreApplication.translate("Dialog", u"Disconnected", None))
+        self.label_state_gmp.setText(QCoreApplication.translate("Dialog", u"disconnected", None))
         self.label_g1_4.setText(QCoreApplication.translate("Dialog", u"State:", None))
         self.label_state.setText(QCoreApplication.translate("Dialog", u"Running", None))
         self.label_g1_5.setText(QCoreApplication.translate("Dialog", u"Action State:", None))
         self.label_action_state.setText(QCoreApplication.translate("Dialog", u"Idle", None))
-<<<<<<< Updated upstream
-        self.label_g1_7.setText(QCoreApplication.translate("Dialog", u"Det H (K):", None))
-        self.label_temp_detH.setText(QCoreApplication.translate("Dialog", u"65.0", None))
-        self.label_g1_8.setText(QCoreApplication.translate("Dialog", u"Det K (K):", None))
-        self.label_temp_detK.setText(QCoreApplication.translate("Dialog", u"65.0", None))
-        self.label_g1_9.setText(QCoreApplication.translate("Dialog", u"Det S (K):", None))
-=======
         self.label_g1_7.setText(QCoreApplication.translate("Dialog", u"Detector H (K):", None))
         self.label_temp_detH.setText(QCoreApplication.translate("Dialog", u"65.0", None))
         self.label_g1_8.setText(QCoreApplication.translate("Dialog", u"Detector K (K):", None))
         self.label_temp_detK.setText(QCoreApplication.translate("Dialog", u"65.0", None))
         self.label_g1_9.setText(QCoreApplication.translate("Dialog", u"Detector S (K):", None))
->>>>>>> Stashed changes
         self.label_temp_detS.setText(QCoreApplication.translate("Dialog", u"65.0", None))
         self.groupBox_ScienceObservation.setTitle("")
         self.label_sampling_number.setText(QCoreApplication.translate("Dialog", u"16", None))
@@ -1495,17 +1126,7 @@ class Ui_Dialog(object):
         self.radio_cross.setText(QCoreApplication.translate("Dialog", u"Cross", None))
         self.chk_off_slit.setText(QCoreApplication.translate("Dialog", u"Off-slit Guide", None))
         self.bt_set_guide_star.setText(QCoreApplication.translate("Dialog", u"Set Guide star", None))
-<<<<<<< Updated upstream
-        self.bt_minus_q.setText(QCoreApplication.translate("Dialog", u"-q", None))
-        self.bt_plus_p.setText(QCoreApplication.translate("Dialog", u"+p", None))
-        self.groupBox_view.setTitle("")
-        self.chk_view_drawing.setText(QCoreApplication.translate("Dialog", u"View", None))
-        self.radio_raw.setText(QCoreApplication.translate("Dialog", u"Raw", None))
-        self.radio_sub.setText(QCoreApplication.translate("Dialog", u"Sub (Sky)", None))
-        self.bt_mark_sky.setText(QCoreApplication.translate("Dialog", u"Mark Sky", None))
-=======
         self.bt_center.setText(QCoreApplication.translate("Dialog", u"Center", None))
         self.pushButton_help.setText(QCoreApplication.translate("Dialog", u"Help", None))
->>>>>>> Stashed changes
     # retranslateUi
 

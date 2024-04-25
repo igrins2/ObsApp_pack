@@ -3,11 +3,7 @@
 """
 Created on Oct 21, 2022
 
-<<<<<<< Updated upstream
-Modified on Jan 10, 2024
-=======
 Modified on Apr 23, 2024
->>>>>>> Stashed changes
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -123,12 +119,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         slit_img_flip = bool(int(cfg.get(SC, 'slit-image-flip')))
         if slit_img_flip:
             self.slit_image_flip_func = lambda im: np.rot90(im, 2) #np.fliplr(np.rot90(im))
-            self.slit_coord_abs_flip_func = lambda x,y: (2048-y, 2048-x)
+            #self.slit_coord_abs_flip_func = lambda x,y: (2048-y, 2048-x)
         else:
             self.slit_image_flip_func = lambda im: im #np.rot90(im)
-            self.slit_coord_abs_flip_func = lambda x,y: (x, y)
+            #self.slit_coord_abs_flip_func = lambda x,y: (x, y)
                     
         global SLIT_CEN, SLIT_WID, SLIT_LEN, SLIT_ANG, ZOOMW, CONTOURW, PIXELSCALE
+        #remove 20240118
+        '''
         try:
             tmp = cfg.get(SC, 'slit-cen').split(",")
             SLIT_CEN = self.slit_coord_abs_flip_func(float(tmp[0]), float(tmp[1]))
@@ -136,28 +134,28 @@ class MainWindow(Ui_Dialog, QMainWindow):
             SLIT_CEN = (0,0)
             msg = 'Slit Center Parameter Error: %s' % (self.cfg.get(SC, 'slit-cen'),)
             self.show_log_list(ERROR, msg)
-                    
+        '''
+        tmp = cfg.get(SC, 'slit-cen').split(",")
+        SLIT_CEN = float(tmp[0]), float(tmp[1])            
         SLIT_WID = float(cfg.get(SC,'slit-wid'))
         SLIT_LEN = float(cfg.get(SC,'slit-len'))
         SLIT_ANG = float(cfg.get(SC,'slit-ang'))
-        
-        A_pos = cfg.get(SC, 'A_pos').split(",")
-        B_pos = cfg.get(SC, 'B_pos').split(",")
-        self.A_x, self.A_y = float(A_pos[0]), float(A_pos[1])
-        self.B_x, self.B_y = float(B_pos[0]), float(B_pos[1])
-
-        slit_cen_pq = cfg.get(SC, 'center_pq').split(",")
-        self.slit_cen_p, self.slit_cen_q = float(slit_cen_pq[0]), float(slit_cen_pq[1])
-        
-        A_pos_pq = cfg.get(SC, 'A_pos_pq').split(",")
-        B_pos_pq = cfg.get(SC, 'B_pos_pq').split(",")
-        self.A_p, self.A_q = float(A_pos_pq[0]), float(A_pos_pq[1])
-        self.B_p, self.B_q = float(B_pos_pq[0]), float(B_pos_pq[1])
-        
-        
+                        
         ZOOMW = int(cfg.get(SC, 'zoomw'))
         CONTOURW = int(cfg.get(SC, 'contourw'))
         PIXELSCALE = float(cfg.get(SC, 'pixelscale'))
+        
+        A_pos_pq = cfg.get(SC, 'A_pos_pq').split(",")
+        B_pos_pq = cfg.get(SC, 'B_pos_pq').split(",")
+        #self.A_p, self.A_q = float(A_pos_pq[0]), float(A_pos_pq[1])
+        #self.B_p, self.B_q = float(B_pos_pq[0]), float(B_pos_pq[1])
+        
+        # modify 20240214
+        A_x, A_y = self.calc_xy_to_pq(float(A_pos_pq[0]), float(A_pos_pq[1]), True)
+        B_x, B_y = self.calc_xy_to_pq(float(B_pos_pq[0]), float(B_pos_pq[1]), True)
+        self.A_x, self.A_y = float(SLIT_CEN[0]) + A_x, float(SLIT_CEN[1]) + A_y
+        self.B_x, self.B_y = float(SLIT_CEN[0]) + B_x, float(SLIT_CEN[1]) + B_y
+                
         self.fwhm_mode = int(cfg.get(SC, 'fwhm-mode'))
         self.fwhm_mode_value = float(cfg.get(SC, 'fwhm-mode-value'))
         
@@ -166,43 +164,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.svc_path = cfg.get(DCS,'data-location')
         
         self.setup_sw_offset_window(self.frame_profile)
-<<<<<<< Updated upstream
-        
-        self.key_to_label = dict()
-        self.dtvalue, self.heatlabel = dict(), dict()
-        self.temp_lower_warning, self.temp_lower_normal = dict(), dict()
-        self.temp_upper_normal, self.temp_upper_warning = dict(), dict()
-        self.det_sts = dict()
-        
-        self.label_list = ["tmc2-a", "tmc2-b", "tmc3-b"]
-        self.dpvalue = DEFAULT_VALUE
-        
-        self.ig2_health = GOOD
-        
-        for k in self.label_list:
-            hk_list = cfg.get(HK, k).split(",")
-            self.key_to_label[k] = hk_list[0]
-            self.temp_lower_warning[k] = hk_list[1]
-            self.temp_lower_normal[k] = hk_list[2]
-            #self.temp_normal[k] = hk_list[3]
-            self.temp_upper_normal[k] = hk_list[4]
-            self.temp_upper_warning[k] = hk_list[5]
-            
-            self.dtvalue[k] = DEFAULT_VALUE
-            self.heatlabel[k] = DEFAULT_VALUE     
-            
-            self.det_sts[k] = "good"                   
-                            
-=======
                 
         #self.ig2_health = GOOD
         self.health = [DISCON for _ in range(8)]    # modify 20240422
                                     
->>>>>>> Stashed changes
         self.producer = None    # for Inst. Sequencer, DCSS
         self.consumer_InstSeq = None
         self.consumer_dcs = [None for _ in range(DC_CNT)]
-        self.consumer_sub = [None for _ in range(SUB_CNT)]
+        self.consumer_uploader = None
         
         #self.Qth_dcs = [None for _ in range(DC_CNT)]
         
@@ -293,13 +262,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.init_events() 
         
         # Instrument Status
-        self.label_is_health.setText("---")
-        self.label_ics_health.setText("---")
-        self.label_dcss_health.setText("---")
-        self.label_dcsh_health.setText("---")
-        self.label_dcsk_health.setText("---")
-        self.label_GDSN_connection.setText("---")
-        self.label_GMP_connection.setText("---")
+        self.label_state_ics.setText("---")
+        self.label_state_dcss.setText("---")
+        self.label_state_dcsh.setText("---")
+        self.label_state_dcsk.setText("---")
+        self.label_state_InstSeq.setText("---")
+        self.label_state_dbuploader.setText("---")
+        self.label_state_gmp.setText("---")
+        
         self.label_state.setText("Idle")
         self.label_action_state.setText("---")        
         
@@ -357,15 +327,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         #self.connect_to_server_virtual_tcs_q()
         
-<<<<<<< Updated upstream
-        #add 20240113 for heart beat
-        self.heartbeat_on = True
-        self.heartbeat_timer = QTimer(self)
-        self.heartbeat_timer.setInterval(1000)
-        self.heartbeat_timer.timeout.connect(self.heartbeat_status)
-        self.heartbeat_timer.start()
-        
-=======
         #add 20240220 heart beat from InstSeq, DBUploader
         self.heartbeat_check_interval = 60
         self.heartbeat_time = [-200, -200]  # modify 20240422
@@ -406,37 +367,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         for i in range(8):
             self.heartbeat_timer[i].start()
->>>>>>> Stashed changes
                        
         self.InstSeq_timer = QTimer(self)
         self.InstSeq_timer.setInterval(1)
         self.InstSeq_timer.timeout.connect(self.InstSeq_data_processing)
         self.InstSeq_timer.start()
-        
-        '''
-        self.svc_cmd_timer = QTimer(self)
-        self.svc_cmd_timer.setInterval(1)
-        self.svc_cmd_timer.timeout.connect(self.svc_progressbar_monit)
-        self.svc_cmd_timer.start()
-        self.svc_progressbar_start = False
-        
-        self.prog_timer[SVC] = QTimer(self)
-        self.prog_timer[SVC].timeout.connect(lambda: self.show_progressbar(SVC)) 
-        
-        self.hk_cmd_timer = QTimer(self)
-        self.hk_cmd_timer.setInterval(1)
-        self.hk_cmd_timer.timeout.connect(self.hk_progressbar_monit)
-        self.hk_cmd_timer.start()
-        self.hk_progressbar_start = False
-        
-        self.prog_timer[H_K] = QTimer(self)
-        self.prog_timer[H_K].timeout.connect(lambda: self.show_progressbar(H_K))
-        '''
-        self.show_sub_timer = QTimer(self)
-        self.show_sub_timer.setInterval(self.Period/2 * 1000)
-        self.show_sub_timer.timeout.connect(self.sub_data_processing)
-        self.show_sub_timer.start()
-        
+                
         self.show_dcs_timer = [None for _ in range(DC_CNT)]
         for idx in range(DC_CNT):
             self.show_dcs_timer[idx] = QTimer(self)
@@ -455,19 +391,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.select_log_none()
         
-<<<<<<< Updated upstream
-        
-=======
         self.reset_resize()
                 
->>>>>>> Stashed changes
         self.sw_slit_star_init()
 
         
         
-<<<<<<< Updated upstream
-    def closeEvent(self, event: QCloseEvent) -> None:        
-=======
     def closeEvent(self, event: QCloseEvent) -> None:    
         
         #self.list_dlg.hide()
@@ -480,13 +409,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.heartbeat_timer[i].stop()
             
         self.InstSeq_timer.stop()
->>>>>>> Stashed changes
         
-        self.heartbeat_timer.stop()
-        self.InstSeq_timer.stop()
-        #self.svc_cmd_timer.stop()
-        self.show_sub_timer.stop()
-        #self.hk_cmd_timer.stop()
         for idx in range(DC_CNT):
             self.show_dcs_timer[idx].stop()
         
@@ -495,15 +418,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                             
         if self.producer != None:
             self.producer.__del__()
-        
-        '''    
-        self.producer.channel.close()
-        self.consumer_InstSeq.channel.close()
-        for i in range(DC_CNT):
-            self.consumer_dcs[i].channel.close()
-            self.consumer_sub[i].channel.close()
-        '''
-                            
+                                    
         self.show_log_list(DEBUG, "Closed!")
         
         return super().closeEvent(event)
@@ -602,34 +517,17 @@ class MainWindow(Ui_Dialog, QMainWindow):
         msg = "<- [InstSeq] %s" % cmd
         self.show_log_list(INFO, msg)
         self.param_InstSeq = cmd
-    
-                
         
-    #--------------------------------------------------------
-    # Vitual TCS queue
-    '''
-    def connect_to_server_virtual_tcs_q(self):
-        self.consumer_virtual_tcs = MsgMiddleware(self.iam, self.ics_ip_addr, self.ics_id, self.ics_pwd, "MovePosition.ex")      
-        self.consumer_virtual_tcs.connect_to_server()
-        self.consumer_virtual_tcs.define_consumer("MovePosition.q", self.callback_virtual_tcs)       
         
-        print("thread; virtual_tcs")
-        self.Qth_virtual_tcs = monitoring(self.consumer_virtual_tcs)
-        self.Qth_virtual_tcs.start()
+    def monit_heartbeat(self, idx):
+        health = GOOD
+        state = "Good"
+        if ti.time() - self.heartbeat_time[idx] > self.heartbeat_check_interval: 
+            health = BAD
+            state = "stopped"
+            
+        self.health[HEALTH_INSTSEQ+idx] = health
         
-<<<<<<< Updated upstream
-        #th = threading.Thread(target=self.consumer_virtual_tcs.start_consumer)
-        #th.daemon = True
-        #th.start()
-    
-    
-    def callback_virtual_tcs(self, ch, method, properties, body):
-        cmd = body.decode()
-        msg = "<- [MovePosition] %s" % cmd
-        self.show_log_list(INFO, msg)
-        print(cmd)
-        param = cmd.split()
-=======
         if idx == INSTSEQ_HB:
             self.show_health_status(health, state, self.label_state_InstSeq)
         elif idx == UPLOAD_HB:
@@ -641,97 +539,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.show_health_status(health, self.judge_status_msg(), self.label_state_dcss)
                 self.show_health_status(health, self.judge_status_msg(), self.label_state_dcsh)
                 self.show_health_status(health, self.judge_status_msg(), self.label_state_dcsk)
->>>>>>> Stashed changes
         
-        #_x, _y = self.calc_xy_to_pq(float(param[1]), float(param[2]), True)
-        
-        #change 20231006
-        #current p and q value!!!
-        if param[0] == MOVEPOS_P_Q:
-            #th = [0.2, 0.2]
-            #ON-OFF
-            #A-B
-            #temp!!!
+        #threading.Timer(self.heartbeat_check_interval, lambda: self.monit_heartbeat(idx)).start()
 
-            #if self.A_p == float(param[1]) and self.A_q == float(param[2]):
-            #    self.cur_frame = A_BOX
-            #elif self.A_p == float(param[1]) and self.A_q == float(param[2]) * 2:
-            #    self.cur_frame = A_BOX
-            #elif self.B_p == float(param[1]) and self.B_q == float(param[2]) * 2:
-            #    self.cur_frame = B_BOX            
-            
-            self.cur_frame = A_BOX
-            if float(param[2]) > 0:
-                self.cur_frame = B_BOX
-                
-            #print(_x, _y)
-            #_x, _y = SLIT_CEN[0]+_x, SLIT_CEN[1]+_y
-            #print(_x, _y)
-        #if param[0] == p and param[1]
-    '''
         
-<<<<<<< Updated upstream
-    #--------------------------------------------------------
-    # tmc2, tmc3, vm queue
-    def connect_to_server_sub_q(self):
-        sub_list = ["tmc2", "tmc3", "vm", "uploader"]
-        
-        sub_ObsApp_ex = [sub_list[i]+'.ex' for i in range(SUB_CNT)]
-        self.consumer_sub = [None for _ in range(SUB_CNT)]
-        for idx in range(SUB_CNT):
-            self.consumer_sub[idx] = MsgMiddleware(self.iam, self.ics_ip_addr, self.ics_id, self.ics_pwd, sub_ObsApp_ex[idx])              
-            self.consumer_sub[idx].connect_to_server()
-                     
-        self.consumer_sub[TMC2].define_consumer(sub_list[TMC2]+'.q', self.callback_tmc2)
-        self.consumer_sub[TMC3].define_consumer(sub_list[TMC3]+'.q', self.callback_tmc3)
-        self.consumer_sub[VM].define_consumer(sub_list[VM]+'.q', self.callback_vm)
-        self.consumer_sub[UPLOADER].define_consumer(sub_list[UPLOADER]+'.q', self.callback_uploader)
-        
-        for idx in range(SUB_CNT):
-            th = threading.Thread(target=self.consumer_sub[idx].start_consumer)
-            th.daemon = True
-            th.start()
-            
-    
-    def callback_tmc2(self, ch, method, properties, body):
-        cmd = body.decode()
-        msg = "<- [TC2] %s" % cmd
-        self.show_log_list(INFO, msg)
-        param = cmd.split()
-                
-        if param[0] == HK_REQ_GETVALUE:
-            self.dtvalue[self.label_list[TMC2_A]] = self.judge_value(param[1])
-            self.dtvalue[self.label_list[TMC2_B]] = self.judge_value(param[2])
-            self.heatlabel[self.label_list[TMC2_A]] = self.judge_value(param[3])
-            self.heatlabel[self.label_list[TMC2_B]] = self.judge_value(param[4])
-            
-    
-    def callback_tmc3(self, ch, method, properties, body):
-        cmd = body.decode()
-        msg = "<- [TC3] %s" % cmd
-        self.show_log_list(INFO, msg)
-        param = cmd.split()
-                
-        if param[0] == HK_REQ_GETVALUE:
-            self.dtvalue[self.label_list[TMC3_B]] = self.judge_value(param[2])
-            self.heatlabel[self.label_list[TMC3_B]] = self.judge_value(param[3])
-            
-    
-    def callback_vm(self, ch, method, properties, body):
-        cmd = body.decode()
-        msg = "<- [VM] %s" % cmd
-        if len(cmd) < 80:
-            self.show_log_list(INFO, msg)
-        param = cmd.split()
-                    
-        if param[0] == HK_REQ_GETVALUE:
-            if len(param[1]) > 10 or param[1] == DEFAULT_VALUE:
-                self.dpvalue = DEFAULT_VALUE
-            else:
-                self.dpvalue = param[1]
-                
-                
-=======
     def connect_to_server_sub_q(self):        
         uploader_ex = "uploader.ex"
         self.consumer_uploader = None
@@ -745,22 +556,12 @@ class MainWindow(Ui_Dialog, QMainWindow):
         th.start()
             
             
->>>>>>> Stashed changes
     def callback_uploader(self, ch, method, properties, body):
         cmd = body.decode()
         msg = "<- [UPLOADER] %s" % cmd
         self.show_log_list(INFO, msg)
         param = cmd.split()
                     
-<<<<<<< Updated upstream
-        if param[0] == IG2_HEALTH:
-            self.ig2_health = int(param[1])
-            
-        #add 20240104
-        elif param[0] == INSTSEQ_TCS_INFO_PA:
-            self.label_IPA.setText(param[1])        
-            self.PA = float(param[1]) - 90
-=======
         if param[0] == HEART_BEAT:
             self.heartbeat_time[UPLOAD_HB] = ti.time()
             self.monit_heartbeat(UPLOAD_HB) # add 20240422
@@ -788,7 +589,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         elif param[0] == UPLOAD_Q:                        
             self.label_IPA.setText(param[26])        
             self.PA = float(param[26]) - 90
->>>>>>> Stashed changes
                    
     
     #--------------------------------------------------------
@@ -835,18 +635,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
     #--------------------------------------------------------
     # sub process
-<<<<<<< Updated upstream
-
-    def judge_value(self, input):
-        if input != DEFAULT_VALUE:
-            value = "%.2f" % float(input)
-        else:
-            value = input
-
-        return value
-    
-=======
->>>>>>> Stashed changes
     
     def createFolder(self, dir):
         try:
@@ -1505,56 +1293,40 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     #--------------------------------------------------------
     # gui set
-    def QShowValue(self, widget, label):
-        value = self.dtvalue[label]
-        name = "Det %s" % self.key_to_label[label][3:].upper()
+    def QShowValue(self, health, cause, value, label, det):
+        color, msgbar = "black", ""
+        name = "Det %s" % det
         
-        prev_sts = self.det_sts[label]
-        sts = INFO
-        
-        if float(self.temp_lower_normal[label]) <= float(value) <= float(self.temp_upper_normal[label]):
-            self.QWidgetLabelColor(widget, "green")
-            msgbar = None
+        if health == GOOD:
+            color = "green"
             
-            self.det_sts[label] = "good"
-        
-        else:
-            color = None
-            if value == DEFAULT_VALUE:
-                color = "dimgray"
-                msgbar = "%s is ERROR!!!" % name        
-                self.det_sts[label] = "error"
-                sts = ERROR
-                self.ig2_health = BAD
-                
-            elif float(self.temp_lower_warning[label]) <= float(value) <= float(self.temp_upper_warning[label]):
-                color = "gold"
-                msgbar = "%s temperature WARNNING!!!" % name
-                self.det_sts[label] = "warn"
-                sts = WARNING
-                self.ig2_health = WARNING
-                
-            elif float(self.temp_upper_warning[label]) < float(value):
-                color = "red"
+        elif health == WARNING:
+            color = "gold"
+            if cause == HI:
+                msgbar = "%s temperature is high!!!" % name
+            elif cause == LO:
+                msgbar = "%s temperature is low!!!" % name
+            
+        elif health == BAD:
+            color = "red"
+            if cause == HIHI:
                 msgbar = "%s temperature is too high!!!" % name
-                self.det_sts[label] = "fatal"
-                sts = ERROR
-                self.ig2_health = BAD
-                
-            elif float(self.temp_lower_warning[label]) > float(value):
-                color = "red"
+            elif cause == LOLO:
                 msgbar = "%s temperature is too low!!!" % name
-                self.det_sts[label] = "fatal"
-                sts = ERROR
-                self.ig2_health = BAD
-                
-            self.QWidgetLabelColor(widget, color)
+            else:
+                msgbar = "%s is ERROR!!!" % name
+                        
+        label.setText(value)
+        self.QWidgetLabelColor(label, color)
+        
+        if health != GOOD:
+            self.label_messagebar.setText(msgbar)
             self.QWidgetLabelColor(self.label_messagebar, color)
-            
-        widget.setText(value)
-        self.label_messagebar.setText(msgbar)
-        if prev_sts != self.det_sts[label]:
-            self.show_log_list(sts, msgbar)
+        
+        if health == WARNING:
+            self.show_log_list(WARNING, msgbar)
+        elif health == BAD:
+            self.show_log_list(ERROR, msgbar)
         
     
     def QWidgetLabelColor(self, widget, textcolor, bgcolor=None):
@@ -1672,29 +1444,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.prev_widget_rect[init_idx] = init_rect
         
-<<<<<<< Updated upstream
-        
-    def show_log_list(self, log_option, msg):
-        if self.radio_show_loglist.isChecked():
-            if self.listWidget_log.count() >= 70:
-                self.listWidget_log.takeItem(0)
-            self.listWidget_log.addItem(msg)
-            
-            if self.listWidget_log.count() != 0:
-                if log_option == WARNING:
-                    self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("gold"))
-                elif log_option == ERROR:
-                    self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("red"))
-                else:
-                    if msg.find(OBSAPP_CAL_OFFSET) >= 0:
-                        self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("green"))
-                    else:
-                        self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("black"))
-                    
-        self.log.send(self.iam, log_option, msg)
-=======
     
->>>>>>> Stashed changes
             
     def show_log_list(self, log_option, msg):
         # send to list message                
@@ -1715,10 +1465,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
     def calc_xy_to_pq(self, para1, para2, opposite=False):    # x-y => p-q               
         PA = SLIT_ANG
         if opposite:
-            #PA *= (-1)
+            PA *= (-1)
             _p, _q = para1, para2
-            dx = - ( _q*np.cos(np.deg2rad(PA)) - _p*np.sin(np.deg2rad(PA)) ) / PIXELSCALE
-            dy = ( _q*np.sin(np.deg2rad(PA)) + _p*np.cos(np.deg2rad(PA)) ) / PIXELSCALE
+            dy = - ( _q*np.cos(np.deg2rad(PA)) - _p*np.sin(np.deg2rad(PA)) ) / PIXELSCALE
+            dx = - ( _q*np.sin(np.deg2rad(PA)) + _p*np.cos(np.deg2rad(PA)) ) / PIXELSCALE
             return dx, dy
         else: 
             _x, _y = para1, para2
@@ -2261,7 +2011,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.e_averaging_number.setEnabled(enable)
         
-        
+    '''    
     def heartbeat_status(self):
         color = ""
         if self.ig2_health == GOOD:
@@ -2277,6 +2027,23 @@ class MainWindow(Ui_Dialog, QMainWindow):
         else:
             self.QWidgetLabelColor(self.label_heartbeat, "white")
             self.heartbeat_on = True
+    '''       
+            
+    def heartbeat_status(self, idx, label):
+        color = ""
+        if self.health[idx] == GOOD:
+            color = "green"
+        elif self.health[idx] == WARNING:
+            color = "gold"
+        elif self.health[idx] == BAD:
+            color = "red"
+            
+        if self.heartbeat_on[idx]:
+            self.QWidgetLabelColor(label, color)
+            self.heartbeat_on[idx] = False
+        else:
+            self.QWidgetLabelColor(label, "white")
+            self.heartbeat_on[idx] = True
 
     
     #--------------------------------------------------------------
@@ -2288,34 +2055,31 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         param = self.param_InstSeq.split()
         print(param)
-<<<<<<< Updated upstream
-            
-        # PA
-        #if param[0] == INSTSEQ_TCS_INFO_PA:
-        #    self.label_IPA.setText(param[1])        
-        #    self.PA = int(param[1])
-            # current frame - A or B, A and B coordination
-            
-        #el
-        if param[0] == INSTSEQ_PQ:
-=======
                         
         if param[0] == HEART_BEAT:
             self.heartbeat_time[INSTSEQ_HB] = ti.time()
             self.monit_heartbeat(INSTSEQ_HB)    # modify 20240422
         
         elif param[0] == INSTSEQ_PQ:
->>>>>>> Stashed changes
             offset_p = float(param[1])
             offset_q = float(param[2])
+            
+            # add 20240214
+            _x, _y = self.calc_xy_to_pq(offset_p, offset_q, True)
             if (offset_p == 0 and offset_q < 0) or (offset_p == 0 and offset_q == 0):    
                 self.cur_frame = A_BOX
-            elif offset_p == 0 and offset_q > 0:  
+                # add 20240214
+                self.A_x, self.A_y = float(SLIT_CEN[0]) + _x, float(SLIT_CEN[1]) + _y
+                
+            else:   #if offset_p == 0 and offset_q > 0:  
                 self.cur_frame = B_BOX
+                # add 20240214
+                self.B_x, self.B_y = float(SLIT_CEN[0]) + _x, float(SLIT_CEN[1]) + _y
+            
             #elif offset_p != 0 and offset_q != 0: 
                 #self.cur_frame = OFF_BOX
-            print(self.cur_frame)
-            
+            #print(self.cur_frame)
+                        
             #add 20240106
             self.cur_guide_cnt = 0 
             self.label_cur_Idx.setText("0 /")
@@ -2477,9 +2241,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.show_log_list(INFO, msgbar)
             
         #---------------------------------------------
-<<<<<<< Updated upstream
-                        
-=======
     
     
     def judge_status_msg(self, state=""):
@@ -2519,7 +2280,6 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.QWidgetLabelColor(label, color)
                
     '''                
->>>>>>> Stashed changes
     def sub_data_processing(self):   
         # show value and color                    
         self.QShowValue(self.label_temp_detS, self.label_list[TMC2_A])
@@ -2529,40 +2289,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         self.QShowValue(self.label_temp_detH, self.label_list[TMC3_B])
         #self.label_heater_detH.setText(self.heatlabel[self.label_list[TMC3_B]])
-                        
-        # from VM
-        #self.label_vacuum.setText(self.dpvalue)
-        
-        # from Uploader
-        sts, color, info = None, None, INFO
-        if self.ig2_health == GOOD:
-            sts = "Good"
-            color = "green"
-        elif self.ig2_health == WARNING:
-            sts = "Warning"
-            color = "gold"
-            info = WARNING
-        elif self.ig2_health == BAD:
-            sts = "Bad"
-            color = "red"
-            info = ERROR
-            
-        self.label_is_health.setText(sts)
-        self.QWidgetLabelColor(self.label_is_health, color)
-        self.label_ics_health.setText(sts)
-        self.QWidgetLabelColor(self.label_ics_health, color)
-        self.label_dcsh_health.setText(sts)
-        self.QWidgetLabelColor(self.label_dcsh_health, color)
-        self.label_dcsk_health.setText(sts)
-        self.QWidgetLabelColor(self.label_dcsk_health, color)
-        self.label_dcss_health.setText(sts)
-        self.QWidgetLabelColor(self.label_dcss_health, color)
-        
-        msgbar = "IGRINS2 health is %s" % sts
-        self.show_log_list(info, msgbar)
-        #self.QWidgetLabelColor(self.label_messagebar, color)
-        #self.label_messagebar.setText(msgbar)
-            
+    '''
         
             
     # DCS -> InstSeq (ObsApp hooking)
@@ -2899,9 +2626,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
 if __name__ == "__main__":
     
     app = QApplication()
-    #sys.argv.append("True")
+    sys.argv.append("True")
     ObsApp = MainWindow(sys.argv[1])
     ObsApp.show()
-    #ObsApp.connect_to_server_dcs_q()
         
     app.exec()

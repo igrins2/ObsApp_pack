@@ -34,11 +34,7 @@
      <x>10</x>
      <y>6</y>
      <width>221</width>
-<<<<<<< Updated upstream
-     <height>378</height>
-=======
      <height>431</height>
->>>>>>> Stashed changes
     </rect>
    </property>
    <property name="sizePolicy">
@@ -55,13 +51,8 @@
    <property name="title">
     <string/>
    </property>
-<<<<<<< Updated upstream
-   <layout class="QGridLayout" name="gridLayout">
-    <item row="0" column="0" colspan="3">
-=======
    <layout class="QGridLayout" name="gridLayout_7">
     <item row="0" column="0" colspan="4">
->>>>>>> Stashed changes
      <widget class="QLabel" name="label_g1">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -83,12 +74,10 @@
       </property>
      </widget>
     </item>
-    <item row="1" column="0">
+    <item row="1" column="0" colspan="2">
      <widget class="QLabel" name="label_heartbeat">
       <property name="font">
        <font>
-<<<<<<< Updated upstream
-=======
         <pointsize>20</pointsize>
        </font>
       </property>
@@ -126,7 +115,6 @@
      <widget class="QLabel" name="label_heartbeat_ics">
       <property name="font">
        <font>
->>>>>>> Stashed changes
         <pointsize>12</pointsize>
        </font>
       </property>
@@ -138,10 +126,6 @@
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="1" column="1">
-     <widget class="QLabel" name="label_g1_1">
-=======
     <item row="2" column="1" colspan="2">
      <widget class="QLabel" name="label_g1_13">
       <property name="font">
@@ -162,7 +146,6 @@
     </item>
     <item row="2" column="3">
      <widget class="QLabel" name="label_state_ics">
->>>>>>> Stashed changes
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -171,88 +154,34 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>12</pointsize>
+        <pointsize>9</pointsize>
         <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>IGRINS-2:</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-<<<<<<< Updated upstream
-    <item row="1" column="2">
-     <widget class="QLabel" name="label_is_health">
-=======
-    <item row="3" column="3">
-     <widget class="QLabel" name="label_state_dcsh">
->>>>>>> Stashed changes
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>GOOD</string>
+       <string>disconnected</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="2" column="1">
-     <widget class="QLabel" name="label_g1_13">
+    <item row="3" column="0">
+     <widget class="QLabel" name="label_heartbeat_dcsh">
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>12</pointsize>
        </font>
       </property>
-      <property name="layoutDirection">
-       <enum>Qt::LeftToRight</enum>
-      </property>
       <property name="text">
-       <string>ICS:</string>
+       <string>♥</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignCenter</set>
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="2" column="2">
-     <widget class="QLabel" name="label_ics_health">
-=======
-    <item row="4" column="3">
-     <widget class="QLabel" name="label_state_dcsk">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
->>>>>>> Stashed changes
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>GOOD</string>
-      </property>
-     </widget>
-    </item>
-    <item row="3" column="0" colspan="2">
+    <item row="3" column="1" colspan="2">
      <widget class="QLabel" name="label_g1_14">
       <property name="font">
        <font>
@@ -266,35 +195,48 @@
        <string>DCSH:</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="3" column="2">
-     <widget class="QLabel" name="label_dcsh_health">
-=======
-    <item row="5" column="3">
-     <widget class="QLabel" name="label_state_dcss">
+    <item row="3" column="3">
+     <widget class="QLabel" name="label_state_dcsh">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
->>>>>>> Stashed changes
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>9</pointsize>
         <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>GOOD</string>
+       <string>disconnected</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="4" column="0" colspan="2">
+    <item row="4" column="0">
+     <widget class="QLabel" name="label_heartbeat_dcsk">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>♥</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="4" column="1" colspan="2">
      <widget class="QLabel" name="label_g1_15">
       <property name="font">
        <font>
@@ -308,36 +250,49 @@
        <string>DCSK:</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="4" column="2">
-     <widget class="QLabel" name="label_dcsk_health">
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>GOOD</string>
-      </property>
-     </widget>
-    </item>
-<<<<<<< Updated upstream
-    <item row="5" column="0" colspan="2">
-     <widget class="QLabel" name="label_g1_24">
-=======
-    <item row="6" column="3">
-     <widget class="QLabel" name="label_state_InstSeq">
+    <item row="4" column="3">
+     <widget class="QLabel" name="label_state_dcsk">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
         <verstretch>0</verstretch>
        </sizepolicy>
       </property>
->>>>>>> Stashed changes
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>disconnected</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="0">
+     <widget class="QLabel" name="label_heartbeat_dcss">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>♥</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="5" column="1" colspan="2">
+     <widget class="QLabel" name="label_g1_24">
       <property name="font">
        <font>
         <pointsize>10</pointsize>
@@ -350,25 +305,49 @@
        <string>DCSS:</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="5" column="2">
-     <widget class="QLabel" name="label_dcss_health">
+    <item row="5" column="3">
+     <widget class="QLabel" name="label_state_dcss">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>9</pointsize>
         <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>GOOD</string>
+       <string>disconnected</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="6" column="1">
-     <widget class="QLabel" name="label_g1_2">
+    <item row="6" column="0">
+     <widget class="QLabel" name="label_heartbeat_InstSeq">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>♥</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="6" column="1" colspan="2">
+     <widget class="QLabel" name="label_InstSeq_connect">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -382,20 +361,52 @@
        </font>
       </property>
       <property name="text">
-       <string>GDSN Status:</string>
+       <string>Inst. Seq:</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="6" column="2">
-     <widget class="QLabel" name="label_GDSN_connection">
-=======
-    <item row="7" column="3">
-     <widget class="QLabel" name="label_state_dbuploader">
->>>>>>> Stashed changes
+    <item row="6" column="3">
+     <widget class="QLabel" name="label_state_InstSeq">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>disconnected</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="0">
+     <widget class="QLabel" name="label_heartbeat_dbuploader">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>♥</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="7" column="1" colspan="2">
+     <widget class="QLabel" name="label_db_uploader">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -405,18 +416,55 @@
       <property name="font">
        <font>
         <pointsize>10</pointsize>
-        <bold>true</bold>
+        <bold>false</bold>
        </font>
       </property>
       <property name="text">
-       <string>Disconnected</string>
+       <string>DB uploader:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="7" column="1">
+    <item row="7" column="3">
+     <widget class="QLabel" name="label_state_dbuploader">
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>9</pointsize>
+        <bold>true</bold>
+       </font>
+      </property>
+      <property name="text">
+       <string>disconnected</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="0">
+     <widget class="QLabel" name="label_heartbeat_gmp">
+      <property name="font">
+       <font>
+        <pointsize>12</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>♥</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+     </widget>
+    </item>
+    <item row="8" column="1" colspan="2">
      <widget class="QLabel" name="label_g1_3">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -434,17 +482,12 @@
        <string>GMP Status:</string>
       </property>
       <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="7" column="2">
-     <widget class="QLabel" name="label_GMP_connection">
-=======
     <item row="8" column="3">
      <widget class="QLabel" name="label_state_gmp">
->>>>>>> Stashed changes
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
         <horstretch>0</horstretch>
@@ -453,19 +496,19 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>10</pointsize>
+        <pointsize>9</pointsize>
         <bold>true</bold>
        </font>
       </property>
       <property name="text">
-       <string>Disconnected</string>
+       <string>disconnected</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-    <item row="8" column="1">
+    <item row="9" column="2">
      <widget class="QLabel" name="label_g1_4">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -487,11 +530,7 @@
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="8" column="2">
-=======
     <item row="9" column="3">
->>>>>>> Stashed changes
      <widget class="QLabel" name="label_state">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -513,7 +552,7 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="1">
+    <item row="10" column="0" colspan="3">
      <widget class="QLabel" name="label_g1_5">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -535,11 +574,7 @@
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="9" column="2">
-=======
     <item row="10" column="3">
->>>>>>> Stashed changes
      <widget class="QLabel" name="label_action_state">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -561,11 +596,7 @@
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="10" column="1">
-=======
     <item row="11" column="1" colspan="2">
->>>>>>> Stashed changes
      <widget class="QLabel" name="label_g1_7">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -580,22 +611,14 @@
        </font>
       </property>
       <property name="text">
-<<<<<<< Updated upstream
-       <string>Det H (K):</string>
-=======
        <string>Detector H (K):</string>
->>>>>>> Stashed changes
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="10" column="2">
-=======
     <item row="11" column="3">
->>>>>>> Stashed changes
      <widget class="QLabel" name="label_temp_detH">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -617,11 +640,7 @@
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="11" column="1">
-=======
     <item row="12" column="1" colspan="2">
->>>>>>> Stashed changes
      <widget class="QLabel" name="label_g1_8">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -636,22 +655,14 @@
        </font>
       </property>
       <property name="text">
-<<<<<<< Updated upstream
-       <string>Det K (K):</string>
-=======
        <string>Detector K (K):</string>
->>>>>>> Stashed changes
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="11" column="2">
-=======
     <item row="12" column="3">
->>>>>>> Stashed changes
      <widget class="QLabel" name="label_temp_detK">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -673,11 +684,7 @@
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="12" column="1">
-=======
     <item row="13" column="1" colspan="2">
->>>>>>> Stashed changes
      <widget class="QLabel" name="label_g1_9">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -692,18 +699,14 @@
        </font>
       </property>
       <property name="text">
-       <string>Det S (K):</string>
+       <string>Detector S (K):</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
       </property>
      </widget>
     </item>
-<<<<<<< Updated upstream
-    <item row="12" column="2">
-=======
     <item row="13" column="3">
->>>>>>> Stashed changes
      <widget class="QLabel" name="label_temp_detS">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -731,15 +734,9 @@
    <property name="geometry">
     <rect>
      <x>10</x>
-<<<<<<< Updated upstream
-     <y>390</y>
-     <width>221</width>
-     <height>231</height>
-=======
      <y>445</y>
      <width>221</width>
      <height>251</height>
->>>>>>> Stashed changes
     </rect>
    </property>
    <property name="sizePolicy">
@@ -877,7 +874,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>8</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -1735,15 +1732,9 @@
   <widget class="QRadioButton" name="radio_show_logfile">
    <property name="geometry">
     <rect>
-<<<<<<< Updated upstream
-     <x>620</x>
-     <y>630</y>
-     <width>111</width>
-=======
      <x>650</x>
      <y>700</y>
      <width>116</width>
->>>>>>> Stashed changes
      <height>25</height>
     </rect>
    </property>
@@ -1759,15 +1750,9 @@
   <widget class="QRadioButton" name="radio_show_loglist">
    <property name="geometry">
     <rect>
-<<<<<<< Updated upstream
-     <x>730</x>
-     <y>630</y>
-     <width>111</width>
-=======
      <x>770</x>
      <y>700</y>
      <width>116</width>
->>>>>>> Stashed changes
      <height>25</height>
     </rect>
    </property>
@@ -2332,10 +2317,6 @@
       </property>
       <property name="font">
        <font>
-<<<<<<< Updated upstream
-        <family>Courier 10 Pitch</family>
-=======
->>>>>>> Stashed changes
         <pointsize>10</pointsize>
        </font>
       </property>
@@ -2355,21 +2336,11 @@
       <property name="font">
        <font>
         <pointsize>10</pointsize>
-<<<<<<< Updated upstream
-=======
         <bold>true</bold>
->>>>>>> Stashed changes
        </font>
       </property>
       <property name="text">
-<<<<<<< Updated upstream
-       <string>Sub (Sky)</string>
-      </property>
-      <property name="autoExclusive">
-       <bool>true</bool>
-=======
        <string>Set Guide star</string>
->>>>>>> Stashed changes
       </property>
      </widget>
     </item>

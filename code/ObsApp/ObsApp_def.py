@@ -3,7 +3,7 @@
 """
 Created on Feb 10, 2023
 
-Modified on Nov 20, 2023
+Modified on Feb 15, 2024
 
 @author: hilee
 """
@@ -98,20 +98,46 @@ T_frame = 1.45479
 T_br = 2
 
 # components
+'''
 TMC2 = 0
 TMC3 = 1
 VM = 2
 UPLOADER = 3
+'''
 
 DEFAULT_VALUE = "-999"
 
+'''
 TMC2_A = 0
 TMC2_B = 1
 TMC3_B = 2
+'''
 
 GOOD = 0
 WARNING = 1
 BAD = 2
+
+HEALTH_IG2 = 0
+HEALTH_ICS = 1
+HEALTH_DCSS = 2
+HEALTH_DCSH = 3
+HEALTH_DCSK = 4
+HEALTH_INSTSEQ = 5
+HEALTH_DBUPLOAD = 6
+HEALTH_GMP = 7
+
+GOOD = 0
+STOPPED = 1
+DISCON = 2
+PWR_OFF = 3
+TMP_ERR = 4
+TMP_WARN = 5
+
+HIHI = 1
+HI = 2
+LOLO = 3
+LO = 4
+OTHER = 5
 
 FWHM_GUESS = 0
 FWHM_FIT = 1
@@ -124,8 +150,11 @@ BOX_CLR = "green"
 
 HK_REQ_GETVALUE = "GetValue"  #temp_ctrl, tm, vm
 
-INSTSEQ_TCS_INFO_PA = "TCSInfoPA"
+UPLOAD_Q = "UploadDBQ"    #uploader
 INSTSEQ_PQ = "OffsetPQ"
+
+INSTSEQ_HB = 0
+UPLOAD_HB = 1
 
 OBSAPP_CAL_OFFSET = "CalOffset"
 OBSAPP_OUTOF_NUMBER_SVC = "Out_of_Number_SVC"
@@ -142,5 +171,6 @@ CMD_STOPACQUISITION = "STOPACQUISITION"
 
 IG2_HEALTH = "IGRINS2Health"    #0-GOOD, 1-WARNING, 2-BAD
 
+HEART_BEAT = "HeartBeat"
 #CMD_COMPLETED = "Completed"
 #EXIT = "Exit"
