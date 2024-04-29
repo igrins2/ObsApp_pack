@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 """
-Created on Apr 15, 2024
+Created on Apr 27, 2024
 
 Modified on
 
@@ -35,18 +35,18 @@ class LogListDlg(Ui_Dialog, QMainWindow):
     
     def show_log(self, log_option, msg):
         #print("test")
-        if self.listWidget_log.count() >= 70:
+        if self.listWidget_log.count() >= 30:
             self.listWidget_log.takeItem(0)
         self.listWidget_log.addItem(msg)
             
         if self.listWidget_log.count() != 0:
             if log_option == WARNING:
-                self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("gold"))
-            elif log_option == ERROR:
+                self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("orange"))
+            elif log_option == BAD:
                 self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("red"))
             else:
                 #print("OBSAPP_CAL_OFFSET:",msg)
-                if msg.find(OBSAPP_CAL_OFFSET) >= 0:
+                if msg.find(OBSAPP_CAL_OFFSET) >= 0 or msg.find("Clicked") >= 0:
                     self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("green"))
                 else:
                     self.listWidget_log.item(self.listWidget_log.count()-1).setForeground(QColor("black"))
