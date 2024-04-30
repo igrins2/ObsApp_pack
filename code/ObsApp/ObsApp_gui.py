@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on Apr 27, 2024
+Modified on Apr 28, 2024
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -272,8 +272,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.label_state_dbuploader.setText("---")
         self.label_state_gmp.setText("---")
         
-        self.label_state.setText("Idle")
-        self.label_action_state.setText("---")        
+        #self.label_state.setText("Idle")
+        #self.label_action_state.setText("---")        
         
         self.label_temp_detH.setText("---")
         #self.label_vacuum.setText("---")
@@ -304,7 +304,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.e_repeat_file_name.setText(fname)
         self.e_saving_number.setText(str(self.out_of_number_svc))
         
-        self.e_offset.setText("1")
+        self.e_offset.setText("0.1")
         
         self.label_cur_Idx.setText("0 /")
         self.e_averaging_number.setText("5")
@@ -457,6 +457,11 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.chk_off_slit.clicked.connect(self.set_off_slit)
         self.bt_set_guide_star.clicked.connect(self.set_guide_star)
         
+        self.bt_plus_p.setText("+P")
+        self.bt_minus_p.setText("-P")
+        self.bt_plus_q.setText("+Q")
+        self.bt_minus_q.setText("-Q")
+        
         self.bt_plus_p.clicked.connect(lambda: self.move_p(False))
         self.bt_minus_p.clicked.connect(lambda: self.move_p(True))
         self.bt_plus_q.clicked.connect(lambda: self.move_q(True))
@@ -602,6 +607,19 @@ class MainWindow(Ui_Dialog, QMainWindow):
             self.QShowValue(int(param[11]), int(param[12]), param[13], self.label_temp_detS, "S")
             self.QShowValue(int(param[14]), int(param[15]), param[16], self.label_temp_detH, "H")
             self.QShowValue(int(param[17]), int(param[18]), param[19], self.label_temp_detK, "K")
+
+            # add 20240429
+            if int(param[20]) == 1:
+                status = "Good"
+                color = "green"
+                self.health[HEALTH_GMP] = GOOD
+            else:
+                status = "stopped"
+                color = "red"
+                self.health[HEALTH_GMP] = BAD
+
+            self.label_state_gmp.setText(status)
+            self.QWidgetLabelColor(self.label_state_gmp, color)
                     
         # add 20240215
         elif param[0] == UPLOAD_Q:                        
@@ -1694,9 +1712,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
 
     #modify 20240106
     def single(self):
-        
         self.show_log_list(LOG_INFO, "Button Clicked: Exposure")
-        
+            
         if self.svc_mode == GUIDE_MODE:
             return
         
@@ -2176,16 +2193,17 @@ class MainWindow(Ui_Dialog, QMainWindow):
         elif param[0] == CMD_SETFSPARAM_ICS:       
             #self.stop_clicked = True            
             if param[1] == "all":
-                if self.acquiring[SVC]:
-                    self.abort_acquisition()
+                #if self.acquiring[SVC]:
+                    #self.abort_acquisition()
                     #self.bt_single.click()
                 
-                _fowlerTime = 1.63 - T_frame * 1
-                _waittime = T_br + (T_frame + _fowlerTime + (2 * T_frame * 1)) + T_br
-                #_waittime = (T_frame * 2 + T_br) * 2
-                if self.cal_waittime[SVC] == 0:
-                    self.cal_waittime[SVC] = _waittime
-                    #print("cal_waittime SVC", self.cal_waittime[SVC])
+                if not self.acquiring[SVC]:
+                    _fowlerTime = 1.63 - T_frame * 1
+                    _waittime = T_br + (T_frame + _fowlerTime + (2 * T_frame * 1)) + T_br
+                    #_waittime = (T_frame * 2 + T_br) * 2
+                    if self.cal_waittime[SVC] == 0:
+                        self.cal_waittime[SVC] = _waittime
+                        #print("cal_waittime SVC", self.cal_waittime[SVC])
                 
                 self.label_exp_time.setText(param[3])
                 self.label_sampling_number.setText(param[4])
@@ -2201,7 +2219,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 
             elif param[1] == "DCSS":
                 if self.acquiring[SVC]:
-                    self.abort_acquisition()
+                    return
+                #    self.abort_acquisition()
                     #self.bt_single.click()
                 
                 _fowlerTime = 1.63 - T_frame * 1
@@ -2227,8 +2246,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
         elif param[0] == CMD_ACQUIRERAMP_ICS:
             #print("CMD_ACQUIRERAMP_ICS from InstSeq")  
             if param[1] == "all":
-                self.label_svc_state.setText("Running")
-                self.svc_progressbar_monit()
+                
+                if not self.acquiring[SVC]:
+                    self.label_svc_state.setText("Running")
+                    self.svc_progressbar_monit()
                 
                 self.label_obs_state.setText("Running")
                 
@@ -2243,6 +2264,9 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.hk_t = ti.time()
 
             elif param[1] == "DCSS":
+                if self.acquiring[SVC]:
+                    return
+                
                 self.label_svc_state.setText("Running")
                 self.svc_progressbar_monit()
                                                             
@@ -2265,6 +2289,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
                 self.acquiring[idx] = False
                 
             self.label_obs_state.setText("Idle")
+            self.label_svc_state.setText("Idle")
                 
             self.prog_timer_hk.stop()
             self.elapsed_obs_timer.stop()
@@ -2275,8 +2300,16 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     
             self.label_svc_state.setText("Idle")
             self.QWidgetBtnColor(self.bt_single, "black")
+            self.QWidgetBtnColor(self.bt_slow_guide, "black")
             self.bt_single.setText("Exposure")
+            self.bt_slow_guide.setText("Slow Guide") 
+            
+            self.cur_save_cnt = 0
+            self.stop_clicked = True
+            
             self.enable_dcss(True)
+
+            self.svc_mode = SINGLE_MODE
                         
             self.status_image_taking(0)     
                 
@@ -2542,18 +2575,32 @@ class MainWindow(Ui_Dialog, QMainWindow):
                     ti.sleep(1)
                     self.set_fs_param()    
                                     
-            elif param[0] == CMD_STOPACQUISITION:  
+            elif param[0] == CMD_STOPACQUISITION: 
+                
+                #add 20240428
+                if not self.acquiring[SVC]:
+                    return
+                 
                 self.prog_timer_svc.stop()
                 
                 self.bt_single.setEnabled(True)
                 self.bt_slow_guide.setEnabled(True)
                         
                 self.label_svc_state.setText("Idle")
+                
                 self.QWidgetBtnColor(self.bt_single, "black")
+                self.QWidgetBtnColor(self.bt_slow_guide, "black")
                 self.bt_single.setText("Exposure")
+                self.bt_slow_guide.setText("Slow Guide") 
+                
+                self.cur_save_cnt = 0
+                
+                self.stop_clicked = True
                 self.enable_dcss(True)
                 
                 self.acquiring[SVC] = False
+
+                self.svc_mode = SINGLE_MODE
                 
                 # add 20240422
                 self.status_image_taking(0)

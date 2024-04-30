@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 ################################################################################
-## Form generated from reading UI file 'ObsAppeMjoQS.ui'
+## Form generated from reading UI file 'ObsAppHWEhPS.ui'
 ##
 ## Created by: Qt User Interface Compiler version 6.4.2
 ##
@@ -35,7 +35,7 @@ class Ui_Dialog(object):
         #Dialog.setModal(False)
         self.groupBox_InstrumentStatus = QGroupBox(Dialog)
         self.groupBox_InstrumentStatus.setObjectName(u"groupBox_InstrumentStatus")
-        self.groupBox_InstrumentStatus.setGeometry(QRect(10, 6, 221, 431))
+        self.groupBox_InstrumentStatus.setGeometry(QRect(3, 6, 231, 431))
         sizePolicy1 = QSizePolicy(QSizePolicy.Expanding, QSizePolicy.Fixed)
         sizePolicy1.setHorizontalStretch(0)
         sizePolicy1.setVerticalStretch(0)
@@ -103,7 +103,7 @@ class Ui_Dialog(object):
         sizePolicy.setHeightForWidth(self.label_state_ics.sizePolicy().hasHeightForWidth())
         self.label_state_ics.setSizePolicy(sizePolicy)
         font6 = QFont()
-        font6.setPointSize(9)
+        font6.setPointSize(8)
         font6.setBold(True)
         self.label_state_ics.setFont(font6)
         self.label_state_ics.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
@@ -260,45 +260,6 @@ class Ui_Dialog(object):
 
         self.gridLayout_7.addWidget(self.label_state_gmp, 8, 3, 1, 1)
 
-        self.label_g1_4 = QLabel(self.groupBox_InstrumentStatus)
-        self.label_g1_4.setObjectName(u"label_g1_4")
-        sizePolicy.setHeightForWidth(self.label_g1_4.sizePolicy().hasHeightForWidth())
-        self.label_g1_4.setSizePolicy(sizePolicy)
-        self.label_g1_4.setFont(font7)
-        self.label_g1_4.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout_7.addWidget(self.label_g1_4, 9, 2, 1, 1)
-
-        self.label_state = QLabel(self.groupBox_InstrumentStatus)
-        self.label_state.setObjectName(u"label_state")
-        sizePolicy.setHeightForWidth(self.label_state.sizePolicy().hasHeightForWidth())
-        self.label_state.setSizePolicy(sizePolicy)
-        font8 = QFont()
-        font8.setPointSize(10)
-        font8.setBold(True)
-        self.label_state.setFont(font8)
-        self.label_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout_7.addWidget(self.label_state, 9, 3, 1, 1)
-
-        self.label_g1_5 = QLabel(self.groupBox_InstrumentStatus)
-        self.label_g1_5.setObjectName(u"label_g1_5")
-        sizePolicy.setHeightForWidth(self.label_g1_5.sizePolicy().hasHeightForWidth())
-        self.label_g1_5.setSizePolicy(sizePolicy)
-        self.label_g1_5.setFont(font7)
-        self.label_g1_5.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout_7.addWidget(self.label_g1_5, 10, 0, 1, 3)
-
-        self.label_action_state = QLabel(self.groupBox_InstrumentStatus)
-        self.label_action_state.setObjectName(u"label_action_state")
-        sizePolicy.setHeightForWidth(self.label_action_state.sizePolicy().hasHeightForWidth())
-        self.label_action_state.setSizePolicy(sizePolicy)
-        self.label_action_state.setFont(font8)
-        self.label_action_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout_7.addWidget(self.label_action_state, 10, 3, 1, 1)
-
         self.label_g1_7 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_7.setObjectName(u"label_g1_7")
         sizePolicy.setHeightForWidth(self.label_g1_7.sizePolicy().hasHeightForWidth())
@@ -306,16 +267,19 @@ class Ui_Dialog(object):
         self.label_g1_7.setFont(font7)
         self.label_g1_7.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.gridLayout_7.addWidget(self.label_g1_7, 11, 1, 1, 2)
+        self.gridLayout_7.addWidget(self.label_g1_7, 9, 0, 1, 3)
 
         self.label_temp_detH = QLabel(self.groupBox_InstrumentStatus)
         self.label_temp_detH.setObjectName(u"label_temp_detH")
         sizePolicy.setHeightForWidth(self.label_temp_detH.sizePolicy().hasHeightForWidth())
         self.label_temp_detH.setSizePolicy(sizePolicy)
+        font8 = QFont()
+        font8.setPointSize(10)
+        font8.setBold(True)
         self.label_temp_detH.setFont(font8)
         self.label_temp_detH.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
-        self.gridLayout_7.addWidget(self.label_temp_detH, 11, 3, 1, 1)
+        self.gridLayout_7.addWidget(self.label_temp_detH, 9, 3, 1, 1)
 
         self.label_g1_8 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_8.setObjectName(u"label_g1_8")
@@ -324,7 +288,7 @@ class Ui_Dialog(object):
         self.label_g1_8.setFont(font7)
         self.label_g1_8.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.gridLayout_7.addWidget(self.label_g1_8, 12, 1, 1, 2)
+        self.gridLayout_7.addWidget(self.label_g1_8, 10, 0, 1, 3)
 
         self.label_temp_detK = QLabel(self.groupBox_InstrumentStatus)
         self.label_temp_detK.setObjectName(u"label_temp_detK")
@@ -333,7 +297,7 @@ class Ui_Dialog(object):
         self.label_temp_detK.setFont(font8)
         self.label_temp_detK.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
-        self.gridLayout_7.addWidget(self.label_temp_detK, 12, 3, 1, 1)
+        self.gridLayout_7.addWidget(self.label_temp_detK, 10, 3, 1, 1)
 
         self.label_g1_9 = QLabel(self.groupBox_InstrumentStatus)
         self.label_g1_9.setObjectName(u"label_g1_9")
@@ -342,7 +306,7 @@ class Ui_Dialog(object):
         self.label_g1_9.setFont(font7)
         self.label_g1_9.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
-        self.gridLayout_7.addWidget(self.label_g1_9, 13, 1, 1, 2)
+        self.gridLayout_7.addWidget(self.label_g1_9, 11, 0, 1, 3)
 
         self.label_temp_detS = QLabel(self.groupBox_InstrumentStatus)
         self.label_temp_detS.setObjectName(u"label_temp_detS")
@@ -351,11 +315,11 @@ class Ui_Dialog(object):
         self.label_temp_detS.setFont(font8)
         self.label_temp_detS.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
-        self.gridLayout_7.addWidget(self.label_temp_detS, 13, 3, 1, 1)
+        self.gridLayout_7.addWidget(self.label_temp_detS, 11, 3, 1, 1)
 
         self.groupBox_ScienceObservation = QGroupBox(Dialog)
         self.groupBox_ScienceObservation.setObjectName(u"groupBox_ScienceObservation")
-        self.groupBox_ScienceObservation.setGeometry(QRect(10, 445, 221, 251))
+        self.groupBox_ScienceObservation.setGeometry(QRect(3, 445, 231, 251))
         sizePolicy1.setHeightForWidth(self.groupBox_ScienceObservation.sizePolicy().hasHeightForWidth())
         self.groupBox_ScienceObservation.setSizePolicy(sizePolicy1)
         self.groupBox_ScienceObservation.setFont(font)
@@ -410,10 +374,7 @@ class Ui_Dialog(object):
         self.label_data_label.setObjectName(u"label_data_label")
         sizePolicy.setHeightForWidth(self.label_data_label.sizePolicy().hasHeightForWidth())
         self.label_data_label.setSizePolicy(sizePolicy)
-        font9 = QFont()
-        font9.setPointSize(8)
-        font9.setBold(True)
-        self.label_data_label.setFont(font9)
+        self.label_data_label.setFont(font6)
         self.label_data_label.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
 
         self.gridLayout_2.addWidget(self.label_data_label, 1, 1, 1, 2)
@@ -502,20 +463,15 @@ class Ui_Dialog(object):
         self.label_svc_filename.setObjectName(u"label_svc_filename")
         sizePolicy.setHeightForWidth(self.label_svc_filename.sizePolicy().hasHeightForWidth())
         self.label_svc_filename.setSizePolicy(sizePolicy)
-        self.label_svc_filename.setFont(font6)
+        font9 = QFont()
+        font9.setPointSize(9)
+        font9.setBold(True)
+        self.label_svc_filename.setFont(font9)
         self.label_svc_filename.setLayoutDirection(Qt.LeftToRight)
         self.label_svc_filename.setFrameShape(QFrame.StyledPanel)
         self.label_svc_filename.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_4.addWidget(self.label_svc_filename, 1, 2, 1, 4)
-
-        self.bt_single = QPushButton(self.groupBox_SlitViewCamera)
-        self.bt_single.setObjectName(u"bt_single")
-        sizePolicy.setHeightForWidth(self.bt_single.sizePolicy().hasHeightForWidth())
-        self.bt_single.setSizePolicy(sizePolicy)
-        self.bt_single.setFont(font8)
-
-        self.gridLayout_4.addWidget(self.bt_single, 5, 3, 1, 3)
 
         self.label_g3_1 = QLabel(self.groupBox_SlitViewCamera)
         self.label_g3_1.setObjectName(u"label_g3_1")
@@ -578,60 +534,6 @@ class Ui_Dialog(object):
 
         self.gridLayout_4.addWidget(self.chk_auto_save, 7, 1, 1, 3)
 
-        self.label_g3_3 = QLabel(self.groupBox_SlitViewCamera)
-        self.label_g3_3.setObjectName(u"label_g3_3")
-        sizePolicy.setHeightForWidth(self.label_g3_3.sizePolicy().hasHeightForWidth())
-        self.label_g3_3.setSizePolicy(sizePolicy)
-        self.label_g3_3.setFont(font7)
-        self.label_g3_3.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout_4.addWidget(self.label_g3_3, 3, 0, 1, 3)
-
-        self.label_g3_4 = QLabel(self.groupBox_SlitViewCamera)
-        self.label_g3_4.setObjectName(u"label_g3_4")
-        sizePolicy.setHeightForWidth(self.label_g3_4.sizePolicy().hasHeightForWidth())
-        self.label_g3_4.setSizePolicy(sizePolicy)
-        self.label_g3_4.setFont(font7)
-        self.label_g3_4.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout_4.addWidget(self.label_g3_4, 4, 0, 1, 3)
-
-        self.label_g3_2 = QLabel(self.groupBox_SlitViewCamera)
-        self.label_g3_2.setObjectName(u"label_g3_2")
-        sizePolicy.setHeightForWidth(self.label_g3_2.sizePolicy().hasHeightForWidth())
-        self.label_g3_2.setSizePolicy(sizePolicy)
-        self.label_g3_2.setFont(font7)
-        self.label_g3_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
-
-        self.gridLayout_4.addWidget(self.label_g3_2, 2, 0, 1, 3)
-
-        self.e_svc_fowler_number = QLineEdit(self.groupBox_SlitViewCamera)
-        self.e_svc_fowler_number.setObjectName(u"e_svc_fowler_number")
-        sizePolicy.setHeightForWidth(self.e_svc_fowler_number.sizePolicy().hasHeightForWidth())
-        self.e_svc_fowler_number.setSizePolicy(sizePolicy)
-        self.e_svc_fowler_number.setFont(font9)
-        self.e_svc_fowler_number.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.e_svc_fowler_number, 3, 3, 1, 3)
-
-        self.e_svc_exp_time = QLineEdit(self.groupBox_SlitViewCamera)
-        self.e_svc_exp_time.setObjectName(u"e_svc_exp_time")
-        sizePolicy.setHeightForWidth(self.e_svc_exp_time.sizePolicy().hasHeightForWidth())
-        self.e_svc_exp_time.setSizePolicy(sizePolicy)
-        self.e_svc_exp_time.setFont(font9)
-        self.e_svc_exp_time.setAlignment(Qt.AlignCenter)
-
-        self.gridLayout_4.addWidget(self.e_svc_exp_time, 4, 3, 1, 3)
-
-        self.label_svc_state = QLabel(self.groupBox_SlitViewCamera)
-        self.label_svc_state.setObjectName(u"label_svc_state")
-        sizePolicy.setHeightForWidth(self.label_svc_state.sizePolicy().hasHeightForWidth())
-        self.label_svc_state.setSizePolicy(sizePolicy)
-        self.label_svc_state.setFont(font8)
-        self.label_svc_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
-
-        self.gridLayout_4.addWidget(self.label_svc_state, 2, 3, 1, 3)
-
         self.label_g3 = QLabel(self.groupBox_SlitViewCamera)
         self.label_g3.setObjectName(u"label_g3")
         sizePolicy.setHeightForWidth(self.label_g3.sizePolicy().hasHeightForWidth())
@@ -645,7 +547,7 @@ class Ui_Dialog(object):
         self.e_repeat_file_name.setObjectName(u"e_repeat_file_name")
         sizePolicy.setHeightForWidth(self.e_repeat_file_name.sizePolicy().hasHeightForWidth())
         self.e_repeat_file_name.setSizePolicy(sizePolicy)
-        self.e_repeat_file_name.setFont(font9)
+        self.e_repeat_file_name.setFont(font6)
         self.e_repeat_file_name.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.gridLayout_4.addWidget(self.e_repeat_file_name, 8, 2, 1, 3)
@@ -658,6 +560,68 @@ class Ui_Dialog(object):
         self.label_g3_5.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
 
         self.gridLayout_4.addWidget(self.label_g3_5, 8, 0, 1, 2)
+
+        self.e_svc_fowler_number = QLineEdit(self.groupBox_SlitViewCamera)
+        self.e_svc_fowler_number.setObjectName(u"e_svc_fowler_number")
+        sizePolicy.setHeightForWidth(self.e_svc_fowler_number.sizePolicy().hasHeightForWidth())
+        self.e_svc_fowler_number.setSizePolicy(sizePolicy)
+        self.e_svc_fowler_number.setFont(font6)
+        self.e_svc_fowler_number.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.e_svc_fowler_number, 3, 4, 1, 2)
+
+        self.e_svc_exp_time = QLineEdit(self.groupBox_SlitViewCamera)
+        self.e_svc_exp_time.setObjectName(u"e_svc_exp_time")
+        sizePolicy.setHeightForWidth(self.e_svc_exp_time.sizePolicy().hasHeightForWidth())
+        self.e_svc_exp_time.setSizePolicy(sizePolicy)
+        self.e_svc_exp_time.setFont(font6)
+        self.e_svc_exp_time.setAlignment(Qt.AlignCenter)
+
+        self.gridLayout_4.addWidget(self.e_svc_exp_time, 4, 4, 1, 2)
+
+        self.bt_single = QPushButton(self.groupBox_SlitViewCamera)
+        self.bt_single.setObjectName(u"bt_single")
+        sizePolicy.setHeightForWidth(self.bt_single.sizePolicy().hasHeightForWidth())
+        self.bt_single.setSizePolicy(sizePolicy)
+        self.bt_single.setFont(font8)
+
+        self.gridLayout_4.addWidget(self.bt_single, 5, 4, 1, 2)
+
+        self.label_g3_4 = QLabel(self.groupBox_SlitViewCamera)
+        self.label_g3_4.setObjectName(u"label_g3_4")
+        sizePolicy.setHeightForWidth(self.label_g3_4.sizePolicy().hasHeightForWidth())
+        self.label_g3_4.setSizePolicy(sizePolicy)
+        self.label_g3_4.setFont(font7)
+        self.label_g3_4.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout_4.addWidget(self.label_g3_4, 4, 0, 1, 4)
+
+        self.label_g3_3 = QLabel(self.groupBox_SlitViewCamera)
+        self.label_g3_3.setObjectName(u"label_g3_3")
+        sizePolicy.setHeightForWidth(self.label_g3_3.sizePolicy().hasHeightForWidth())
+        self.label_g3_3.setSizePolicy(sizePolicy)
+        self.label_g3_3.setFont(font7)
+        self.label_g3_3.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout_4.addWidget(self.label_g3_3, 3, 0, 1, 4)
+
+        self.label_svc_state = QLabel(self.groupBox_SlitViewCamera)
+        self.label_svc_state.setObjectName(u"label_svc_state")
+        sizePolicy.setHeightForWidth(self.label_svc_state.sizePolicy().hasHeightForWidth())
+        self.label_svc_state.setSizePolicy(sizePolicy)
+        self.label_svc_state.setFont(font8)
+        self.label_svc_state.setAlignment(Qt.AlignLeading|Qt.AlignLeft|Qt.AlignVCenter)
+
+        self.gridLayout_4.addWidget(self.label_svc_state, 2, 4, 1, 2)
+
+        self.label_g3_2 = QLabel(self.groupBox_SlitViewCamera)
+        self.label_g3_2.setObjectName(u"label_g3_2")
+        sizePolicy.setHeightForWidth(self.label_g3_2.sizePolicy().hasHeightForWidth())
+        self.label_g3_2.setSizePolicy(sizePolicy)
+        self.label_g3_2.setFont(font7)
+        self.label_g3_2.setAlignment(Qt.AlignRight|Qt.AlignTrailing|Qt.AlignVCenter)
+
+        self.gridLayout_4.addWidget(self.label_g3_2, 2, 0, 1, 4)
 
         self.groupBox_zscale = QGroupBox(Dialog)
         self.groupBox_zscale.setObjectName(u"groupBox_zscale")
@@ -682,7 +646,7 @@ class Ui_Dialog(object):
         self.e_mscale_min.setObjectName(u"e_mscale_min")
         sizePolicy.setHeightForWidth(self.e_mscale_min.sizePolicy().hasHeightForWidth())
         self.e_mscale_min.setSizePolicy(sizePolicy)
-        self.e_mscale_min.setFont(font9)
+        self.e_mscale_min.setFont(font6)
         self.e_mscale_min.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_3.addWidget(self.e_mscale_min, 1, 1, 1, 1)
@@ -691,7 +655,7 @@ class Ui_Dialog(object):
         self.e_mscale_max.setObjectName(u"e_mscale_max")
         sizePolicy.setHeightForWidth(self.e_mscale_max.sizePolicy().hasHeightForWidth())
         self.e_mscale_max.setSizePolicy(sizePolicy)
-        self.e_mscale_max.setFont(font9)
+        self.e_mscale_max.setFont(font6)
         self.e_mscale_max.setAlignment(Qt.AlignCenter)
 
         self.gridLayout_3.addWidget(self.e_mscale_max, 1, 2, 1, 1)
@@ -725,7 +689,7 @@ class Ui_Dialog(object):
         self.label_messagebar.setAlignment(Qt.AlignCenter)
         self.frame_expand = QFrame(Dialog)
         self.frame_expand.setObjectName(u"frame_expand")
-        self.frame_expand.setGeometry(QRect(230, 4, 181, 181))
+        self.frame_expand.setGeometry(QRect(232, 4, 181, 181))
         sizePolicy.setHeightForWidth(self.frame_expand.sizePolicy().hasHeightForWidth())
         self.frame_expand.setSizePolicy(sizePolicy)
         self.frame_expand.setCursor(QCursor(Qt.ArrowCursor))
@@ -736,7 +700,7 @@ class Ui_Dialog(object):
         self.frame_fitting = QFrame(Dialog)
         self.frame_fitting.setObjectName(u"frame_fitting")
         self.frame_fitting.setEnabled(True)
-        self.frame_fitting.setGeometry(QRect(400, 4, 181, 181))
+        self.frame_fitting.setGeometry(QRect(402, 4, 181, 181))
         sizePolicy2 = QSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.MinimumExpanding)
         sizePolicy2.setHorizontalStretch(0)
         sizePolicy2.setVerticalStretch(2)
@@ -749,7 +713,7 @@ class Ui_Dialog(object):
         self.frame_svc = QFrame(Dialog)
         self.frame_svc.setObjectName(u"frame_svc")
         self.frame_svc.setEnabled(True)
-        self.frame_svc.setGeometry(QRect(230, 170, 351, 351))
+        self.frame_svc.setGeometry(QRect(232, 170, 351, 351))
         sizePolicy.setHeightForWidth(self.frame_svc.sizePolicy().hasHeightForWidth())
         self.frame_svc.setSizePolicy(sizePolicy)
         self.frame_svc.setCursor(QCursor(Qt.ArrowCursor))
@@ -893,7 +857,7 @@ class Ui_Dialog(object):
         self.bt_mark_sky.setObjectName(u"bt_mark_sky")
         sizePolicy.setHeightForWidth(self.bt_mark_sky.sizePolicy().hasHeightForWidth())
         self.bt_mark_sky.setSizePolicy(sizePolicy)
-        self.bt_mark_sky.setFont(font6)
+        self.bt_mark_sky.setFont(font9)
 
         self.gridLayout_6.addWidget(self.bt_mark_sky, 0, 2, 1, 1)
 
@@ -925,7 +889,7 @@ class Ui_Dialog(object):
         self.frame_svc_expand = QFrame(Dialog)
         self.frame_svc_expand.setObjectName(u"frame_svc_expand")
         self.frame_svc_expand.setEnabled(True)
-        self.frame_svc_expand.setGeometry(QRect(230, 505, 201, 201))
+        self.frame_svc_expand.setGeometry(QRect(232, 505, 201, 201))
         sizePolicy.setHeightForWidth(self.frame_svc_expand.sizePolicy().hasHeightForWidth())
         self.frame_svc_expand.setSizePolicy(sizePolicy)
         self.frame_svc_expand.setCursor(QCursor(Qt.ArrowCursor))
@@ -935,7 +899,7 @@ class Ui_Dialog(object):
         self.frame_svc_expand.setFrameShadow(QFrame.Raised)
         self.groupBox_withView = QGroupBox(Dialog)
         self.groupBox_withView.setObjectName(u"groupBox_withView")
-        self.groupBox_withView.setGeometry(QRect(400, 515, 171, 181))
+        self.groupBox_withView.setGeometry(QRect(403, 515, 171, 181))
         self.groupBox_withView.setFlat(False)
         self.gridLayout_5 = QGridLayout(self.groupBox_withView)
         self.gridLayout_5.setObjectName(u"gridLayout_5")
@@ -1044,12 +1008,8 @@ class Ui_Dialog(object):
         self.label_db_uploader.setText(QCoreApplication.translate("Dialog", u"DB uploader:", None))
         self.label_state_dbuploader.setText(QCoreApplication.translate("Dialog", u"disconnected", None))
         self.label_heartbeat_gmp.setText(QCoreApplication.translate("Dialog", u"\u2665", None))
-        self.label_g1_3.setText(QCoreApplication.translate("Dialog", u"GMP Status:", None))
+        self.label_g1_3.setText(QCoreApplication.translate("Dialog", u"GMP:", None))
         self.label_state_gmp.setText(QCoreApplication.translate("Dialog", u"disconnected", None))
-        self.label_g1_4.setText(QCoreApplication.translate("Dialog", u"State:", None))
-        self.label_state.setText(QCoreApplication.translate("Dialog", u"Running", None))
-        self.label_g1_5.setText(QCoreApplication.translate("Dialog", u"Action State:", None))
-        self.label_action_state.setText(QCoreApplication.translate("Dialog", u"Idle", None))
         self.label_g1_7.setText(QCoreApplication.translate("Dialog", u"Detector H (K):", None))
         self.label_temp_detH.setText(QCoreApplication.translate("Dialog", u"65.0", None))
         self.label_g1_8.setText(QCoreApplication.translate("Dialog", u"Detector K (K):", None))
@@ -1072,20 +1032,20 @@ class Ui_Dialog(object):
         self.label_g2_3.setText(QCoreApplication.translate("Dialog", u"Fowler Sampling:", None))
         self.groupBox_SlitViewCamera.setTitle("")
         self.label_svc_filename.setText(QCoreApplication.translate("Dialog", u"SDCS_20240105_0004.fits", None))
-        self.bt_single.setText(QCoreApplication.translate("Dialog", u"Exposure", None))
         self.label_g3_1.setText(QCoreApplication.translate("Dialog", u"File Name:", None))
         self.bt_repeat_filesave.setText(QCoreApplication.translate("Dialog", u"save", None))
         self.e_saving_number.setText(QCoreApplication.translate("Dialog", u"5", None))
         self.chk_continue.setText(QCoreApplication.translate("Dialog", u"continue", None))
         self.label.setText(QCoreApplication.translate("Dialog", u"1 /", None))
         self.chk_auto_save.setText(QCoreApplication.translate("Dialog", u"Auto save (local)", None))
-        self.label_g3_3.setText(QCoreApplication.translate("Dialog", u"Fowler Sampling:", None))
-        self.label_g3_4.setText(QCoreApplication.translate("Dialog", u"Exposure Time (sec):", None))
-        self.label_g3_2.setText(QCoreApplication.translate("Dialog", u"Observing State:", None))
-        self.label_svc_state.setText(QCoreApplication.translate("Dialog", u"---", None))
         self.label_g3.setText(QCoreApplication.translate("Dialog", u"Slit View Camera", None))
         self.e_repeat_file_name.setText("")
         self.label_g3_5.setText(QCoreApplication.translate("Dialog", u"File name:", None))
+        self.bt_single.setText(QCoreApplication.translate("Dialog", u"Exposure", None))
+        self.label_g3_4.setText(QCoreApplication.translate("Dialog", u"Exposure Time (sec):", None))
+        self.label_g3_3.setText(QCoreApplication.translate("Dialog", u"Fowler Sampling:", None))
+        self.label_svc_state.setText(QCoreApplication.translate("Dialog", u"---", None))
+        self.label_g3_2.setText(QCoreApplication.translate("Dialog", u"Observing State:", None))
         self.groupBox_zscale.setTitle("")
         self.radio_zscale.setText(QCoreApplication.translate("Dialog", u"zscale", None))
         self.radio_mscale.setText(QCoreApplication.translate("Dialog", u"manual", None))

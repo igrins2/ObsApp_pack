@@ -31,9 +31,9 @@
   <widget class="QGroupBox" name="groupBox_InstrumentStatus">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>3</x>
      <y>6</y>
-     <width>221</width>
+     <width>231</width>
      <height>431</height>
     </rect>
    </property>
@@ -154,7 +154,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>8</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -209,7 +209,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>8</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -264,7 +264,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>8</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -319,7 +319,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>8</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -378,7 +378,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>8</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -437,7 +437,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>8</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -479,7 +479,7 @@
        </font>
       </property>
       <property name="text">
-       <string>GMP Status:</string>
+       <string>GMP:</string>
       </property>
       <property name="alignment">
        <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -496,7 +496,7 @@
       </property>
       <property name="font">
        <font>
-        <pointsize>9</pointsize>
+        <pointsize>8</pointsize>
         <bold>true</bold>
        </font>
       </property>
@@ -508,95 +508,7 @@
       </property>
      </widget>
     </item>
-    <item row="9" column="2">
-     <widget class="QLabel" name="label_g1_4">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>State:</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="9" column="3">
-     <widget class="QLabel" name="label_state">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Running</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="0" colspan="3">
-     <widget class="QLabel" name="label_g1_5">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>false</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Action State:</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="10" column="3">
-     <widget class="QLabel" name="label_action_state">
-      <property name="sizePolicy">
-       <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
-        <horstretch>0</horstretch>
-        <verstretch>0</verstretch>
-       </sizepolicy>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>10</pointsize>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Idle</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
-      </property>
-     </widget>
-    </item>
-    <item row="11" column="1" colspan="2">
+    <item row="9" column="0" colspan="3">
      <widget class="QLabel" name="label_g1_7">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -618,7 +530,7 @@
       </property>
      </widget>
     </item>
-    <item row="11" column="3">
+    <item row="9" column="3">
      <widget class="QLabel" name="label_temp_detH">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -640,7 +552,7 @@
       </property>
      </widget>
     </item>
-    <item row="12" column="1" colspan="2">
+    <item row="10" column="0" colspan="3">
      <widget class="QLabel" name="label_g1_8">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -662,7 +574,7 @@
       </property>
      </widget>
     </item>
-    <item row="12" column="3">
+    <item row="10" column="3">
      <widget class="QLabel" name="label_temp_detK">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -684,7 +596,7 @@
       </property>
      </widget>
     </item>
-    <item row="13" column="1" colspan="2">
+    <item row="11" column="0" colspan="3">
      <widget class="QLabel" name="label_g1_9">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -706,7 +618,7 @@
       </property>
      </widget>
     </item>
-    <item row="13" column="3">
+    <item row="11" column="3">
      <widget class="QLabel" name="label_temp_detS">
       <property name="sizePolicy">
        <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
@@ -733,9 +645,9 @@
   <widget class="QGroupBox" name="groupBox_ScienceObservation">
    <property name="geometry">
     <rect>
-     <x>10</x>
+     <x>3</x>
      <y>445</y>
-     <width>221</width>
+     <width>231</width>
      <height>251</height>
     </rect>
    </property>
@@ -1615,7 +1527,7 @@
   <widget class="QFrame" name="frame_expand">
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>232</x>
      <y>4</y>
      <width>181</width>
      <height>181</height>
@@ -1649,7 +1561,7 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>402</x>
      <y>4</y>
      <width>181</width>
      <height>181</height>
@@ -1680,7 +1592,7 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>232</x>
      <y>170</y>
      <width>351</width>
      <height>351</height>
@@ -2177,7 +2089,7 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>230</x>
+     <x>232</x>
      <y>505</y>
      <width>201</width>
      <height>201</height>
@@ -2208,7 +2120,7 @@
   <widget class="QGroupBox" name="groupBox_withView">
    <property name="geometry">
     <rect>
-     <x>400</x>
+     <x>403</x>
      <y>515</y>
      <width>171</width>
      <height>181</height>
