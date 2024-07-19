@@ -48,6 +48,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 from matplotlib.patches import Rectangle, Circle
 
+# add 20240720 for barbage collector
+import gc
               
 class MainWindow(Ui_Dialog, QMainWindow):
     
@@ -492,10 +494,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
     def _init_mask(self):
         # make the mask from mask.template
-        hdul = fits.open(WORKING_DIR + "ObsApp_pack/code/ObsApp/slitmaskv0_igrins2.fits")
-        mask = hdul[0].data     
-        self.mask = self.slit_image_flip_func(mask)
-        hdul.close()
+        #change 20240720 by hilee
+        #hdul = fits.open(WORKING_DIR + "ObsApp_pack/code/ObsApp/slitmaskv0_igrins2.fits")
+        with fits.open(WORKING_DIR + "ObsApp_pack/code/ObsApp/slitmaskv0_igrins2.fits") as hdul:
+            mask = hdul[0].data     
+            self.mask = self.slit_image_flip_func(mask)
+        #hdul.close()
+        
+        gc.collect()
          
     #--------------------------------------------------------
     # ObsApp publisher
@@ -775,18 +781,24 @@ class MainWindow(Ui_Dialog, QMainWindow):
         try:
             self.fitsfullpath = "%sObsApp/dcss/Fowler/%s" % (WORKING_DIR, folder_name)
 
-            hdul = fits.open(self.fitsfullpath)
-            msg = "%.5f" % (ti.time() - self.NFS_load_time)
-            self.show_log_list(LOG_INFO, msg)
+            #change 20240720 by hilee
+            #hdul = fits.open(self.fitsfullpath)
+            with fits.open(self.fitsfullpath) as hdul:
+                msg = "%.5f" % (ti.time() - self.NFS_load_time)
+                self.show_log_list(LOG_INFO, msg)
             
-            data = hdul[0].data
-            self.svc_header = hdul[0].header
-            _img = np.array(data, dtype = "f")
-            hdul.close()
+                data = hdul[0].data
+                self.svc_header = hdul[0].header
+                _img = np.array(data, dtype = "f")
+            #hdul.close()
             
             #_img = np.rot90(_img, 1)
             self.svc_img = self.slit_image_flip_func(_img)
             #self.svc_img = rotate(_svc_img, -45, axes=(1,0), reshape=None)      
+            
+            # add 20240720 by hilee
+            del _img
+            gc.collect()
                         
             self.draw = True
             
@@ -1918,12 +1930,14 @@ class MainWindow(Ui_Dialog, QMainWindow):
     # modify 20240425
     def subtract(self, cut = True):
         mark_file = "%sObsApp/mark_sky.fits" % WORKING_DIR
-        hdul = fits.open(mark_file)
-                    
-        data = hdul[0].data
-        header = hdul[0].header
-        img = np.array(data, dtype = "f")
-        hdul.close()
+        
+        #change 20240720 by hilee
+        #hdul = fits.open(mark_file)
+        with fits.open(mark_file) as hdul:
+            data = hdul[0].data
+            header = hdul[0].header
+            img = np.array(data, dtype = "f")
+        #hdul.close()
         
         try:
             exp_time = float(header["EXPTIME"])
@@ -1936,6 +1950,10 @@ class MainWindow(Ui_Dialog, QMainWindow):
         imgSub_data = self.svc_img - flip_img*cor
         
         ny, nx = imgSub_data.shape
+        
+        #add 20240720 by hilee
+        del img
+        gc.collect()
         
         if cut:
             return imgSub_data[self.svc_cut_y:ny-self.svc_cut_y, self.svc_cut_x:nx-self.svc_cut_x]
