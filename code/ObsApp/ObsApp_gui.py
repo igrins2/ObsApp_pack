@@ -332,33 +332,40 @@ class MainWindow(Ui_Dialog, QMainWindow):
         #self.connect_to_server_virtual_tcs_q()
         
         #add 20240220 heart beat from InstSeq, DBUploader
-        self.heartbeat_check_interval = 60
+        self.heartbeat_check_interval = 60*1000
         self.heartbeat_time = [-200, -200]  # modify 20240422
         
         #for idx in range(2):
         #    self.monit_heartbeat(idx)
-            
+        
+        #remove 20240831
+        '''    
         self.InstSeq_heartbeat_timer = QTimer(self)
         # modify 20240423
-        #self.InstSeq_heartbeat_timer.setInterval(self.heartbeat_check_interval)
-        self.InstSeq_heartbeat_timer.setInterval(20)
+        self.InstSeq_heartbeat_timer.setInterval(self.heartbeat_check_interval)
+        #self.InstSeq_heartbeat_timer.setInterval(20)
         self.InstSeq_heartbeat_timer.timeout.connect(lambda: self.monit_heartbeat(INSTSEQ_HB))
         self.InstSeq_heartbeat_timer.start()
         
         self.DBUploader_heartbeat_timer = QTimer(self)
         # modify 20240423
-        #self.DBUploader_heartbeat_timer.setInterval(self.heartbeat_check_interval)
-        self.DBUploader_heartbeat_timer.setInterval(20)
+        self.DBUploader_heartbeat_timer.setInterval(self.heartbeat_check_interval)
+        #self.DBUploader_heartbeat_timer.setInterval(20)
         self.DBUploader_heartbeat_timer.timeout.connect(lambda: self.monit_heartbeat(UPLOAD_HB))
         self.DBUploader_heartbeat_timer.start()        
+        '''
         
         #modify 20240215 for heart beat
         self.heartbeat_on = [True for _ in range(8)]
         
+        #--------------------------------------------------------------------------------------------------------------
+        #modify 20240831
+        '''
         self.heartbeat_timer = [QTimer(self) for _ in range(8)]
         
         for i in range(8):
             self.heartbeat_timer[i].setInterval(1000)
+        
             
         self.heartbeat_timer[HEALTH_IG2].timeout.connect(lambda: self.heartbeat_status(HEALTH_IG2, self.label_heartbeat))
         self.heartbeat_timer[HEALTH_ICS].timeout.connect(lambda: self.heartbeat_status(HEALTH_ICS, self.label_heartbeat_ics))
@@ -371,7 +378,13 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         for i in range(8):
             self.heartbeat_timer[i].start()
-                       
+        '''
+        self.heartbeat_timer = QTimer(self)
+        self.heartbeat_timer.setInterval(1000)
+        self.heartbeat_timer.timeout.connect(self.show_heartbeat_status)
+        self.heartbeat_timer.start()
+        #--------------------------------------------------------------------------------------------------------------
+                               
         self.InstSeq_timer = QTimer(self)
         self.InstSeq_timer.setInterval(1)
         self.InstSeq_timer.timeout.connect(self.InstSeq_data_processing)
@@ -400,24 +413,31 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.sw_slit_star_init()
         
         # add 20240425 for test changing A or B mode
+        '''
         if self.simulation:
             self.AB_mode_timer = QTimer(self)
             self.AB_mode_timer.setInterval(20000)
             self.AB_mode_timer.timeout.connect(self.AB_mode_changer)
             self.AB_mode_timer.start()
-
-        
+        '''
         
     def closeEvent(self, event: QCloseEvent) -> None:    
         
         #self.list_dlg.hide()
         self.list_dlg.close()
          
+        #---------------------------------------------------
+        # remove 20240831
+        '''
         self.InstSeq_heartbeat_timer.stop()
         self.DBUploader_heartbeat_timer.stop()
-           
-        for i in range(8):
-            self.heartbeat_timer[i].stop()
+        '''
+        #---------------------------------------------------
+        
+        #modify 20240831   
+        #for i in range(8):
+        #    self.heartbeat_timer[i].stop()
+        self.heartbeat_timer.stop()
             
         self.InstSeq_timer.stop()
         
@@ -540,6 +560,8 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         
     def monit_heartbeat(self, idx):
+        print("monit_heartbeat")
+        
         health = GOOD
         state = "Good"
         if ti.time() - self.heartbeat_time[idx] > self.heartbeat_check_interval: 
@@ -1406,17 +1428,38 @@ class MainWindow(Ui_Dialog, QMainWindow):
         elif health == BAD:
             self.show_log_list(LOG_ERROR, msgbar)
         
-    
+    #--------------------------------------------------------------------------
+    #modify 20240831
+    '''
     def QWidgetLabelColor(self, widget, textcolor, bgcolor=None):
+                
         if bgcolor == None:
             label = "QLabel {color:%s}" % textcolor
             widget.setStyleSheet(label)
         else:
             label = "QLabel {color:%s;background:%s}" % (textcolor, bgcolor)
             widget.setStyleSheet(label)
+    '''
+        
+    def QWidgetLabelColor(self, widget, textcolor):
+      
+        _textclr = ''
+        if textcolor == 'green':    _textclr = '#32cd32'
+        elif textcolor == 'red':    _textclr = '#ff0000'
+        elif textcolor == 'orange': _textclr = '#ff8c00'
+        else:                       _textclr = '#ffffff'
+            
+        palette = widget.palette()
+        palette.setColor(QPalette.WindowText, QColor(_textclr))    
+        
+        #widget.setAutoFillBackground(True)
+        widget.setPalette(palette)
+        
+        widget.show()
             
             
     def QWidgetBtnColor(self, widget, textcolor, bgcolor=None):
+        #print('Button', textcolor, bgcolor, ti.localtime())   #20240830 test
         if bgcolor == None:
             label = "QPushButton {color:%s}" % textcolor
             widget.setStyleSheet(label)
@@ -2152,6 +2195,21 @@ class MainWindow(Ui_Dialog, QMainWindow):
         self.e_offset.setEnabled(enable)
         
         self.e_averaging_number.setEnabled(enable)
+        
+    
+    #add 20240831 
+    def show_heartbeat_status(self):
+        print("show_heartbeat_status")
+        
+        self.heartbeat_status(HEALTH_IG2, self.label_heartbeat)
+        self.heartbeat_status(HEALTH_ICS, self.label_heartbeat_ics)
+        self.heartbeat_status(HEALTH_DCSS, self.label_heartbeat_dcss)
+        self.heartbeat_status(HEALTH_DCSH, self.label_heartbeat_dcsh)
+        self.heartbeat_status(HEALTH_DCSK, self.label_heartbeat_dcsk)
+        self.heartbeat_status(HEALTH_INSTSEQ, self.label_heartbeat_InstSeq)
+        self.heartbeat_status(HEALTH_DBUPLOAD, self.label_heartbeat_dbuploader)
+        self.heartbeat_status(HEALTH_GMP, self.label_heartbeat_gmp)
+        
 
 
     def heartbeat_status(self, idx, label):
@@ -2735,7 +2793,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     def sw_slit_star_push_offset(self, sw_slit, sw_star):
         # i = len(self._sw_slit_star_stack)
-        self._sw_slit_star_stack.insert(0, ("offset",
+        self._sw_slit_star_stack.insert(0, ("offset(20240830)",
                                             # i,
                                             sw_slit,
                                             sw_star))

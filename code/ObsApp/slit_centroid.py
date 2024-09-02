@@ -44,7 +44,7 @@ class MplFrame(QFrame):
         else:
             sw_slit_star_stack, nn = sw_slit_star_stack
 
-        print(sw_slit_star_stack)
+        #print(sw_slit_star_stack)
         self.fig.clf()
         # ax = AA.Subplot(self.fig, 111)
         # self.fig.add_subplot(ax)
@@ -85,8 +85,8 @@ class MplFrame(QFrame):
                 sw_slit_list.append([])
                 sw_star_color = sw_star_color1
 
-        print(sw_slit_list)
-        print("---", np.median(sw_slit_list[0]))
+        #print(sw_slit_list)
+        #sprint("---", np.median(sw_slit_list[0]))
         ax2.axvline(np.median(sw_slit_list[0]), color="0.8",
                     linewidth=2)
         ax2.scatter(sw_star_list, range(len(sw_star_list)),

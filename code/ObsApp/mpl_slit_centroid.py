@@ -161,52 +161,63 @@ class SW_centroid_finder():
         return sl_slit, sl_star
 
     def plot(self, ax, pixel_scale=1.):
-        # self = finder
-        m_thresh, x, y = self.get_sw_slit()
-        sw_slit = self.find_sw_slit_centroid((x, y))
-        xx, yy, mfinite = self.get_sw_star(m_thresh)
-        x, ym = xx[mfinite], yy[mfinite]
+        
+        #20240830 test
+        try:
+            # self = finder
+            m_thresh, x, y = self.get_sw_slit()
+            sw_slit = self.find_sw_slit_centroid((x, y))
+            xx, yy, mfinite = self.get_sw_star(m_thresh)
+            x, ym = xx[mfinite], yy[mfinite]
 
-        bins = np.arange(int(x.min()) - 0.5, int(x.max()) + 0.5, 1)
-        v = np.histogram(x, weights=ym, bins=bins)[0]
-        w = np.histogram(x, bins=bins)[0]
+            bins = np.arange(int(x.min()) - 0.5, int(x.max()) + 0.5, 1)
+            v = np.histogram(x, weights=ym, bins=bins)[0]
+            w = np.histogram(x, bins=bins)[0]
 
-        vw = v/w
-        # vw_mask = np.isfinite(vw)
-        vw_mask = w > 10.
-        vx = 0.5 * (bins[:-1] + bins[1:])
+            vw = v/w
+            # vw_mask = np.isfinite(vw)
+            vw_mask = w > 10.
+            vx = 0.5 * (bins[:-1] + bins[1:])
 
-        # sw_star_model = self.find_sw_star_model((x, ym))
-        sw_star_model = self.find_sw_star_model((vx[vw_mask],
-                                                 vw[vw_mask]))
-        sw_star = sw_star_model.mean_0.value
+            # sw_star_model = self.find_sw_star_model((x, ym))
+            sw_star_model = self.find_sw_star_model((vx[vw_mask],
+                                                    vw[vw_mask]))
+            sw_star = sw_star_model.mean_0.value
 
-        import matplotlib.transforms as mtrans
-        tr = mtrans.blended_transform_factory(ax.transData, ax.transAxes)
+            import matplotlib.transforms as mtrans
+            tr = mtrans.blended_transform_factory(ax.transData, ax.transAxes)
 
-        ax.set_autoscaley_on(True)
-        ax.plot(vx*pixel_scale,
-                np.ma.array(vw, mask=~vw_mask).filled(np.nan),
-                # vw,
-                "-", zorder=5, lw=3,
-                drawstyle='steps-mid')
-        ax.set_autoscaley_on(False)
-        ax.plot(xx*pixel_scale, yy, ".", color="r", alpha=0.2, zorder=3)
-        ax.fill_betweenx([0, 1],
-                         (sw_slit-4)*pixel_scale, (sw_slit+4)*pixel_scale,
-                         transform=tr, facecolor="0.8", alpha=0.5, zorder=2)
-        x1 = np.linspace(-32, 32, 128) # no pixel scale applied as this is
-                                       # given to model
-        ax.plot(x1*pixel_scale, sw_star_model(x1))
-        # print("$$$", sw_star)
-        ax.axvline(sw_star*pixel_scale, linestyle=":")
-        ax.set_xlim(-32*pixel_scale, 32*pixel_scale)
-        ylim = ax.get_ylim()
-        ymax_cand1 = np.nanpercentile(vw, 99)
-        ymax_cand2 = sw_star_model(x1).max()
-        ax.set_ylim(ylim[0], np.max([ymax_cand1, ymax_cand2]))
+            ax.set_autoscaley_on(True)
+            ax.plot(vx*pixel_scale,
+                    np.ma.array(vw, mask=~vw_mask).filled(np.nan),
+                    # vw,
+                    "-", zorder=5, lw=3,
+                    drawstyle='steps-mid')
+            ax.set_autoscaley_on(False)
+            ax.plot(xx*pixel_scale, yy, ".", color="r", alpha=0.2, zorder=3)
+            ax.fill_betweenx([0, 1],
+                            (sw_slit-4)*pixel_scale, (sw_slit+4)*pixel_scale,
+                            transform=tr, facecolor="0.8", alpha=0.5, zorder=2)
+            x1 = np.linspace(-32, 32, 128) # no pixel scale applied as this is
+                                        # given to model
+            ax.plot(x1*pixel_scale, sw_star_model(x1))
+            # print("$$$", sw_star)
+            ax.axvline(sw_star*pixel_scale, linestyle=":")
+            ax.set_xlim(-32*pixel_scale, 32*pixel_scale)
+            ylim = ax.get_ylim()
+            ymax_cand1 = np.nanpercentile(vw, 99)
+            ymax_cand2 = sw_star_model(x1).max()
+            ax.set_ylim(ylim[0], np.max([ymax_cand1, ymax_cand2]))
 
-        return sw_slit*pixel_scale, sw_star*pixel_scale
+            return sw_slit*pixel_scale, sw_star*pixel_scale
+        
+        except ZeroDivisionError:
+            pass
+        except ValueError:
+            pass
+        except Exception as e:
+            import traceback, sys
+            traceback.print_exc(file=sys.stdout) 
 
 
 def test():
