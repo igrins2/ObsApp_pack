@@ -3,7 +3,7 @@
 """
 Created on Oct 21, 2022
 
-Modified on Apr 28, 2024
+Modified on Sep 1, 2024
 
 refered from SCP of original IGRINS
 @author: hilee
@@ -560,7 +560,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
         
         
     def monit_heartbeat(self, idx):
-        print("monit_heartbeat")
+        #print("monit_heartbeat")
         
         health = GOOD
         state = "Good"
@@ -2793,7 +2793,7 @@ class MainWindow(Ui_Dialog, QMainWindow):
     
     def sw_slit_star_push_offset(self, sw_slit, sw_star):
         # i = len(self._sw_slit_star_stack)
-        self._sw_slit_star_stack.insert(0, ("offset(20240830)",
+        self._sw_slit_star_stack.insert(0, ("offset",
                                             # i,
                                             sw_slit,
                                             sw_star))
